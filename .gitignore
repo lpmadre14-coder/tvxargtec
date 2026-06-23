@@ -1,0 +1,19 @@
+.gradle/
+build/
+app/build/
+local.properties
+*.iml
+.idea/
+*.jks
+*.keystore
+*-adminsdk-*.json
+google-services.json
+tvxargtec (1).webp
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.bak
+*.swp
+__pycache__/
+*.pyc

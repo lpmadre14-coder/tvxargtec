@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Backgrounds (Deep Cyber Space) -->
+    <color name="bg_primary">#FF080C14</color>       <!-- Fondo ultra oscuro con tinte azulado frío -->
+    <color name="bg_secondary">#FF0F1626</color>     <!-- Capa secundaria profunda -->
+    <color name="bg_card">#FF141D33</color>          <!-- Contenedores con contraste cibernético -->
+    <color name="bg_surface">#FF18243F</color>       <!-- Superficies elevadas -->
+    <color name="bg_overlay">#A6080C14</color>       <!-- Overlay oscuro traslúcido -->
+    <color name="bg_glass">#1A00D4FF</color>         <!-- Cristal con tintado Cyan futurista -->
+
+    <!-- Brand (Crimson & Neon Tech) -->
+    <color name="brand_violet">#FF8B5CF6</color>     <!-- Violeta Neón (Añadido) -->
+    <color name="brand_crimson">#FFEF0044</color>     <!-- Carmesí Eléctrico Neón (Main Engine) -->
+    <color name="brand_crimson_dark">#FF990026</color><!-- Carmesí profundo para estados presionados -->
+    <color name="brand_crimson_light">#FFFF3370</color><!-- Brillo carmesí brillante para activados -->
+    <color name="brand_cyan">#FF00E5FF</color>        <!-- Cyan Neón de alta tecnología (Accent principal) -->
+    <color name="brand_cyan_dark">#FF00A3B5</color>   <!-- Cyan cibernético oscuro -->
+    <color name="brand_green">#FF00FF66</color>       <!-- Verde Matrix / Neón puro -->
+    <color name="brand_green_dark">#FF00993D</color>  <!-- Verde funcional oscuro -->
+
+    <!-- Gradients (Crimson Light to Cyber Cyan) -->
+    <color name="gradient_crimson_start">#FFEF0044</color>
+    <color name="gradient_crimson_end">#FF00E5FF</color>
+    <color name="gradient_dark_start">#FF080C14</color>
+    <color name="gradient_dark_end">#FF0F1626</color>
+    <color name="gradient_card_start">#FF141D33</color>
+    <color name="gradient_card_end">#FF0F1626</color>
+    <color name="gradient_banner_start">#00080C14</color>
+    <color name="gradient_banner_end">#FF080C14</color>
+
+    <!-- Text (High Contrast & Matrix Tech) -->
+    <color name="text_primary">#FFFFFFFF</color>       <!-- Blanco Puro -->
+    <color name="text_secondary">#FF8A99AD</color>     <!-- Gris azulado futurista, mucho más limpio -->
+    <color name="text_hint">#FF4E5D78</color>          <!-- Texto de sugerencia o deshabilitado -->
+    <color name="text_on_brand">#FFFFFFFF</color>      <!-- Texto sobre botones principales -->
+
+    <!-- Semantic (Cyber Alerts) -->
+    <color name="semantic_success">#FF00FF66</color>   <!-- Éxito en verde neón -->
+    <color name="semantic_warning">#FFFFBB00</color>   <!-- Alerta ámbar industrial -->
+    <color name="semantic_error">#FFFF0033</color>     <!-- Error crítico carmesí brillante -->
+    <color name="semantic_info">#FF00E5FF</color>      <!-- Info en cyan tecnológico -->
+
+    <!-- Badges -->
+    <color name="badge_hd">#FFEF0044</color>           <!-- Crimson Badge -->
+    <color name="badge_4k">#FF00E5FF</color>           <!-- Cyan Badge -->
+    <color name="badge_live">#FFFF0033</color>         <!-- Pulso de alerta vivo -->
+    <color name="badge_premium">#FF00FF66</color>      <!-- Premium Matrix Green -->
+
+    <!-- Borders (Laser Edges) -->
+    <color name="border_glass">#3300E5FF</color>       <!-- Bordes estilo HUD holográfico (Cyan con alpha) -->
+    <color name="border_card">#1AFFFFFF</color>        <!-- Borde sutil para delimitar estructuras -->
+
+    <!-- Specific -->
+    <color name="splash_bg">#FF080C14</color>          <!-- Consistente con el fondo de la app -->
+    <color name="online_dot">#FF00FF66</color>         <!-- Nodo activo en verde neón -->
+    <color name="shimmer_highlight">#4D00E5FF</color>  <!-- Shimmer con destello Cyan futurista -->
+    <color name="shimmer_base">#15FFFFFF</color>
+
+    <!-- Gradient accent (Crimson → Cyan) -->
+    <color name="gradient_start">#FFEF0044</color>
+    <color name="gradient_end">#FF00E5FF</color>
+    <color name="error">@color/semantic_error</color>
+
+    <!-- Legacy compatibility (Mapeado al nuevo ecosistema) -->
+    <color name="primary">@color/brand_crimson</color>
+    <color name="primary_dark">@color/bg_primary</color>
+    <color name="accent">@color/brand_cyan</color>
+    <color name="background">@color/bg_primary</color>
+    <color name="surface">@color/bg_card</color>
+    <color name="surface_light">@color/bg_surface</color>
+    <color name="card_bg">@color/bg_card</color>
+    <color name="on_primary">@color/text_on_brand</color>
+    <color name="on_surface">@color/text_primary</color>
+    <color name="vip_gold">#FF00E5FF</color>
+</resources>

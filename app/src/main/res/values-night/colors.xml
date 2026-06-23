@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg_primary">#FF060A14</color>
+    <color name="bg_secondary">#FF0C1424</color>
+    <color name="bg_card">#FF10182E</color>
+    <color name="bg_surface">#FF0E1830</color>
+    <color name="brand_violet">#FF8B5CF6</color>
+    <color name="brand_cyan">#FF22D3EE</color>
+    <color name="brand_green">#FF34D399</color>
+    <color name="text_primary">#FFFFFFFF</color>
+    <color name="text_secondary">#FF7C829A</color>
+    <color name="text_hint">#FF4B556A</color>
+    <color name="splash_bg">#FF060A14</color>
+</resources>

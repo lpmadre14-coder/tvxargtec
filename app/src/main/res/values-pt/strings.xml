@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Tvxargtec</string>
+    <string name="default_notification_channel_id">tvxargtec_alerts</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_skip">Pular</string>
+    <string name="onboarding_next">Próximo</string>
+    <string name="onboarding_start">Começar</string>
+    <string name="onboarding_title_1">Bem-vindo ao Tvxargtec</string>
+    <string name="onboarding_desc_1">Desfrute do melhor streaming com qualidade premium</string>
+    <string name="onboarding_title_2">Conteúdo Ilimitado</string>
+    <string name="onboarding_desc_2">Milhares de canais ao vivo, filmes e séries em HD/4K</string>
+    <string name="onboarding_title_3">Sem Limites</string>
+    <string name="onboarding_desc_3">Acesse de qualquer dispositivo, a qualquer momento</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Início</string>
+    <string name="nav_live">TV ao Vivo</string>
+    <string name="nav_series">Séries</string>
+    <string name="nav_movies">Filmes</string>
+    <string name="nav_profile">Perfil</string>
+
+    <!-- Home -->
+    <string name="home_continue_watching">Continuar Assistindo</string>
+    <string name="home_live_channels">Canais ao Vivo</string>
+    <string name="home_recommended">Recomendados</string>
+    <string name="home_premieres">Estreias</string>
+    <string name="home_trending">Em Alta</string>
+    <string name="home_watch_now">Assistir Agora</string>
+    <string name="home_more_info">Mais Informações</string>
+    <string name="home_categories">Categorias</string>
+    <string name="home_channels">Canais</string>
+
+    <!-- Live TV -->
+    <string name="live_all">Todos</string>
+    <string name="live_sports">Esportes</string>
+    <string name="live_news">Notícias</string>
+    <string name="live_entertainment">Entretenimento</string>
+    <string name="live_music">Música</string>
+    <string name="live_now">AO VIVO</string>
+
+    <!-- Player -->
+    <string name="player_quality">Qualidade de Vídeo</string>
+    <string name="player_audio">Áudio</string>
+    <string name="player_subtitles">Legendas</string>
+    <string name="player_settings">Configurações de Reprodução</string>
+    <string name="player_locked">Controles bloqueados</string>
+    <string name="player_unlocked">Controles desbloqueados</string>
+    <string name="player_error">Erro de reprodução</string>
+    <string name="player_no_options">Nenhuma opção disponível</string>
+
+    <!-- Profile -->
+    <string name="profile_my_account">Minha Conta</string>
+    <string name="profile_favorites">Favoritos</string>
+    <string name="profile_history">Histórico</string>
+    <string name="profile_settings">Configurações</string>
+    <string name="profile_logout">Sair</string>
+    <string name="profile_vip">Membro VIP</string>
+    <string name="profile_not_vip">Ainda não é membro</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Configurações</string>
+    <string name="settings_general">GERAL</string>
+    <string name="settings_language">Idioma</string>
+    <string name="settings_notifications">Notificações</string>
+    <string name="settings_info">INFORMAÇÕES</string>
+    <string name="settings_about">Sobre</string>
+    <string name="settings_logout">Sair</string>
+    <string name="settings_version">Versão</string>
+
+    <!-- VIP -->
+    <string name="vip_title">Tvxargtec VIP</string>
+    <string name="vip_subtitle">Aproveite todo o conteúdo sem limites</string>
+    <string name="vip_monthly">Mensal</string>
+    <string name="vip_yearly">Anual</string>
+    <string name="vip_lifetime">Vitalício</string>
+    <string name="vip_subscribe">Assinar</string>
+    <string name="vip_buy">Comprar</string>
+    <string name="vip_redeem">Tem um código de resgate?</string>
+    <string name="vip_most_popular">MAIS POPULAR</string>
+    <string name="vip_per_month">/ mês</string>
+    <string name="vip_per_year">/ ano</string>
+    <string name="vip_one_time">Pagamento único</string>
+    <string name="vip_success">Assinatura ativada!</string>
+
+    <!-- Login -->
+    <string name="login_title">Faça login para continuar</string>
+    <string name="login_email">E-mail</string>
+    <string name="login_password">Senha</string>
+    <string name="login_button">Entrar</string>
+    <string name="login_register">Não tem uma conta? Cadastre-se</string>
+    <string name="login_forgot">Esqueceu sua senha?</string>
+    <string name="login_empty">Insira e-mail e senha</string>
+    <string name="login_success">Login bem-sucedido</string>
+
+    <!-- Search -->
+    <string name="search_hint">Pesquisar canais...</string>
+    <string name="search_no_results">Nenhum resultado encontrado</string>
+
+    <!-- Favorites -->
+    <string name="favorites_title">Meus Favoritos</string>
+    <string name="favorites_empty">Você ainda não tem favoritos</string>
+
+    <!-- History -->
+    <string name="history_title">Histórico</string>
+    <string name="history_empty">Nenhum histórico ainda</string>
+
+    <!-- General -->
+    <string name="loading">Carregando...</string>
+    <string name="error_generic">Algo deu errado</string>
+    <string name="retry">Tentar novamente</string>
+    <string name="cancel">Cancelar</string>
+    <string name="confirm">Confirmar</string>
+    <string name="splash_tagline">Streaming Premium</string>
+</resources>

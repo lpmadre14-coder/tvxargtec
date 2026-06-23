@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Tvxargtec" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Brand Colors adaptados al ecosistema Carmesí/Cyan -->
+        <item name="colorPrimary">@color/brand_crimson</item>
+        <item name="colorPrimaryDark">@color/bg_primary</item>
+        <item name="colorAccent">@color/brand_cyan</item>
+        <item name="colorOnPrimary">@color/text_on_brand</item>
+        <item name="colorSecondary">@color/brand_cyan</item>
+        <item name="colorOnSecondary">@color/text_primary</item>
+        <item name="android:colorBackground">@color/bg_primary</item>
+        <item name="colorSurface">@color/bg_card</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorError">@color/semantic_error</item>
+
+        <!-- System Bars (Cyber UI Consistente) -->
+        <item name="android:statusBarColor">@color/bg_primary</item>
+        <item name="android:navigationBarColor">@color/bg_primary</item>
+        <item name="android:windowBackground">@color/bg_primary</item>
+
+        <!-- Component Styles Overrides -->
+        <item name="materialCardViewStyle">@style/Widget.Tvxargtec.Card</item>
+        <item name="materialButtonStyle">@style/Widget.Tvxargtec.Button</item>
+        <item name="bottomNavigationStyle">@style/Widget.Tvxargtec.BottomNav</item>
+    </style>
+
+    <!-- Splash with transparent BG for animation -->
+    <style name="Theme.Tvxargtec.Splash" parent="Theme.Tvxargtec">
+        <item name="android:windowBackground">@color/splash_bg</item>
+    </style>
+        <!-- Your existing themes/styles -->
+
+        <!-- Add this style to define the circular shape -->
+        <style name="ShapeAppearance.Tvxargtec.Circle" parent="">
+            <item name="cornerFamily">rounded</item>
+            <item name="cornerSize">50%</item>
+        </style>
+    <!-- Translucent for overlays -->
+    <style name="Theme.Tvxargtec.Translucent" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+
+    <!-- Onboarding fullscreen -->
+    <style name="Theme.Tvxargtec.Onboarding" parent="Theme.Tvxargtec">
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <!-- Introducción (onboarding walkthrough) -->
+    <style name="Theme.Tvxargtec.Introduce" parent="Theme.Tvxargtec" />
+
+    <!-- Transición de idioma -->
+    <style name="Theme.Tvxargtec.TransitionLanguage" parent="Theme.Tvxargtec" />
+
+    <!-- Base: Widget -->
+    <style name="Widget.Tvxargtec" parent="@android:style/Widget" />
+
+    <!-- Widget: Card (Bordes más finos y estilo Sci-Fi) -->
+    <style name="Widget.Tvxargtec.Card" parent="Widget.MaterialComponents.CardView">
+        <item name="cardBackgroundColor">@color/bg_card</item>
+        <item name="cardCornerRadius">14dp</item> <!-- Esquinas un toque más agudas para verse más Tech -->
+        <item name="cardElevation">6dp</item>
+        <item name="cardMaxElevation">10dp</item>
+        <item name="strokeColor">@color/border_card</item>
+        <item name="strokeWidth">1dp</item> <!-- Ajustado a 1dp para definir mejor la estructura -->
+        <item name="contentPadding">0dp</item>
+    </style>
+
+    <!-- Widget: Button Premium (Carmesí Eléctrico Neón) -->
+    <style name="Widget.Tvxargtec.Button" parent="Widget.MaterialComponents.Button">
+        <item name="cornerRadius">12dp</item> <!-- Bordes menos redondeados = Estética más industrial/cyberpunk -->
+        <item name="backgroundTint">@color/brand_crimson</item>
+        <item name="android:textColor">@color/text_on_brand</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">0.04</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+
+    <!-- Widget: Button Outline (Cyber Cyan Laser) -->
+    <style name="Widget.Tvxargtec.Button.Outline" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="cornerRadius">12dp</item>
+        <item name="strokeColor">@color/brand_cyan</item>
+        <item name="strokeWidth">1.5dp</item>
+        <item name="android:textColor">@color/brand_cyan</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <!-- Widget: Bottom Navigation (HUD Integrado) -->
+    <style name="Widget.Tvxargtec.BottomNav" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="backgroundTint">@color/bg_secondary</item>
+        <item name="itemIconTint">@color/nav_color</item>
+        <item name="itemTextColor">@color/nav_color</item>
+        <item name="itemTextAppearanceActive">@style/Text.Tvxargtec.NavActive</item>
+        <item name="itemTextAppearanceInactive">@style/Text.Tvxargtec.NavInactive</item>
+        <item name="itemRippleColor">@color/brand_crimson</item> <!-- Efecto tap en Carmesí -->
+        <item name="elevation">16dp</item>
+        <item name="labelVisibilityMode">labeled</item>
+        <item name="menuGravity">center</item>
+    </style>
+
+    <!-- Widget: Chip base -->
+    <style name="Widget.Tvxargtec.Chip" parent="Widget.MaterialComponents.Chip.Choice">
+        <item name="chipBackgroundColor">@color/bg_surface</item>
+        <item name="chipStrokeColor">@color/border_glass</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="chipCornerRadius">8dp</item> <!-- Match con estética geométrica -->
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="chipIconTint">@color/text_secondary</item>
+    </style>
+
+    <!-- Widget: Chip Seleccionado SOLUCIONADO (Parámetros Neón) -->
+    <style name="Widget.Tvxargtec.Chip.Selected" parent="Widget.Tvxargtec.Chip">
+        <item name="chipBackgroundColor">#26EF0044</item> <!-- Fondo carmesí ultra traslúcido (15% alpha) -->
+        <item name="chipStrokeColor">@color/brand_crimson</item>
+        <item name="chipStrokeWidth">1.5dp</item>
+        <item name="android:textColor">@color/brand_crimson_light</item> <!-- ¡Error de compilación corregido acá! -->
+    </style>
+
+    <!-- Base: Text styles -->
+    <style name="Text.Tvxargtec" parent="@android:style/TextAppearance" />
+
+    <style name="Text.Tvxargtec.Hero">
+        <item name="android:textSize">28sp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:fontFamily">sans-serif-black</item> <!-- Cambiado a Black para tipografías con mucha fuerza -->
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.01</item>
+        <item name="android:lineSpacingExtra">4sp</item>
+    </style>
+
+    <style name="Text.Tvxargtec.Title">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Text.Tvxargtec.Subtitle">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="Text.Tvxargtec.Body">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="Text.Tvxargtec.NavActive">
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="Text.Tvxargtec.NavInactive">
+        <item name="android:textSize">11sp</item>
+    </style>
+
+    <!-- Badge style (Micro HUD tags) -->
+    <style name="Widget.Tvxargtec.Badge">
+        <item name="android:background">@drawable/bg_badge</item>
+        <item name="android:paddingHorizontal">8dp</item>
+        <item name="android:paddingVertical">2dp</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.08</item>
+    </style>
+</resources>

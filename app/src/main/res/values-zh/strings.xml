@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Tvxargtec</string>
+    <string name="default_notification_channel_id">tvxargtec_alerts</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_skip">跳过</string>
+    <string name="onboarding_next">下一步</string>
+    <string name="onboarding_start">开始使用</string>
+    <string name="onboarding_title_1">欢迎使用 Tvxargtec</string>
+    <string name="onboarding_desc_1">享受最佳的高品质流媒体体验</string>
+    <string name="onboarding_title_2">无限内容</string>
+    <string name="onboarding_desc_2">数以千计的直播频道、电影和剧集，支持HD/4K</string>
+    <string name="onboarding_title_3">无限制</string>
+    <string name="onboarding_desc_3">随时随地，任何设备均可访问</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">首页</string>
+    <string name="nav_live">电视直播</string>
+    <string name="nav_series">剧集</string>
+    <string name="nav_movies">电影</string>
+    <string name="nav_profile">个人中心</string>
+
+    <!-- Home -->
+    <string name="home_continue_watching">继续观看</string>
+    <string name="home_live_channels">直播频道</string>
+    <string name="home_recommended">推荐</string>
+    <string name="home_premieres">首播</string>
+    <string name="home_trending">热门</string>
+    <string name="home_watch_now">立即观看</string>
+    <string name="home_more_info">更多信息</string>
+    <string name="home_categories">分类</string>
+    <string name="home_channels">频道</string>
+
+    <!-- Live TV -->
+    <string name="live_all">全部</string>
+    <string name="live_sports">体育</string>
+    <string name="live_news">新闻</string>
+    <string name="live_entertainment">娱乐</string>
+    <string name="live_music">音乐</string>
+    <string name="live_now">直播</string>
+
+    <!-- Player -->
+    <string name="player_quality">视频质量</string>
+    <string name="player_audio">音频</string>
+    <string name="player_subtitles">字幕</string>
+    <string name="player_settings">播放设置</string>
+    <string name="player_locked">控制已锁定</string>
+    <string name="player_unlocked">控制已解锁</string>
+    <string name="player_error">播放错误</string>
+    <string name="player_no_options">没有可用选项</string>
+
+    <!-- Profile -->
+    <string name="profile_my_account">我的账户</string>
+    <string name="profile_favorites">收藏</string>
+    <string name="profile_history">历史记录</string>
+    <string name="profile_settings">设置</string>
+    <string name="profile_logout">退出登录</string>
+    <string name="profile_vip">VIP会员</string>
+    <string name="profile_not_vip">还不是会员</string>
+
+    <!-- Settings -->
+    <string name="settings_title">设置</string>
+    <string name="settings_general">通用</string>
+    <string name="settings_language">语言</string>
+    <string name="settings_notifications">通知</string>
+    <string name="settings_info">信息</string>
+    <string name="settings_about">关于</string>
+    <string name="settings_logout">退出登录</string>
+    <string name="settings_version">版本</string>
+
+    <!-- VIP -->
+    <string name="vip_title">Tvxargtec VIP</string>
+    <string name="vip_subtitle">无限制享受所有内容</string>
+    <string name="vip_monthly">每月</string>
+    <string name="vip_yearly">每年</string>
+    <string name="vip_lifetime">终身</string>
+    <string name="vip_subscribe">订阅</string>
+    <string name="vip_buy">购买</string>
+    <string name="vip_redeem">有兑换码？</string>
+    <string name="vip_most_popular">最受欢迎</string>
+    <string name="vip_per_month">/月</string>
+    <string name="vip_per_year">/年</string>
+    <string name="vip_one_time">一次性付款</string>
+    <string name="vip_success">订阅已激活！</string>
+
+    <!-- Login -->
+    <string name="login_title">登录以继续</string>
+    <string name="login_email">邮箱</string>
+    <string name="login_password">密码</string>
+    <string name="login_button">登录</string>
+    <string name="login_register">没有账户？立即注册</string>
+    <string name="login_forgot">忘记密码？</string>
+    <string name="login_empty">请输入邮箱和密码</string>
+    <string name="login_success">登录成功</string>
+
+    <!-- Search -->
+    <string name="search_hint">搜索频道...</string>
+    <string name="search_no_results">未找到结果</string>
+
+    <!-- Favorites -->
+    <string name="favorites_title">我的收藏</string>
+    <string name="favorites_empty">暂无收藏</string>
+
+    <!-- History -->
+    <string name="history_title">历史记录</string>
+    <string name="history_empty">暂无历史记录</string>
+
+    <!-- General -->
+    <string name="loading">加载中...</string>
+    <string name="error_generic">出了点问题</string>
+    <string name="retry">重试</string>
+    <string name="cancel">取消</string>
+    <string name="confirm">确认</string>
+    <string name="splash_tagline">优质流媒体</string>
+</resources>

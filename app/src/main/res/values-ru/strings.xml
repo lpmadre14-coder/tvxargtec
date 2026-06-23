@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Tvxargtec</string>
+    <string name="default_notification_channel_id">tvxargtec_alerts</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_skip">Пропустить</string>
+    <string name="onboarding_next">Далее</string>
+    <string name="onboarding_start">Начать</string>
+    <string name="onboarding_title_1">Добро пожаловать в Tvxargtec</string>
+    <string name="onboarding_desc_1">Наслаждайтесь лучшим стримингом премиум-качества</string>
+    <string name="onboarding_title_2">Безлимитный контент</string>
+    <string name="onboarding_desc_2">Тысячи прямых каналов, фильмов и сериалов в HD/4K</string>
+    <string name="onboarding_title_3">Без ограничений</string>
+    <string name="onboarding_desc_3">Доступ с любого устройства в любое время</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Главная</string>
+    <string name="nav_live">ТВ в прямом эфире</string>
+    <string name="nav_series">Сериалы</string>
+    <string name="nav_movies">Фильмы</string>
+    <string name="nav_profile">Профиль</string>
+
+    <!-- Home -->
+    <string name="home_continue_watching">Продолжить просмотр</string>
+    <string name="home_live_channels">Прямые каналы</string>
+    <string name="home_recommended">Рекомендуемое</string>
+    <string name="home_premieres">Премьеры</string>
+    <string name="home_trending">В тренде</string>
+    <string name="home_watch_now">Смотреть сейчас</string>
+    <string name="home_more_info">Подробнее</string>
+    <string name="home_categories">Категории</string>
+    <string name="home_channels">Каналы</string>
+
+    <!-- Live TV -->
+    <string name="live_all">Все</string>
+    <string name="live_sports">Спорт</string>
+    <string name="live_news">Новости</string>
+    <string name="live_entertainment">Развлечения</string>
+    <string name="live_music">Музыка</string>
+    <string name="live_now">ПРЯМОЙ ЭФИР</string>
+
+    <!-- Player -->
+    <string name="player_quality">Качество видео</string>
+    <string name="player_audio">Аудио</string>
+    <string name="player_subtitles">Субтитры</string>
+    <string name="player_settings">Настройки воспроизведения</string>
+    <string name="player_locked">Элементы управления заблокированы</string>
+    <string name="player_unlocked">Элементы управления разблокированы</string>
+    <string name="player_error">Ошибка воспроизведения</string>
+    <string name="player_no_options">Нет доступных опций</string>
+
+    <!-- Profile -->
+    <string name="profile_my_account">Мой аккаунт</string>
+    <string name="profile_favorites">Избранное</string>
+    <string name="profile_history">История</string>
+    <string name="profile_settings">Настройки</string>
+    <string name="profile_logout">Выйти</string>
+    <string name="profile_vip">VIP-участник</string>
+    <string name="profile_not_vip">Ещё не участник</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Настройки</string>
+    <string name="settings_general">ОБЩИЕ</string>
+    <string name="settings_language">Язык</string>
+    <string name="settings_notifications">Уведомления</string>
+    <string name="settings_info">ИНФОРМАЦИЯ</string>
+    <string name="settings_about">О приложении</string>
+    <string name="settings_logout">Выйти</string>
+    <string name="settings_version">Версия</string>
+
+    <!-- VIP -->
+    <string name="vip_title">Tvxargtec VIP</string>
+    <string name="vip_subtitle">Наслаждайтесь всем контентом без ограничений</string>
+    <string name="vip_monthly">Ежемесячно</string>
+    <string name="vip_yearly">Ежегодно</string>
+    <string name="vip_lifetime">Пожизненно</string>
+    <string name="vip_subscribe">Подписаться</string>
+    <string name="vip_buy">Купить</string>
+    <string name="vip_redeem">Есть код активации?</string>
+    <string name="vip_most_popular">САМЫЙ ПОПУЛЯРНЫЙ</string>
+    <string name="vip_per_month">/ месяц</string>
+    <string name="vip_per_year">/ год</string>
+    <string name="vip_one_time">Разовый платёж</string>
+    <string name="vip_success">Подписка активирована!</string>
+
+    <!-- Login -->
+    <string name="login_title">Войдите, чтобы продолжить</string>
+    <string name="login_email">Эл. почта</string>
+    <string name="login_password">Пароль</string>
+    <string name="login_button">Войти</string>
+    <string name="login_register">Нет аккаунта? Зарегистрироваться</string>
+    <string name="login_forgot">Забыли пароль?</string>
+    <string name="login_empty">Введите эл. почту и пароль</string>
+    <string name="login_success">Вход выполнен успешно</string>
+
+    <!-- Search -->
+    <string name="search_hint">Поиск каналов...</string>
+    <string name="search_no_results">Результатов не найдено</string>
+
+    <!-- Favorites -->
+    <string name="favorites_title">Моё избранное</string>
+    <string name="favorites_empty">У вас ещё нет избранного</string>
+
+    <!-- History -->
+    <string name="history_title">История</string>
+    <string name="history_empty">Истории пока нет</string>
+
+    <!-- General -->
+    <string name="loading">Загрузка...</string>
+    <string name="error_generic">Что-то пошло не так</string>
+    <string name="retry">Повторить</string>
+    <string name="cancel">Отмена</string>
+    <string name="confirm">Подтвердить</string>
+    <string name="splash_tagline">Премиум-стриминг</string>
+</resources>

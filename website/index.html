@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TVXargtec — Streaming Premium</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #080C14;
+            --bg2: #0D1225;
+            --card: #111827;
+            --card2: #1A1F35;
+            --violet: #7C3AED;
+            --cyan: #00D4FF;
+            --green: #10B981;
+            --crimson: #EF0044;
+            --gold: #F59E0B;
+            --text: #F1F5F9;
+            --muted: #64748B;
+            --border: rgba(124,58,237,0.15);
+        }
+        html { scroll-behavior: smooth; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', -apple-system, sans-serif;
+            overflow-x: hidden;
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--violet); border-radius: 4px; }
+
+        /* ── Navigation ── */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            padding: 1rem 2rem;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(8,12,20,0.85); backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+        nav .logo {
+            font-size: 1.5rem; font-weight: 900;
+            background: linear-gradient(135deg, var(--cyan), var(--violet));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        nav .links a {
+            color: var(--muted); text-decoration: none; margin-left: 2rem;
+            font-size: 0.9rem; font-weight: 500; transition: color .3s;
+        }
+        nav .links a:hover { color: var(--text); }
+
+        /* ── Hero ── */
+        .hero {
+            min-height: 100vh;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; padding: 2rem; position: relative;
+            background:
+                radial-gradient(ellipse 80% 60% at 50% -10%, rgba(124,58,237,0.15) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 50% at 80% 80%, rgba(0,212,255,0.08) 0%, transparent 50%),
+                var(--bg);
+        }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: .5rem;
+            padding: .5rem 1.2rem; border-radius: 100px;
+            background: rgba(124,58,237,0.1); border: 1px solid var(--border);
+            font-size: .85rem; color: var(--cyan); margin-bottom: 2rem;
+        }
+        .hero h1 {
+            font-size: clamp(2.8rem, 8vw, 6rem);
+            font-weight: 900; line-height: 1.05; max-width: 900px;
+            background: linear-gradient(135deg, #fff 30%, var(--cyan) 60%, var(--violet));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero p {
+            font-size: clamp(1rem, 2vw, 1.3rem);
+            color: var(--muted); max-width: 600px; margin: 1.5rem 0 2.5rem;
+            line-height: 1.7;
+        }
+        .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+        .btn {
+            padding: 1rem 2.5rem; border-radius: 50px; font-weight: 600;
+            font-size: 1rem; text-decoration: none; transition: all .3s;
+            display: inline-flex; align-items: center; gap: .5rem;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--violet), #A855F7);
+            color: #fff; box-shadow: 0 4px 25px rgba(124,58,237,0.3);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 35px rgba(124,58,237,0.5); }
+        .btn-secondary {
+            background: rgba(255,255,255,0.05); color: var(--text);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .btn-secondary:hover { background: rgba(255,255,255,0.1); }
+        .hero-stats {
+            display: flex; gap: 3rem; flex-wrap: wrap; justify-content: center;
+            margin-top: 4rem; padding: 2rem; border-top: 1px solid var(--border);
+        }
+        .hero-stats div { text-align: center; }
+        .hero-stats .num { font-size: 2rem; font-weight: 900; background: linear-gradient(135deg, var(--cyan), var(--violet)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero-stats .label { font-size: .85rem; color: var(--muted); margin-top: .3rem; }
+
+        /* ── Sections ── */
+        section { padding: 6rem 2rem; max-width: 1200px; margin: 0 auto; }
+        .section-tag {
+            display: inline-block; font-size: .8rem; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 2px; color: var(--cyan); margin-bottom: 1rem;
+        }
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3rem); font-weight: 800;
+            margin-bottom: 1rem; line-height: 1.2;
+        }
+        .section-sub {
+            color: var(--muted); max-width: 600px; font-size: 1.1rem; line-height: 1.7;
+            margin-bottom: 3rem;
+        }
+
+        /* ── Bento Grid ── */
+        .bento {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.2rem;
+        }
+        .bento-item {
+            background: var(--card);
+            border-radius: 24px;
+            padding: 2rem;
+            border: 1px solid var(--border);
+            transition: all .4s;
+            position: relative; overflow: hidden;
+        }
+        .bento-item:hover {
+            border-color: rgba(124,58,237,0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 20px 60px rgba(124,58,237,0.1);
+        }
+        .bento-item .icon {
+            width: 48px; height: 48px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; margin-bottom: 1.2rem;
+        }
+        .bento-item h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: .6rem; }
+        .bento-item p { font-size: .9rem; color: var(--muted); line-height: 1.6; }
+        .bento-item .glow {
+            position: absolute; width: 200px; height: 200px;
+            border-radius: 50%; filter: blur(80px); opacity: .08;
+            top: -50px; right: -50px; pointer-events: none;
+        }
+
+        .span-2 { grid-column: span 2; }
+        .span-3 { grid-column: span 3; }
+        .span-full { grid-column: 1 / -1; }
+        .row-2 { grid-row: span 2; }
+
+        /* Featured bento - hero card */
+        .bento-featured {
+            background: linear-gradient(135deg, var(--card), rgba(124,58,237,0.08));
+            border: 1px solid rgba(124,58,237,0.2);
+        }
+        .bento-featured .icon { background: linear-gradient(135deg, var(--violet), #A855F7); color: #fff; }
+        .violet-icon .icon { background: rgba(124,58,237,0.15); color: var(--violet); }
+        .cyan-icon .icon { background: rgba(0,212,255,0.1); color: var(--cyan); }
+        .green-icon .icon { background: rgba(16,185,129,0.1); color: var(--green); }
+        .gold-icon .icon { background: rgba(245,158,11,0.1); color: var(--gold); }
+        .crimson-icon .icon { background: rgba(239,0,68,0.1); color: var(--crimson); }
+
+        /* ── Channels Marque ── */
+        .marquee-wrap {
+            overflow: hidden; position: relative;
+            background: var(--card); border-radius: 24px; border: 1px solid var(--border);
+            padding: 2rem 0;
+        }
+        .marquee {
+            display: flex; gap: 2rem; animation: scroll 30s linear infinite;
+            width: max-content;
+        }
+        .marquee:hover { animation-play-state: paused; }
+        .marquee .chip {
+            display: flex; align-items: center; gap: .8rem;
+            padding: .8rem 1.5rem; border-radius: 100px;
+            background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+            white-space: nowrap;
+        }
+        .marquee .chip img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+        .marquee .chip span { font-size: .9rem; font-weight: 500; }
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* ── Pricing ── */
+        .pricing-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+        }
+        .pricing-card {
+            background: var(--card); border-radius: 24px; padding: 2rem;
+            border: 1px solid var(--border); text-align: center; transition: all .4s;
+        }
+        .pricing-card:hover { border-color: var(--violet); transform: translateY(-4px); }
+        .pricing-card.popular {
+            border-color: var(--violet);
+            background: linear-gradient(135deg, var(--card), rgba(124,58,237,0.08));
+            position: relative;
+        }
+        .pricing-card.popular::before {
+            content: 'MÁS POPULAR'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+            background: var(--violet); color: #fff; font-size: .7rem; font-weight: 700;
+            padding: .3rem 1rem; border-radius: 100px; letter-spacing: 1px;
+        }
+        .pricing-card .plan-name { font-size: 1.1rem; font-weight: 700; margin-bottom: .5rem; }
+        .pricing-card .price { font-size: 2.5rem; font-weight: 900; margin: 1rem 0; }
+        .pricing-card .price span { font-size: 1rem; color: var(--muted); font-weight: 400; }
+        .pricing-card ul { list-style: none; text-align: left; margin: 1.5rem 0; }
+        .pricing-card ul li { padding: .4rem 0; font-size: .9rem; color: var(--muted); display: flex; align-items: center; gap: .5rem; }
+        .pricing-card ul li::before { content: '✓'; color: var(--green); font-weight: 700; }
+        .pricing-card .btn { width: 100%; justify-content: center; }
+
+        /* ── Download ── */
+        .download-section {
+            background:
+                radial-gradient(ellipse 80% 50% at 50% 50%, rgba(124,58,237,0.1) 0%, transparent 70%),
+                var(--card);
+            border-radius: 32px; padding: 4rem; text-align: center;
+            border: 1px solid var(--border); margin-top: 4rem;
+        }
+        .download-section h2 { font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; }
+        .download-section p { color: var(--muted); max-width: 500px; margin: 0 auto 2rem; }
+        .badge-group { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .badge {
+            background: var(--bg2); padding: 1rem 2rem; border-radius: 14px;
+            border: 1px solid var(--border); text-decoration: none; color: var(--text);
+            display: flex; align-items: center; gap: .8rem; font-weight: 600;
+            transition: all .3s;
+        }
+        .badge:hover { border-color: var(--violet); transform: translateY(-2px); }
+        .badge svg { width: 24px; height: 24px; }
+
+        /* ── Security ── */
+        .security-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        .security-item {
+            background: var(--card); border-radius: 16px; padding: 1.5rem;
+            border: 1px solid var(--border); text-align: center;
+        }
+        .security-item .icon { font-size: 2rem; margin-bottom: .8rem; }
+        .security-item h4 { font-size: .95rem; margin-bottom: .4rem; }
+        .security-item p { font-size: .8rem; color: var(--muted); line-height: 1.5; }
+
+        /* ── Footer ── */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 3rem 2rem; text-align: center; color: var(--muted);
+            font-size: .9rem;
+        }
+        footer a { color: var(--cyan); text-decoration: none; }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .bento { grid-template-columns: 1fr; }
+            .span-2, .span-3 { grid-column: span 1; }
+            nav .links a { margin-left: 1rem; font-size: .8rem; }
+            .download-section { padding: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+    <div class="logo">◆ TVXargtec</div>
+    <div class="links">
+        <a href="#features">Features</a>
+        <a href="#channels">Canales</a>
+        <a href="#pricing">Planes</a>
+        <a href="#security">Seguridad</a>
+        <a href="#download">Descargar</a>
+    </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+    <div class="hero-badge">✦ 1,895+ canales · 4K · Sin anuncios</div>
+    <h1>Streaming que<br>rompe esquemas</h1>
+    <p>La plataforma IPTV más avanzada. Canales en vivo, series, películas y deportes de todo el mundo con calidad 4K y protección antirrastreo.</p>
+    <div class="hero-actions">
+        <a href="#download" class="btn btn-primary">📲 Descargar App</a>
+        <a href="#features" class="btn btn-secondary">Explorar →</a>
+    </div>
+    <div class="hero-stats">
+        <div><div class="num">1,895+</div><div class="label">Canales en vivo</div></div>
+        <div><div class="num">90+</div><div class="label">Países</div></div>
+        <div><div class="num">4K</div><div class="label">Calidad máxima</div></div>
+        <div><div class="num">99.9%</div><div class="label">Uptime</div></div>
+    </div>
+</section>
+
+<!-- Bento Features -->
+<section id="features">
+    <div class="section-tag">✦ Features</div>
+    <h2 class="section-title">Diseñado para<br>experiencias extremas</h2>
+    <p class="section-sub">Cada detalle está optimizado para ofrecerte la mejor experiencia de streaming, con velocidad, seguridad y diseño de primer nivel.</p>
+
+    <div class="bento">
+        <div class="bento-item span-2 bento-featured">
+            <div class="glow" style="background:var(--violet)"></div>
+            <div class="icon">📺</div>
+            <h3>1,895+ Canales en Vivo</h3>
+            <p>Desde Argentina hasta Japón. Canales de 90+ países con streams 4K, Full HD y HD. Actualización automática vía IPTV-org.</p>
+        </div>
+        <div class="bento-item violet-icon">
+            <div class="icon">🎬</div>
+            <h3>Series + Películas</h3>
+            <p>Biblioteca en expansión con contenido bajo demanda organizado por categorías.</p>
+        </div>
+        <div class="bento-item row-2 cyan-icon">
+            <div class="icon">🔒</div>
+            <h3>Anti-Rastreo</h3>
+            <p>Protección FLAG_SECURE, PIN de 6 dígitos, tokens JWT, interceptores con refresh automático. Tu privacidad no se negocia.</p>
+            <div style="margin-top:1rem;display:flex;gap:.5rem;flex-wrap:wrap">
+                <span style="background:rgba(0,212,255,0.1);padding:.2rem .6rem;border-radius:6px;font-size:.75rem;color:var(--cyan)">JWT</span>
+                <span style="background:rgba(0,212,255,0.1);padding:.2rem .6rem;border-radius:6px;font-size:.75rem;color:var(--cyan)">SSL Pinning</span>
+                <span style="background:rgba(0,212,255,0.1);padding:.2rem .6rem;border-radius:6px;font-size:.75rem;color:var(--cyan)">ProGuard</span>
+                <span style="background:rgba(0,212,255,0.1);padding:.2rem .6rem;border-radius:6px;font-size:.75rem;color:var(--cyan)">Firebase</span>
+            </div>
+        </div>
+        <div class="bento-item green-icon">
+            <div class="icon">⚡</div>
+            <h3>Auto-Update</h3>
+            <p>Actualizaciones automáticas desde GitHub. Nunca te pierdas una mejora.</p>
+        </div>
+        <div class="bento-item gold-icon">
+            <div class="icon">📱</div>
+            <h3>Multi-dispositivo</h3>
+            <p>Android TV, tablets y phones. Interfaz adaptativa con navegación inferior.</p>
+        </div>
+        <div class="bento-item span-2 violet-icon">
+            <div class="icon">🌐</div>
+            <h3>Backend Go + MySQL</h3>
+            <p>API propia en Go con MySQL, Nginx reverse proxy, rutas protegidas, favoritos e historial sincronizados en la nube.</p>
+        </div>
+        <div class="bento-item crimson-icon">
+            <div class="icon">🛡</div>
+            <h3>VIP Plans</h3>
+            <p>Free, Básico, Premium y Familiar. Pagos vía Stripe con beneficios escalonados.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Channels Marque -->
+<section id="channels">
+    <div class="section-tag">✦ Canales</div>
+    <h2 class="section-title">Canales que<br>realmente funcionan</h2>
+    <p class="section-sub">Streams verificados de Argentina, Chile, México, España, USA y más. Actualizados constantemente.</p>
+
+    <div class="marquee-wrap">
+        <div class="marquee" id="channelMarquee">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+
+    <div style="margin-top:2rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem">
+        <div class="bento-item" style="text-align:center;padding:1.5rem"><h3>🇦🇷 Argentina</h3><p style="font-size:.8rem">26 canales</p></div>
+        <div class="bento-item" style="text-align:center;padding:1.5rem"><h3>🇺🇸 USA</h3><p style="font-size:.8rem">340+ canales</p></div>
+        <div class="bento-item" style="text-align:center;padding:1.5rem"><h3>🇪🇸 España</h3><p style="font-size:.8rem">120+ canales</p></div>
+        <div class="bento-item" style="text-align:center;padding:1.5rem"><h3>🇲🇽 México</h3><p style="font-size:.8rem">95+ canales</p></div>
+        <div class="bento-item" style="text-align:center;padding:1.5rem"><h3>🇨🇱 Chile</h3><p style="font-size:.8rem">60+ canales</p></div>
+        <div class="bento-item" style="text-align:center;padding:1.5rem"><h3>⚽ Deportes</h3><p style="font-size:.8rem">200+ canales</p></div>
+    </div>
+</section>
+
+<!-- Pricing -->
+<section id="pricing">
+    <div class="section-tag">✦ Planes</div>
+    <h2 class="section-title">Elegí tu plan<br>sin compromiso</h2>
+    <p class="section-sub">Todos los planes incluyen acceso instantáneo. Cancelá cuando quieras.</p>
+
+    <div class="pricing-grid">
+        <div class="pricing-card">
+            <div class="plan-name">Free</div>
+            <div class="price">$0 <span>/mes</span></div>
+            <ul>
+                <li>Canales básicos SD</li>
+                <li>Publicidad</li>
+                <li>1 dispositivo</li>
+                <li>Soporte email</li>
+            </ul>
+            <a href="#download" class="btn btn-secondary">Empezar</a>
+        </div>
+        <div class="pricing-card popular">
+            <div class="plan-name">Premium</div>
+            <div class="price">$9.99 <span>/mes</span></div>
+            <ul>
+                <li>300+ canales HD</li>
+                <li>Sin anuncios</li>
+                <li>2 dispositivos</li>
+                <li>Calidad Full HD</li>
+                <li>Soporte prioritario</li>
+            </ul>
+            <a href="#download" class="btn btn-primary">Elegir Premium</a>
+        </div>
+        <div class="pricing-card">
+            <div class="plan-name">Familiar</div>
+            <div class="price">$14.99 <span>/mes</span></div>
+            <ul>
+                <li>Todos los canales 4K</li>
+                <li>Sin anuncios</li>
+                <li>5 dispositivos</li>
+                <li>Series + Películas</li>
+                <li>Soporte 24/7</li>
+            </ul>
+            <a href="#download" class="btn btn-secondary">Elegir Familiar</a>
+        </div>
+    </div>
+</section>
+
+<!-- Security -->
+<section id="security">
+    <div class="section-tag">🛡 Seguridad</div>
+    <h2 class="section-title">Protegemos tu<br>experiencia</h2>
+    <p class="section-sub">Tu privacidad y seguridad son nuestra prioridad. Cada capa está diseñada para mantenerte protegido.</p>
+
+    <div class="security-grid">
+        <div class="security-item">
+            <div class="icon">📵</div>
+            <h4>FLAG_SECURE</h4>
+            <p>Bloqueo de capturas de pantalla en toda la app.</p>
+        </div>
+        <div class="security-item">
+            <div class="icon">🔐</div>
+            <h4>PIN 6 dígitos</h4>
+            <p>Control parental con PIN configurable (default 525452).</p>
+        </div>
+        <div class="security-item">
+            <div class="icon">🔑</div>
+            <h4>JWT + Refresh</h4>
+            <p>Tokens con auto-refresh y renovación silenciosa.</p>
+        </div>
+        <div class="security-item">
+            <div class="icon">🛡</div>
+            <h4>ProGuard / R8</h4>
+            <p>Código ofuscado en release. Reverse engineering mitigado.</p>
+        </div>
+        <div class="security-item">
+            <div class="icon">☁️</div>
+            <h4>Firebase Security</h4>
+            <p>Crashlytics, Analytics, Messaging con reglas seguras.</p>
+        </div>
+        <div class="security-item">
+            <div class="icon">🔒</div>
+            <h4>SSL/TLS</h4>
+            <p>Cifrado extremo a extremo vía Nginx + Let's Encrypt.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Download -->
+<section id="download">
+    <div class="download-section">
+        <h2>Descargá la app</h2>
+        <p>Experimentá TVXargtec en tu dispositivo Android. Streaming sin límites, donde sea.</p>
+        <div class="badge-group">
+            <a href="#" class="badge" onclick="alert('APK disponible próximamente. Compilá desde GitHub.')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="7.5 8.5 12 11 16.5 8.5"/></svg>
+                APK Directa
+            </a>
+            <a href="https://github.com/lpmadre14-coder/tvxargtec" target="_blank" class="badge">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+                GitHub
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <p>© 2026 <strong>TVXargtec</strong>. Hecho con ❤️ en Argentina.  
+    <br><a href="https://apitvxargtec.duckdns.org/api/health">API Status</a> · <a href="https://github.com/lpmadre14-coder/tvxargtec">GitHub</a></p>
+</footer>
+
+<script>
+    const channels = [
+        { name: 'A24 Argentina', logo: 'https://i.imgur.com/LnXQkIU.png' },
+        { name: '13C Chile', logo: 'https://i.imgur.com/Zfe2f5j.png' },
+        { name: 'ADN 40', logo: 'https://i.imgur.com/Og17U9N.png' },
+        { name: 'Al Jazeera', logo: 'https://i.imgur.com/7bRVpnu.png' },
+        { name: 'A&E', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/A%26E_Network_logo.svg/960px-A%26E_Network_logo.svg.png' },
+        { name: 'Pluto TV Acapulco', logo: 'https://images.pluto.tv/channels/61a52615cbef2500072876e2/colorLogoPNG_1756972226445.png' },
+        { name: 'ABC Teleshow', logo: 'https://i.imgur.com/cF7gJ2Q.jpeg' },
+        { name: '3ABN', logo: 'https://i.imgur.com/IecOZHR.png' },
+    ];
+    const marquee = document.getElementById('channelMarquee');
+    const items = [...channels, ...channels].map(c =>
+        `<div class="chip"><img src="${c.logo}" alt="" loading="lazy"><span>${c.name}</span></div>`
+    ).join('');
+    marquee.innerHTML = items;
+</script>
+</body>
+</html>

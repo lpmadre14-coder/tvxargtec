@@ -1,0 +1,426 @@
+[
+  {
+    "id": "1",
+    "title": "3ABN International Network",
+    "url": "https://3abn.bozztv.com/3abn2/Int_live/smil:Int_live.smil/playlist.m3u8",
+    "logo": "https://i.imgur.com/IecOZHR.png",
+    "categoryId": "religious",
+    "isLive": true
+  },
+  {
+    "id": "2",
+    "title": "6 Wise Tv (720p)",
+    "url": "https://live.enhdtv.com:8081/8150/index.m3u8",
+    "logo": "https://jrlist70.pages.dev/list/wise.png",
+    "categoryId": "family",
+    "isLive": true
+  },
+  {
+    "id": "3",
+    "title": "8NTV (1080p)",
+    "url": "https://60417ddeaf0d9.streamlock.net/ntv/videontv/playlist.m3u8",
+    "logo": "https://i.imgur.com/7ecgGIG.png",
+    "categoryId": "general",
+    "isLive": true
+  },
+  {
+    "id": "4",
+    "title": "13C (1080p)",
+    "url": "https://origin.dpsgo.com/ssai/event/GI-9cp_bT8KcerLpZwkuhw/master.m3u8",
+    "logo": "https://i.imgur.com/Zfe2f5j.png",
+    "categoryId": "culture",
+    "isLive": true
+  },
+  {
+    "id": "5",
+    "title": "13 Entretención (720p)",
+    "url": "https://origin.dpsgo.com/ssai/event/BBp0VeP6QtOOlH8nu3bWTg/master.m3u8",
+    "logo": "https://i.imgur.com/utI1tJV.png",
+    "categoryId": "entertainment",
+    "isLive": true
+  },
+  {
+    "id": "6",
+    "title": "13 Festival (1080p)",
+    "url": "https://origin.dpsgo.com/ssai/event/Nftd0fM2SXasfDlRphvUsg/master.m3u8",
+    "logo": "https://i.imgur.com/Ymk6j5o.png",
+    "categoryId": "music",
+    "isLive": true
+  },
+  {
+    "id": "7",
+    "title": "13 Humor (1080p)",
+    "url": "https://origin.dpsgo.com/ssai/event/cKWySXKgSK-SzlJmESkOWw/master.m3u8",
+    "logo": "https://i.imgur.com/KvMuTzN.png",
+    "categoryId": "comedy",
+    "isLive": true
+  },
+  {
+    "id": "8",
+    "title": "13 Kids (1080p)",
+    "url": "https://origin.dpsgo.com/ssai/event/LhHrVtyeQkKZ-Ye_xEU75g/master.m3u8",
+    "logo": "https://i.imgur.com/8WJUbSD.png",
+    "categoryId": "kids",
+    "isLive": true
+  },
+  {
+    "id": "9",
+    "title": "13 Prime (720p)",
+    "url": "https://origin.dpsgo.com/ssai/event/p4mmBxEzSmKAxY1GusOHrw/master.m3u8",
+    "logo": "https://i.imgur.com/R6D228s.png",
+    "categoryId": "lifestyle",
+    "isLive": true
+  },
+  {
+    "id": "10",
+    "title": "13 Realities (1080p)",
+    "url": "https://origin.dpsgo.com/ssai/event/g7_JOM0ORki9SR5RKHe-Kw/master.m3u8",
+    "logo": "https://i.imgur.com/m0SuwMU.png",
+    "categoryId": "entertainment",
+    "isLive": true
+  },
+  {
+    "id": "11",
+    "title": "13 Teleseries (720p)",
+    "url": "https://origin.dpsgo.com/ssai/event/f4TrySe8SoiGF8Lu3EIq1g/master.m3u8",
+    "logo": "https://i.imgur.com/csBNi2L.png",
+    "categoryId": "series",
+    "isLive": true
+  },
+  {
+    "id": "12",
+    "title": "15.1 BPB (720p)",
+    "url": "https://v2.tustreaming.cl/enlacebpbtv/index.m3u8",
+    "logo": "https://i.imgur.com/hyxkJYV.png",
+    "categoryId": "religious",
+    "isLive": true
+  },
+  {
+    "id": "13",
+    "title": "24/7 Canal de Noticias",
+    "url": "https://panel.host-live.com:19360/cn247tv/cn247tv.m3u8",
+    "logo": "https://i.imgur.com/4hDCB1M.png",
+    "categoryId": "news",
+    "isLive": true
+  },
+  {
+    "id": "14",
+    "title": "24/7 TV (1080p)",
+    "url": "https://master.tucableip.com/eldebertv/index.m3u8",
+    "logo": "https://i.imgur.com/03YIXxd.png",
+    "categoryId": "news",
+    "isLive": true
+  },
+  {
+    "id": "15",
+    "title": "36 TV Huacho (720p)",
+    "url": "https://live-evg10.tv360.bitel.com.pe/bitel/36tvSRT/playlist.m3u8",
+    "logo": "https://i.imgur.com/F4NZM3s.jpeg",
+    "categoryId": "general",
+    "isLive": true
+  },
+  {
+    "id": "16",
+    "title": "A24 (720p)",
+    "url": "https://g5.vxral-slo.transport.edge-access.net/a12/ngrp:a24-100056_all/playlist.m3u8?sense=true",
+    "logo": "https://i.imgur.com/LnXQkIU.png",
+    "categoryId": "news",
+    "isLive": true
+  },
+  {
+    "id": "17",
+    "title": "A24 Paraguay",
+    "url": "http://45.184.109.10/live/69393EAE6ADBC65A68F942022362A202/6.m3u8",
+    "logo": "https://i.imgur.com/XWBmjBk.png",
+    "categoryId": "news",
+    "isLive": true
+  },
+  {
+    "id": "18",
+    "title": "A&E Latin America (1080p)",
+    "url": "http://138.121.15.230:9002/A&E/index.m3u8",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/A%26E_Network_logo.svg/960px-A%26E_Network_logo.svg.png",
+    "categoryId": "entertainment",
+    "isLive": true
+  },
+  {
+    "id": "19",
+    "title": "A&R Canal Adventista (720p)",
+    "url": "http://51.222.9.192:3589/stream/play.m3u8",
+    "logo": "https://i.imgur.com/ejRJqSI.png",
+    "categoryId": "religious",
+    "isLive": true
+  },
+  {
+    "id": "20",
+    "title": "Abajo e' La Linea TV",
+    "url": "https://5ff3d9babae13.streamlock.net/ynfpncxxjg/ynfpncxxjg/playlist.m3u8",
+    "logo": "https://i.imgur.com/CK5DBuh.png",
+    "categoryId": "general",
+    "isLive": true
+  },
+  {
+    "id": "21",
+    "title": "ABC Teleshow (720p)",
+    "url": "https://live-evg10.tv360.bitel.com.pe/bitel/abctv/playlist.m3u8",
+    "logo": "https://i.imgur.com/cF7gJ2Q.jpeg",
+    "categoryId": "general",
+    "isLive": true
+  },
+  {
+    "id": "22",
+    "title": "ABC-TV Paraguay",
+    "url": "http://45.184.109.10/live/69393EAE6ADBC65A68F942022362A202/7.m3u8",
+    "logo": "https://i.imgur.com/OqfBMGy.png",
+    "categoryId": "news",
+    "isLive": true
+  },
+  {
+    "id": "23",
+    "title": "ABTelevision (720p)",
+    "url": "https://live-evg8.tv360.bitel.com.pe/bitel/abctelevisionSRT/playlist.m3u8",
+    "logo": "https://i.imgur.com/tqMDscD.png",
+    "categoryId": "general",
+    "isLive": true
+  },
+  {
+    "id": "24",
+    "title": "ABTV Bariloche",
+    "url": "https://videostream.shockmedia.com.ar/hls/abtvbariloche/abtvbariloche.m3u8",
+    "logo": "https://i.imgur.com/l4TSfDr.png",
+    "categoryId": "general",
+    "isLive": true
+  },
+  {
+    "id": "25",
+    "title": "Abya Yala TV",
+    "url": "https://seo.tv.bo/tv/LIpSEO-TV-8.m3u8",
+    "logo": "https://abyayala.tv.bo/wp-content/uploads/2024/04/MOSCA-BLANCA-OK-308x189.png",
+    "categoryId": "general",
+    "isLive": true
+  },
+  {
+    "id": "26",
+    "title": "Acapulco Shore Pluto TV",
+    "url": "https://jmp2.uk/plu-61a52615cbef2500072876e2.m3u8",
+    "logo": "https://images.pluto.tv/channels/61a52615cbef2500072876e2/colorLogoPNG_1756972226445.png",
+    "categoryId": "series",
+    "isLive": true
+  },
+  {
+    "id": "27",
+    "title": "Acento TV",
+    "url": "https://acentotv01.streamprolive.com/hls/live.m3u8",
+    "logo": "https://i.imgur.com/jhiZfHf.png",
+    "categoryId": "news",
+    "isLive": true
+  },
+  {
+    "id": "28",
+    "title": "Activa TV (720p)",
+    "url": "https://videoserver.tmcreativos.com:19360/mbcrtzxnxd/mbcrtzxnxd.m3u8",
+    "logo": "https://i.imgur.com/S69lDu4.png",
+    "categoryId": "religious",
+    "isLive": true
+  },
+  {
+    "id": "29",
+    "title": "Adesso TV (720p)",
+    "url": "https://cdn.jmvstream.com/w/LVW-9715/LVW9715_12B26T62tm/playlist.m3u8",
+    "logo": "https://i.imgur.com/KgetM8j.png",
+    "categoryId": "general",
+    "isLive": true
+  },
+  {
+    "id": "30",
+    "title": "ADN 40 (720p)",
+    "url": "https://mdstrm.com/live-stream-playlist/60b578b060947317de7b57ac.m3u8",
+    "logo": "https://i.imgur.com/Og17U9N.png",
+    "categoryId": "news",
+    "isLive": true
+  },
+  {
+    "id": "31",
+    "title": "Adoram TV (720p)",
+    "url": "https://live20.bozztv.com/giatv/giatv-adoram/adoram/chunks.m3u8",
+    "logo": "https://i.imgur.com/uU01KHz.png",
+    "categoryId": "religious",
+    "isLive": true
+  },
+  {
+    "id": "32",
+    "title": "Adrenalina Pura TV",
+    "url": "https://jmp2.uk/plu-61b790b985706b00072cb797.m3u8",
+    "logo": "https://i.imgur.com/Pvid2iH.png",
+    "categoryId": "movies",
+    "isLive": true
+  },
+  {
+    "id": "33",
+    "title": "Adrenalina Pura TV (720p)",
+    "url": "https://jmp2.uk/plu-61b793ccf571b80007b7a610.m3u8",
+    "logo": "https://i.imgur.com/Pvid2iH.png",
+    "categoryId": "movies",
+    "isLive": true
+  },
+  {
+    "id": "34",
+    "title": "Agape TV (720p)",
+    "url": "https://5fc584f3f19c9.streamlock.net/agape/smil:agape.smil/playlist.m3u8",
+    "logo": "https://i.imgur.com/DsGmrnc.png",
+    "categoryId": "general",
+    "isLive": true
+  },
+  {
+    "id": "35",
+    "title": "Agenda Minera TV",
+    "url": "https://stv2.boliviaplay.com.bo/hls/stream.m3u8",
+    "logo": "https://i.imgur.com/hg2PiIn.png",
+    "categoryId": "business",
+    "isLive": true
+  },
+  {
+    "id": "36",
+    "title": "Agro TV (720p)",
+    "url": "https://live-evg8.tv360.bitel.com.pe/bitel/agroSRT/playlist.m3u8",
+    "logo": "https://i.imgur.com/1uLGa3w.png",
+    "categoryId": "outdoor",
+    "isLive": true
+  },
+  {
+    "id": "37",
+    "title": "Agrotendencia TV (1080p)",
+    "url": "https://5fc584f3f19c9.streamlock.net/agrotendencia/videoagrotendencia_hls1/playlist.m3u8",
+    "logo": "https://i.imgur.com/frd60hR.png",
+    "categoryId": "outdoor",
+    "isLive": true
+  },
+  {
+    "id": "38",
+    "title": "Aguacate TV (1080p)",
+    "url": "https://streamtv.intervenhosting.net:3040/hybrid/play.m3u8",
+    "logo": "https://i.ibb.co/wpWBsgf/IMG-20230705-154622.jpg",
+    "categoryId": "entertainment",
+    "isLive": true
+  },
+  {
+    "id": "39",
+    "title": "Aire de Santa Fe (1080p)",
+    "url": "https://unlimited1-us.dps.live/airedesantafetv/airedesantafetv.smil/playlist.m3u8",
+    "logo": "https://i.imgur.com/60vSWW0.png",
+    "categoryId": "general",
+    "isLive": true
+  },
+  {
+    "id": "40",
+    "title": "Al Jazeera English (1080p)",
+    "url": "https://live-hls-apps-aje-fa.getaj.net/AJE/index.m3u8",
+    "logo": "https://i.imgur.com/7bRVpnu.png",
+    "categoryId": "news",
+    "isLive": true
+  },
+  {
+    "id": "41",
+    "title": "Albricias TV (720p)",
+    "url": "https://live-evg10.tv360.bitel.com.pe/bitel/albriciastv/playlist.m3u8",
+    "logo": "https://i.imgur.com/NZxu3z8.jpeg",
+    "categoryId": "general",
+    "isLive": true
+  },
+  {
+    "id": "42",
+    "title": "Alcance FM PLAY TV",
+    "url": "https://video.wilohosting.com:19360/alcancefmtv/alcancefmtv.m3u8",
+    "logo": "https://i.imgur.com/ymcWecA.png",
+    "categoryId": "music",
+    "isLive": true
+  },
+  {
+    "id": "43",
+    "title": "Alcance TV (720p)",
+    "url": "https://5bf8041cb3fed.streamlock.net/AlcanceTV/AlcanceTV/playlist.m3u8",
+    "logo": "https://i.imgur.com/5nYjRlb.png",
+    "categoryId": "religious",
+    "isLive": true
+  },
+  {
+    "id": "44",
+    "title": "Alcance TV (720p)",
+    "url": "https://rv100.globalhost1.com:3516/live/tjjqdqurlive.m3u8",
+    "logo": "https://i.imgur.com/veeuqS1.png",
+    "categoryId": "religious",
+    "isLive": true
+  },
+  {
+    "id": "45",
+    "title": "Alien Nation by DUST (1080p)",
+    "url": "https://dqi7ayt2o24fn.cloudfront.net/playlist.m3u8",
+    "logo": "https://i.imgur.com/FxYhME9.png",
+    "categoryId": "movies",
+    "isLive": true
+  },
+  {
+    "id": "46",
+    "title": "Almaya TV (720p)",
+    "url": "https://video.hostingcaaguazu.com:19360/almayatv/almayatv.m3u8",
+    "logo": "https://i.imgur.com/dDAf1nJ.png",
+    "categoryId": "general",
+    "isLive": true
+  },
+  {
+    "id": "47",
+    "title": "Alpha Channel (720p)",
+    "url": "https://5b01a3d32b65c.streamlock.net:1936/tvalpha/tvalpha/playlist.m3u8",
+    "logo": "https://i.imgur.com/c1QqslA.png",
+    "categoryId": "general",
+    "isLive": true
+  },
+  {
+    "id": "48",
+    "title": "Alsacias Televisión (ATV | Canal 28) (720p)",
+    "url": "https://s.emisoras.tv:8081/atv/index.m3u8",
+    "logo": "https://i.imgur.com/SbuD1UW.png",
+    "categoryId": "general",
+    "isLive": true
+  },
+  {
+    "id": "49",
+    "title": "Altura TV (720p)",
+    "url": "https://live-evg10.tv360.bitel.com.pe/bitel/urbanatv/playlist.m3u8",
+    "logo": "https://i.imgur.com/U6GwIL7.jpeg",
+    "categoryId": "general",
+    "isLive": true
+  },
+  {
+    "id": "50",
+    "title": "Amaga Television (720p)",
+    "url": "https://viewhn.com/amagatelevision/sdfUYWKegHKRPpSirG/playlist.m3u8",
+    "logo": "https://i.imgur.com/hvpbfzG.png",
+    "categoryId": "general",
+    "isLive": true
+  },
+  {
+    "id": "51",
+    "title": "A24 (Argentina)",
+    "url": "https://g5.vxral-slo.transport.edge-access.net/a12/ngrp:a24-100056_all/playlist.m3u8?sense=true",
+    "logo": "https://i.imgur.com/LnXQkIU.png",
+    "categoryId": "news",
+    "isLive": true
+  },
+  {
+    "id": "52",
+    "title": "13C (Chile )",
+    "url": "https://origin.dpsgo.com/ssai/event/GI-9cp_bT8KcerLpZwkuhw/master.m3u8",
+    "logo": "https://i.imgur.com/Zfe2f5j.png",
+    "categoryId": "culture",
+    "isLive": true
+  },
+  {
+    "id": "53",
+    "title": "Pluto TV - Acapulco Shore",
+    "url": "https://jmp2.uk/plu-61a52615cbef2500072876e2.m3u8",
+    "logo": "https://images.pluto.tv/channels/61a52615cbef2500072876e2/colorLogoPNG_1756972226445.png",
+    "categoryId": "entertainment",
+    "isLive": true
+  }
+]

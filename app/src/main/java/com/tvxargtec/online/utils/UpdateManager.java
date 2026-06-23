@@ -55,7 +55,7 @@ public class UpdateManager {
                     public okhttp3.Response intercept(Chain chain) throws IOException {
                         Request original = chain.request();
                         Request.Builder builder = original.newBuilder()
-                                .header("User-Agent", "tvxargtec-android/1.0")
+                                .header("User-Agent", "tvxargtec-android/" + getCurrentVersionName())
                                 .header("Accept", "application/vnd.github.v3+json");
                         return chain.proceed(builder.build());
                     }
@@ -120,10 +120,7 @@ public class UpdateManager {
                         return;
                     }
 
-                    int remoteVersion = parseVersionCode(tagName);
-                    int currentVersion = getCurrentVersionCode();
-
-                    if (remoteVersion > currentVersion) {
+                    if (isNewerVersion(tagName)) {
                         String releaseNotes = release.optString("body", "Nueva versión disponible");
                         if (listener != null) {
                             String finalApkUrl = apkUrl;
@@ -160,29 +157,31 @@ public class UpdateManager {
         return null;
     }
 
-    private int parseVersionCode(String tag) {
+    private String getCurrentVersionName() {
         try {
-            String clean = tag.replaceAll("[^0-9.]", "");
-            String[] parts = clean.split("\\.");
-            int code = 0;
-            for (int i = 0; i < Math.min(3, parts.length); i++) {
-                code = code * 100 + Integer.parseInt(parts[i]);
-            }
-            return code;
+            return context.getPackageManager()
+                .getPackageInfo(context.getPackageName(), 0).versionName;
         } catch (Exception e) {
-            return 0;
+            return "1.0.0";
         }
     }
 
-    private int getCurrentVersionCode() {
+    private boolean isNewerVersion(String tagName) {
         try {
-            PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                return (int) info.getLongVersionCode();
+            String remote = tagName.replaceAll("[^0-9.]", "");
+            String local = context.getPackageManager()
+                .getPackageInfo(context.getPackageName(), 0).versionName;
+            String[] rParts = remote.split("\\.");
+            String[] lParts = local.split("\\.");
+            int max = Math.max(rParts.length, lParts.length);
+            for (int i = 0; i < max; i++) {
+                int r = i < rParts.length ? Integer.parseInt(rParts[i]) : 0;
+                int l = i < lParts.length ? Integer.parseInt(lParts[i]) : 0;
+                if (r != l) return r > l;
             }
-            return info.versionCode;
-        } catch (PackageManager.NameNotFoundException e) {
-            return 0;
+            return false;
+        } catch (Exception e) {
+            return false;
         }
     }
 

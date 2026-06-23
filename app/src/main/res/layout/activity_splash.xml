@@ -18,8 +18,17 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"
         android:layout_marginBottom="32dp"
-        android:text="v1.0.0"
+            android:text="TV en vivo, películas y más"
         android:textColor="@color/text_hint"
         android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/tvSplashVersion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:layout_marginBottom="12dp"
+        android:textColor="@color/text_hint"
+        android:textSize="10sp" />
 
 </FrameLayout>

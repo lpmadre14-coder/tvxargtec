@@ -2,6 +2,7 @@ package com.tvxargtec.online.fragment;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,6 +62,15 @@ public class ProfileFragment extends Fragment {
         tvUserName = view.findViewById(R.id.tvUserName);
         tvUserEmail = view.findViewById(R.id.tvUserEmail);
         ivAvatar = view.findViewById(R.id.ivAvatar);
+
+        TextView tvVersion = view.findViewById(R.id.tvProfileVersion);
+        if (tvVersion != null) {
+            try {
+                String vn = requireContext().getPackageManager()
+                    .getPackageInfo(requireContext().getPackageName(), 0).versionName;
+                tvVersion.setText("Tvxargtec v" + vn);
+            } catch (PackageManager.NameNotFoundException ignored) {}
+        }
     }
 
     private void loadUserData() {

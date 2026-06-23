@@ -16,6 +16,10 @@ class SplashAty : BaseActivity() {
     override fun initView() {
         val logo = findViewById<ImageView>(R.id.ivLogo)
         val subtitle = findViewById<TextView>(R.id.tvTagline)
+        val tvVersion = findViewById<TextView>(R.id.tvSplashVersion)
+        try {
+            tvVersion.text = "v${packageManager.getPackageInfo(packageName, 0).versionName}"
+        } catch (_: Exception) {} 
 
         logo.scaleX = 0.3f
         logo.scaleY = 0.3f

@@ -42,7 +42,12 @@
         android:requestLegacyExternalStorage="true"
         android:supportsRtl="true"
         android:theme="@style/Theme.Tvxargtec"
-        android:networkSecurityConfig="@xml/network_security_config">
+        android:networkSecurityConfig="@xml/network_security_config"
+        tools:replace="android:name">
+
+        <meta-data android:name="firebase_messaging_auto_init_enabled" android:value="false" />
+        <meta-data android:name="firebase_analytics_collection_enabled" android:value="false" />
+        <meta-data android:name="firebase_crashlytics_collection_enabled" android:value="false" />
 
         <!-- Splash / Launch -->
         <activity
@@ -93,11 +98,14 @@
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
             android:value="com.tvxargtec.online.cast.CastOptionsProvider" />
 
+        <!-- Firebase Messaging Service - Habilitar cuando google-services.json sea real -->
+        <!--
         <service android:exported="false" android:name=".service.MyFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+        -->
 
         <service android:exported="false" android:foregroundServiceType="mediaPlayback" android:name=".service.AudioPlaybackService" />
 

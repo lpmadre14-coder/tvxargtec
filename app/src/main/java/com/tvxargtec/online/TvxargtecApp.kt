@@ -10,13 +10,15 @@ import com.tvxargtec.online.utils.NotificationHelper
 class TvxargtecApp : Application() {
     override fun onCreate() {
         super.onCreate()
-        NotificationHelper.createNotificationChannels(this)
+        try {
+            NotificationHelper.createNotificationChannels(this)
+        } catch (_: Exception) {}
         try {
             CastContext.getSharedInstance(this)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        migrateFavoritesToRoom()
+        } catch (_: Exception) {}
+        try {
+            migrateFavoritesToRoom()
+        } catch (_: Exception) {}
     }
 
     private fun migrateFavoritesToRoom() {

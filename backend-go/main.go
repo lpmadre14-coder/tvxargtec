@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"compress/gzip"
 	"database/sql"
 	"encoding/json"
@@ -310,6 +311,7 @@ func main() {
 	http.HandleFunc("/api/fcm/register", fcmRegisterHandler)
 	http.HandleFunc("/api/activation/code", activationCodeHandler)
 	http.HandleFunc("/api/activation/validate", activationValidateHandler)
+	http.HandleFunc("/api/notifications/send", sendNotificationHandler)
 
 	fmt.Println("🚀 Servidor TVXargtec corriendo en http://localhost:8081")
 	log.Fatal(http.ListenAndServe(":8081", nil))
@@ -853,4 +855,198 @@ func activationValidateHandler(w http.ResponseWriter, r *http.Request) {
 			"valid":    true,
 		},
 	})
+}
+
+func sendNotificationHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method != http.MethodPost {
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 405, "message": "Método no permitido"})
+		return
+	}
+
+	var req struct {
+		UserID int    `json:"userId"`
+		Title  string `json:"title"`
+		Body   string `json:"body"`
+		Type   string `json:"type"`
+		URL    string `json:"url"`
+		All    bool   `json:"all"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 400, "message": "Solicitud inválida"})
+		return
+	}
+
+	if req.Title == "" || req.Body == "" {
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 400, "message": "title y body requeridos"})
+		return
+	}
+
+	serverKey := os.Getenv("FCM_SERVER_KEY")
+	if serverKey == "" {
+		// Intentar con service account
+		err := sendViaServiceAccount(req.Title, req.Body, req.Type, req.URL, req.UserID, req.All)
+		if err != nil {
+			json.NewEncoder(w).Encode(map[string]interface{}{"code": 500, "message": fmt.Sprintf("Error: %v", err)})
+			return
+		}
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 200, "message": "Notificación enviada vía service account"})
+		return
+	}
+
+	// Legacy FCM HTTP API
+	var tokens []string
+	if req.All {
+		rows, err := db.Query("SELECT DISTINCT token FROM fcm_tokens")
+		if err != nil {
+			json.NewEncoder(w).Encode(map[string]interface{}{"code": 500, "message": "Error consultando tokens"})
+			return
+		}
+		defer rows.Close()
+		for rows.Next() {
+			var t string
+			rows.Scan(&t)
+			tokens = append(tokens, t)
+		}
+	} else if req.UserID > 0 {
+		rows, err := db.Query("SELECT token FROM fcm_tokens WHERE user_id = ?", req.UserID)
+		if err != nil {
+			json.NewEncoder(w).Encode(map[string]interface{}{"code": 500, "message": "Error consultando tokens"})
+			return
+		}
+		defer rows.Close()
+		for rows.Next() {
+			var t string
+			rows.Scan(&t)
+			tokens = append(tokens, t)
+		}
+	} else {
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 400, "message": "userId o all requerido"})
+		return
+	}
+
+	if len(tokens) == 0 {
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 404, "message": "No hay tokens registrados"})
+		return
+	}
+
+	data := map[string]string{
+		"title": req.Title,
+		"body":  req.Body,
+		"type":  req.Type,
+	}
+	if req.URL != "" {
+		data["url"] = req.URL
+	}
+
+	sent := 0
+	for _, token := range tokens {
+		payload := map[string]interface{}{
+			"to": token,
+			"notification": map[string]string{
+				"title": req.Title,
+				"body":  req.Body,
+			},
+			"data": data,
+		}
+		bodyBytes, _ := json.Marshal(payload)
+		resp, err := http.Post("https://fcm.googleapis.com/fcm/send", "application/json",
+			bytes.NewReader(bodyBytes))
+		if err != nil {
+			continue
+		}
+		resp.Body.Close()
+		sent++
+	}
+
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"code":    200,
+		"message": fmt.Sprintf("Notificación enviada a %d dispositivos", sent),
+		"data": map[string]interface{}{
+			"sent": sent,
+			"total": len(tokens),
+		},
+	})
+}
+
+func sendViaServiceAccount(title, body, msgType, url string, userID int, all bool) error {
+	saFile := os.Getenv("FCM_SERVICE_ACCOUNT")
+	if saFile == "" {
+		saFile = "tv-x-arg-tec-firebase-adminsdk-fbsvc-52ae02a69a.json"
+	}
+	saData, err := os.ReadFile(saFile)
+	if err != nil {
+		return fmt.Errorf("service account no encontrado: %v", err)
+	}
+	var sa struct {
+		ProjectID string `json:"project_id"`
+	}
+	json.Unmarshal(saData, &sa)
+	if sa.ProjectID == "" {
+		return fmt.Errorf("project_id no encontrado en service account")
+	}
+
+	var tokens []string
+	if all {
+		rows, err := db.Query("SELECT DISTINCT token FROM fcm_tokens")
+		if err == nil {
+			defer rows.Close()
+			for rows.Next() {
+				var t string
+				rows.Scan(&t)
+				tokens = append(tokens, t)
+			}
+		}
+	} else if userID > 0 {
+		rows, err := db.Query("SELECT token FROM fcm_tokens WHERE user_id = ?", userID)
+		if err == nil {
+			defer rows.Close()
+			for rows.Next() {
+				var t string
+				rows.Scan(&t)
+				tokens = append(tokens, t)
+			}
+		}
+	}
+
+	if len(tokens) == 0 {
+		return fmt.Errorf("no hay tokens")
+	}
+
+	// Obtener server key del service account (campo client_email)
+	// Para FCM v1 se necesita OAuth2 - requiere google.golang.org/api/identitytoolkit
+	// Por ahora fallback: leer server key del env
+	serverKey := os.Getenv("FCM_SERVER_KEY")
+	if serverKey == "" {
+		return fmt.Errorf("FCM_SERVER_KEY no configurado. Obtenelo de Firebase Console > Cloud Messaging")
+	}
+
+	for _, token := range tokens {
+		payload := map[string]interface{}{
+			"to": token,
+			"notification": map[string]string{
+				"title": title,
+				"body":  body,
+			},
+			"data": map[string]string{
+				"title": title,
+				"body":  body,
+				"type":  msgType,
+				"url":   url,
+			},
+		}
+		bodyBytes, _ := json.Marshal(payload)
+		req, _ := http.NewRequest("POST", "https://fcm.googleapis.com/fcm/send",
+			bytes.NewReader(bodyBytes))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", "key="+serverKey)
+		client := &http.Client{Timeout: 10 * time.Second}
+		resp, err := client.Do(req)
+		if err != nil {
+			continue
+		}
+		resp.Body.Close()
+	}
+	return nil
 }

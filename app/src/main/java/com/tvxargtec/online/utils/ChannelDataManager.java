@@ -6,7 +6,17 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -32,6 +42,7 @@ public class ChannelDataManager {
     private static List<String> cachedCountries = null;
     private static final List<String> REMOTE_M3U_SOURCES = new ArrayList<>();
     private static final List<String> CATEGORY_M3U_SOURCES = new ArrayList<>();
+    private static final String CUSTOM_M3U_PREF = "custom_m3u_url";
 
     static {
         REMOTE_M3U_SOURCES.add("https://iptv-org.github.io/iptv/index.m3u");
@@ -68,12 +79,43 @@ public class ChannelDataManager {
 
     public static synchronized List<Channel> getChannels(Context context) {
         if (cachedChannels == null) {
-            cachedChannels = M3u8Parser.parseFromAssets(context, ASSETS_FILE);
+            cachedChannels = loadFromCache(context);
+            if (cachedChannels == null || cachedChannels.isEmpty()) {
+                cachedChannels = M3u8Parser.parseFromAssets(context, ASSETS_FILE);
+            }
             if (cachedChannels == null || cachedChannels.isEmpty()) {
                 cachedChannels = getMockChannels("");
             }
         }
         return cachedChannels;
+    }
+
+    private static List<Channel> loadFromCache(Context context) {
+        try {
+            File cacheFile = new File(context.getCacheDir(), "channels_cache.json");
+            if (!cacheFile.exists()) return null;
+            FileInputStream fis = new FileInputStream(cacheFile);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) sb.append(line);
+            reader.close();
+            Type type = new TypeToken<List<Channel>>(){}.getType();
+            return new Gson().fromJson(sb.toString(), type);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private static void saveToCache(Context context, List<Channel> channels) {
+        try {
+            File cacheFile = new File(context.getCacheDir(), "channels_cache.json");
+            String json = new Gson().toJson(channels);
+            FileOutputStream fos = new FileOutputStream(cacheFile);
+            OutputStreamWriter writer = new OutputStreamWriter(fos);
+            writer.write(json);
+            writer.close();
+        } catch (Exception ignored) {}
     }
 
     public static List<Channel> getChannels(Context context, String category) {
@@ -179,6 +221,7 @@ public class ChannelDataManager {
     }
 
     public static void fetchRemoteM3USources(Context context, DataCallback callback) {
+        loadCustomM3USource(context);
         List<Channel> merged = new ArrayList<>(getChannels(context));
         final int[] completed = {0};
         final int total = REMOTE_M3U_SOURCES.size() + CATEGORY_M3U_SOURCES.size();
@@ -198,6 +241,7 @@ public class ChannelDataManager {
                     }
                     completed[0]++;
                     if (completed[0] >= total) {
+                        saveToCache(context, merged);
                         new Handler(Looper.getMainLooper()).post(() -> callback.onDataLoaded(merged));
                     }
                 }
@@ -206,6 +250,7 @@ public class ChannelDataManager {
                 public void onError(Exception e) {
                     completed[0]++;
                     if (completed[0] >= total) {
+                        saveToCache(context, merged);
                         new Handler(Looper.getMainLooper()).post(() -> callback.onDataLoaded(merged));
                     }
                 }
@@ -229,6 +274,7 @@ public class ChannelDataManager {
                     }
                     completed[0]++;
                     if (completed[0] >= total) {
+                        saveToCache(context, merged);
                         new Handler(Looper.getMainLooper()).post(() -> callback.onDataLoaded(merged));
                     }
                 }
@@ -237,6 +283,7 @@ public class ChannelDataManager {
                 public void onError(Exception e) {
                     completed[0]++;
                     if (completed[0] >= total) {
+                        saveToCache(context, merged);
                         new Handler(Looper.getMainLooper()).post(() -> callback.onDataLoaded(merged));
                     }
                 }
@@ -307,6 +354,44 @@ public class ChannelDataManager {
             return filtered;
         }
         return channels;
+    }
+
+    public static void addCustomM3USource(String url) {
+        if (url != null && !url.isEmpty() && !REMOTE_M3U_SOURCES.contains(url)) {
+            REMOTE_M3U_SOURCES.add(url);
+            cachedChannels = null;
+        }
+    }
+
+    public static void clearCustomM3USource() {
+        // Remove all custom URLs (those not in the default list)
+        List<String> defaults = new ArrayList<>();
+        defaults.add("https://iptv-org.github.io/iptv/index.m3u");
+        defaults.add("https://iptv-org.github.io/iptv/countries/ar.m3u");
+        defaults.add("https://iptv-org.github.io/iptv/countries/us.m3u");
+        defaults.add("https://iptv-org.github.io/iptv/countries/es.m3u");
+        defaults.add("https://iptv-org.github.io/iptv/countries/mx.m3u");
+        defaults.add("https://iptv-org.github.io/iptv/countries/cl.m3u");
+        defaults.add("https://iptv-org.github.io/iptv/countries/co.m3u");
+        defaults.add("https://iptv-org.github.io/iptv/countries/pe.m3u");
+        defaults.add("https://iptv-org.github.io/iptv/countries/br.m3u");
+        defaults.add("https://iptv-org.github.io/iptv/countries/ve.m3u");
+        defaults.add("https://iptv-org.github.io/iptv/countries/gb.m3u");
+        defaults.add("https://iptv-org.github.io/iptv/countries/fr.m3u");
+        defaults.add("https://iptv-org.github.io/iptv/countries/de.m3u");
+        defaults.add("https://iptv-org.github.io/iptv/countries/it.m3u");
+        defaults.add("https://iptv-org.github.io/iptv/countries/pt.m3u");
+
+        REMOTE_M3U_SOURCES.clear();
+        REMOTE_M3U_SOURCES.addAll(defaults);
+        cachedChannels = null;
+    }
+
+    public static void loadCustomM3USource(Context context) {
+        String url = context.getSharedPreferences("playlist_prefs", 0).getString(CUSTOM_M3U_PREF, "");
+        if (!url.isEmpty() && !REMOTE_M3U_SOURCES.contains(url)) {
+            REMOTE_M3U_SOURCES.add(url);
+        }
     }
 
     public interface DataCallback {

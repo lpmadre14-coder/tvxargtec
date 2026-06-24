@@ -15,17 +15,22 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.tvxargtec.online.R;
 import com.tvxargtec.online.activity.PlayAty;
+import com.tvxargtec.online.database.AppDatabase;
+import com.tvxargtec.online.database.entity.FavoriteEntity;
+import com.tvxargtec.online.utils.Channel;
+import com.tvxargtec.online.utils.ChannelDataManager;
 import com.tvxargtec.online.utils.ChannelItem;
 import com.tvxargtec.online.utils.LocalDataManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FavoritesFragment extends Fragment {
 
     private RecyclerView rvFavorites;
     private TextView tvEmpty;
-    private LocalDataManager dataManager;
     private FavoriteListAdapter adapter;
+    private AppDatabase db;
 
     @Nullable
     @Override
@@ -33,14 +38,26 @@ public class FavoritesFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_favorites, container, false);
         rvFavorites = view.findViewById(R.id.rvFavorites);
         tvEmpty = view.findViewById(R.id.tvEmpty);
-        dataManager = new LocalDataManager(requireContext());
+        db = AppDatabase.getInstance(requireContext());
         rvFavorites.setLayoutManager(new LinearLayoutManager(getContext()));
         loadFavorites();
         return view;
     }
 
     private void loadFavorites() {
-        List<ChannelItem> favorites = dataManager.getFavorites();
+        List<FavoriteEntity> favEntities = db.favoriteDao().getAllFavorites();
+        List<Channel> allChannels = ChannelDataManager.getChannels(requireContext(), "");
+        List<ChannelItem> favorites = new ArrayList<>();
+
+        for (FavoriteEntity fav : favEntities) {
+            for (Channel ch : allChannels) {
+                if (ch.getId().equals(fav.contentId)) {
+                    favorites.add(new ChannelItem(ch.getId(), ch.getTitle(), ch.getUrl(), ch.getLogo(), ch.getCategoryName()));
+                    break;
+                }
+            }
+        }
+
         if (favorites.isEmpty()) {
             tvEmpty.setVisibility(View.VISIBLE);
             rvFavorites.setVisibility(View.GONE);

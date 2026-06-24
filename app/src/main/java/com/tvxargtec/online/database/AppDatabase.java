@@ -39,6 +39,7 @@ public abstract class AppDatabase extends RoomDatabase {
                         "tvxargtec_database"
                     )
                     .fallbackToDestructiveMigration()
+                    .allowMainThreadQueries()
                     .build();
                 }
             }

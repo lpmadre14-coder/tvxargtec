@@ -16,6 +16,8 @@ import android.view.ViewGroup;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Collections;
+import java.util.Comparator;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -114,6 +116,7 @@ public class LiveTvFragment extends Fragment {
     private String selectedCountry = "";
     private ChannelAdapter adapter;
     private List<Channel> allChannels;
+    private boolean sortByName = false;
 
     @Nullable
     @Override
@@ -155,6 +158,24 @@ public class LiveTvFragment extends Fragment {
             chipCountryAll.setChecked(true);
             selectedCountryChip = chipCountryAll;
         }
+
+        Chip chipSort = new Chip(requireContext());
+        chipSort.setText("A-Z");
+        chipSort.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
+        chipSort.setChipBackgroundColorResource(R.color.bg_card);
+        chipSort.setTextColor(getResources().getColor(R.color.text_primary));
+        chipSort.setChipCornerRadius(20f);
+        chipSort.setClickable(true);
+        chipSort.setCheckable(true);
+        chipSort.setOnClickListener(v -> {
+            sortByName = !sortByName;
+            chipSort.setChecked(sortByName);
+            filterChannels();
+        });
+        ((ViewGroup) view.findViewById(R.id.chipContainer)).addView(chipSort);
     }
 
     private void setupListeners() {
@@ -217,19 +238,35 @@ public class LiveTvFragment extends Fragment {
     private void loadChannels() {
         if (loadingContainer != null) loadingContainer.setVisibility(View.VISIBLE);
 
-        allChannels = ChannelDataManager.getChannels(requireContext(), "");
+        ChannelDataManager.fetchRemoteM3USources(requireContext(), new ChannelDataManager.DataCallback() {
+            @Override
+            public void onDataLoaded(List<Channel> channels) {
+                allChannels = ChannelDataManager.getChannels(requireContext(), "");
+                if (adapter == null) {
+                    adapter = new ChannelAdapter(requireContext(), allChannels, channel -> Unit.INSTANCE);
+                    rvChannels.setAdapter(adapter);
+                } else {
+                    adapter.updateChannels(allChannels);
+                }
+                if (loadingContainer != null) loadingContainer.setVisibility(View.GONE);
+                if (swipeRefresh != null) swipeRefresh.setRefreshing(false);
+                populateCountryChips();
+            }
 
-        if (adapter == null) {
-            adapter = new ChannelAdapter(requireContext(), allChannels, channel -> Unit.INSTANCE);
-            rvChannels.setAdapter(adapter);
-        } else {
-            adapter.updateChannels(allChannels);
-        }
-
-        if (loadingContainer != null) loadingContainer.setVisibility(View.GONE);
-        if (swipeRefresh != null) swipeRefresh.setRefreshing(false);
-
-        populateCountryChips();
+            @Override
+            public void onError(Exception e) {
+                allChannels = ChannelDataManager.getChannels(requireContext(), "");
+                if (adapter == null) {
+                    adapter = new ChannelAdapter(requireContext(), allChannels, channel -> Unit.INSTANCE);
+                    rvChannels.setAdapter(adapter);
+                } else {
+                    adapter.updateChannels(allChannels);
+                }
+                if (loadingContainer != null) loadingContainer.setVisibility(View.GONE);
+                if (swipeRefresh != null) swipeRefresh.setRefreshing(false);
+                populateCountryChips();
+            }
+        });
     }
 
     private void populateCountryChips() {
@@ -294,6 +331,14 @@ public class LiveTvFragment extends Fragment {
 
         if (!selectedCountry.isEmpty()) {
             filtered = ChannelDataManager.getChannelsByCountry(requireContext(), selectedCountry);
+        }
+
+        if (sortByName) {
+            java.util.Collections.sort(filtered, (a, b) -> {
+                if (a.getTitle() == null) return 1;
+                if (b.getTitle() == null) return -1;
+                return a.getTitle().compareToIgnoreCase(b.getTitle());
+            });
         }
 
         adapter.updateChannels(filtered);

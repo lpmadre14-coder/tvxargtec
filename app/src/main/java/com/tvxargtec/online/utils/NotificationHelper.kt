@@ -18,6 +18,7 @@ object NotificationHelper {
     const val CHANNEL_NEW_CONTENT = "tvxargtec_new_content"
     const val CHANNEL_PROMOS = "tvxargtec_promos"
     const val CHANNEL_SYSTEM = "tvxargtec_system"
+    const val CHANNEL_AUDIO = "audio_playback"
 
     private const val NOTIFICATION_ID_BASE = 1000
     private var notificationCounter = 0
@@ -57,6 +58,14 @@ object NotificationHelper {
                 NotificationManager.IMPORTANCE_MIN
             ).apply {
                 description = "Notificaciones del sistema"
+            },
+            NotificationChannel(
+                CHANNEL_AUDIO,
+                "Reproducción de audio",
+                NotificationManager.IMPORTANCE_LOW
+            ).apply {
+                description = "Reproducción de audio en segundo plano"
+                setSound(null, null)
             }
         )
 

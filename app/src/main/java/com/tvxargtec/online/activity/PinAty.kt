@@ -58,6 +58,9 @@ class PinAty : BaseActivity() {
                     if (s?.length == 1 && i < pins.size - 1) {
                         pins[i + 1].requestFocus()
                     }
+                    if (s?.length == 0 && i > 0) {
+                        pins[i - 1].requestFocus()
+                    }
                     checkPin()
                 }
             })

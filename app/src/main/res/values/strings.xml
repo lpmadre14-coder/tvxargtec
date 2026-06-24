@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">Tvxargtec</string>
     <string name="default_notification_channel_id">tvxargtec_alerts</string>
+    <string name="license_text">Licencia MIT\n\nCopyright (c) 2026 Tvxargtec\n\nSe concede permiso para usar, copiar, modificar, fusionar, publicar, distribuir, sublicenciar y/o vender copias del software, así como para permitir a las personas a quienes se les proporcione el software hacerlo, sujeto a las siguientes condiciones:\n\nEl aviso de copyright anterior y este aviso de permiso se incluirán en todas las copias o partes sustanciales del software.\n\nEL SOFTWARE SE PROPORCIONA "TAL CUAL", SIN GARANTÍA DE NINGÚN TIPO, EXPRESA O IMPLÍCITA.</string>
 
     <!-- Onboarding -->
     <string name="onboarding_skip">Saltar</string>

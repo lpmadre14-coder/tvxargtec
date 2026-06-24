@@ -98,6 +98,8 @@
             </intent-filter>
         </service>
 
+        <service android:exported="false" android:foregroundServiceType="mediaPlayback" android:name=".service.AudioPlaybackService" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

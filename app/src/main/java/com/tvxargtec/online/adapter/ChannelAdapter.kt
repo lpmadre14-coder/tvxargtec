@@ -2,6 +2,8 @@ package com.tvxargtec.online.adapter
 
 import android.content.Context
 import android.content.Intent
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,8 +13,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.tvxargtec.online.R
 import com.tvxargtec.online.activity.PlayAty
+import com.tvxargtec.online.database.AppDatabase
+import com.tvxargtec.online.database.entity.FavoriteEntity
 import com.tvxargtec.online.utils.Channel
+import com.tvxargtec.online.utils.EpgHelper
+import com.tvxargtec.online.utils.EpgProgramme
 import com.tvxargtec.online.utils.LocalDataManager
+import java.util.HashSet
 
 class ChannelAdapter(
     private val context: Context,
@@ -21,6 +28,14 @@ class ChannelAdapter(
 ) : RecyclerView.Adapter<ChannelAdapter.ViewHolder>() {
 
     private val dataManager = LocalDataManager(context)
+    private val favoriteIds = HashSet<String>()
+    private val db = AppDatabase.getInstance(context)
+
+    init {
+        for (fav in db.favoriteDao().getAllFavorites()) {
+            favoriteIds.add(fav.contentId)
+        }
+    }
 
     fun updateChannels(newChannels: List<Channel>) {
         channels = newChannels
@@ -43,6 +58,7 @@ class ChannelAdapter(
         private val ivLogo: ImageView = itemView.findViewById(R.id.ivChannelLogo)
         private val tvTitle: TextView = itemView.findViewById(R.id.tvChannelName)
         private val tvCategory: TextView = itemView.findViewById(R.id.tvChannelCategory)
+        private val tvEpg: TextView = itemView.findViewById(R.id.tvChannelEpg)
         private val ivFavorite: ImageView = itemView.findViewById(R.id.ivFavorite)
 
         fun bind(channel: Channel) {
@@ -55,21 +71,19 @@ class ChannelAdapter(
                 .error(R.drawable.ic_play)
                 .into(ivLogo)
 
-            val isFav = dataManager.isFavorite(channel.id)
+            val isFav = favoriteIds.contains(channel.id)
             ivFavorite.setImageResource(
                 if (isFav) android.R.drawable.star_on else android.R.drawable.star_off
             )
 
             ivFavorite.setOnClickListener {
-                if (dataManager.isFavorite(channel.id)) {
-                    dataManager.removeFavorite(channel.id)
+                if (favoriteIds.contains(channel.id)) {
+                    favoriteIds.remove(channel.id)
+                    db.favoriteDao().deleteFavoriteByContentId(channel.id)
                     ivFavorite.setImageResource(android.R.drawable.star_off)
                 } else {
-                    dataManager.addFavorite(
-                        com.tvxargtec.online.utils.ChannelItem(
-                            channel.id, channel.title, channel.url, channel.logo, channel.categoryName
-                        )
-                    )
+                    favoriteIds.add(channel.id)
+                    db.favoriteDao().addFavorite(FavoriteEntity(channel.id))
                     ivFavorite.setImageResource(android.R.drawable.star_on)
                 }
             }
@@ -87,6 +101,23 @@ class ChannelAdapter(
                     )
                 )
             }
+
+            fetchEpg(channel)
+        }
+
+        private fun fetchEpg(channel: Channel) {
+            EpgHelper.fetchNowPlaying(channel.title, object : EpgHelper.Callback {
+                override fun invoke(current: EpgProgramme?, next: EpgProgramme?) {
+                    Handler(Looper.getMainLooper()).post {
+                        if (current != null && current.title != null && current.title.isNotEmpty()) {
+                            tvEpg.text = "▶ ${current.title}"
+                            tvEpg.visibility = View.VISIBLE
+                        } else {
+                            tvEpg.visibility = View.GONE
+                        }
+                    }
+                }
+            })
         }
     }
 }

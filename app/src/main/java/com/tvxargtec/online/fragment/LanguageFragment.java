@@ -48,7 +48,6 @@ public class LanguageFragment extends Fragment {
             Intent intent = new Intent(requireContext(), TransitionLanguageAty.class);
             intent.putExtra("lang", languages[position][0]);
             startActivity(intent);
-            requireActivity().finish();
         });
     }
 }

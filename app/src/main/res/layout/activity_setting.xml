@@ -104,6 +104,37 @@
 
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- Custom Playlist -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/llPlaylist"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginVertical="3dp"
+            app:cardBackgroundColor="@color/card_bg"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="1dp"
+            app:strokeColor="@color/surface_light"
+            app:strokeWidth="0.5dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingHorizontal="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:drawableEnd="@drawable/ic_arrow"
+                    android:gravity="center_vertical"
+                    android:text="Playlist personalizada (M3U)"
+                    android:textColor="@color/text_primary"
+                    android:textSize="15sp" />
+
+            </RelativeLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
         <!-- Section title -->
         <TextView
             android:layout_width="wrap_content"

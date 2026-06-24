@@ -57,7 +57,8 @@ public class MoviesFragment extends Fragment {
                 getResources().getColor(R.color.brand_green)
         );
 
-        rvMovies.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        int spanCount = ChannelDataManager.isTelevision(requireContext()) ? 4 : 2;
+        rvMovies.setLayoutManager(new GridLayoutManager(getContext(), spanCount));
 
         chipAll = view.findViewById(R.id.chipAll);
         chipAction = view.findViewById(R.id.chipAction);
@@ -102,15 +103,32 @@ public class MoviesFragment extends Fragment {
     private void loadChannels() {
         if (loadingContainer != null) loadingContainer.setVisibility(View.VISIBLE);
 
-        List<Channel> channels = ChannelDataManager.getChannels(requireContext(), selectedCategory);
-        if (adapter == null) {
-            adapter = new ChannelAdapter(requireContext(), channels, channel -> Unit.INSTANCE);
-            rvMovies.setAdapter(adapter);
-        } else {
-            adapter.updateChannels(channels);
-        }
+        ChannelDataManager.fetchRemoteM3USources(requireContext(), new ChannelDataManager.DataCallback() {
+            @Override
+            public void onDataLoaded(List<Channel> channels) {
+                List<Channel> filtered = ChannelDataManager.getChannels(requireContext(), selectedCategory);
+                if (adapter == null) {
+                    adapter = new ChannelAdapter(requireContext(), filtered, channel -> Unit.INSTANCE);
+                    rvMovies.setAdapter(adapter);
+                } else {
+                    adapter.updateChannels(filtered);
+                }
+                if (loadingContainer != null) loadingContainer.setVisibility(View.GONE);
+                if (swipeRefresh != null) swipeRefresh.setRefreshing(false);
+            }
 
-        if (loadingContainer != null) loadingContainer.setVisibility(View.GONE);
-        if (swipeRefresh != null) swipeRefresh.setRefreshing(false);
+            @Override
+            public void onError(Exception e) {
+                List<Channel> channels = ChannelDataManager.getChannels(requireContext(), selectedCategory);
+                if (adapter == null) {
+                    adapter = new ChannelAdapter(requireContext(), channels, channel -> Unit.INSTANCE);
+                    rvMovies.setAdapter(adapter);
+                } else {
+                    adapter.updateChannels(channels);
+                }
+                if (loadingContainer != null) loadingContainer.setVisibility(View.GONE);
+                if (swipeRefresh != null) swipeRefresh.setRefreshing(false);
+            }
+        });
     }
 }

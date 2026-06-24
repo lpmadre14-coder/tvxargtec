@@ -1,6 +1,8 @@
 package com.tvxargtec.online.activity
 
 import android.app.AlertDialog
+import android.os.Handler
+import android.os.Looper
 import android.view.MenuItem
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -15,6 +17,9 @@ class MainAty : BaseActivity() {
     override fun getLayoutResId(): Int = R.layout.activity_main
 
     private lateinit var bottomNav: BottomNavigationView
+    private val sleepHandler = Handler(Looper.getMainLooper())
+    private var sleepDialogShown = false
+    private var usageStartTime = 0L
 
     companion object {
         private var instance: MainAty? = null
@@ -55,6 +60,32 @@ class MainAty : BaseActivity() {
                 .commit()
         }
         checkForUpdatesSilent()
+        startSleepTimer()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        usageStartTime = System.currentTimeMillis()
+    }
+
+    private fun startSleepTimer() {
+        sleepHandler.removeCallbacksAndMessages(null)
+        sleepHandler.postDelayed({
+            if (!sleepDialogShown) {
+                sleepDialogShown = true
+                AlertDialog.Builder(this)
+                    .setTitle("⏰ Tiempo de uso")
+                    .setMessage("Llevas más de 5 horas usando la app. Descansa un poco, tus ojos lo agradecerán ❤️")
+                    .setPositiveButton("Seguir viendo") { d, _ ->
+                        sleepDialogShown = false
+                        usageStartTime = System.currentTimeMillis()
+                        startSleepTimer()
+                    }
+                    .setNegativeButton("Salir") { d, _ -> finish() }
+                    .setCancelable(false)
+                    .show()
+            }
+        }, 5 * 60 * 60 * 1000L)
     }
 
     private fun checkForUpdatesSilent() {
@@ -93,6 +124,7 @@ class MainAty : BaseActivity() {
     }
 
     override fun onDestroy() {
+        sleepHandler.removeCallbacksAndMessages(null)
         super.onDestroy()
         instance = null
     }

@@ -27,9 +27,9 @@ public class AboutFragment extends Fragment {
         try {
             String vn = requireContext().getPackageManager()
                     .getPackageInfo(requireContext().getPackageName(), 0).versionName;
-            tvVersion.setText("v" + vn);
+            tvVersion.setText("v" + vn + " (MIT License)");
         } catch (PackageManager.NameNotFoundException e) {
-            tvVersion.setText("v1.0.0");
+            tvVersion.setText("v1.0.0 (MIT License)");
         }
     }
 }

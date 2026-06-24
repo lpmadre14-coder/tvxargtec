@@ -148,8 +148,20 @@ public class HomeFragment extends Fragment {
     private void loadChannels() {
         if (loadingContainer != null) loadingContainer.setVisibility(View.VISIBLE);
 
-        List<Channel> allChannels = ChannelDataManager.getChannels(requireContext(), "");
+        ChannelDataManager.fetchRemoteM3USources(requireContext(), new ChannelDataManager.DataCallback() {
+            @Override
+            public void onDataLoaded(List<Channel> channels) {
+                updateChannelSections(channels);
+            }
 
+            @Override
+            public void onError(Exception e) {
+                updateChannelSections(ChannelDataManager.getChannels(requireContext(), ""));
+            }
+        });
+    }
+
+    private void updateChannelSections(List<Channel> allChannels) {
         List<Channel> continueWatching = allChannels.subList(0, Math.min(5, allChannels.size()));
         if (adapterContinueWatching == null) {
             adapterContinueWatching = new ChannelAdapter(requireContext(), continueWatching, channel -> Unit.INSTANCE);

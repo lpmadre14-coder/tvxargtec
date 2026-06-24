@@ -46,6 +46,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.tvxargtec.online.R;
 import com.tvxargtec.online.base.BaseActivity;
 import com.tvxargtec.online.cast.CastManager;
+import com.tvxargtec.online.service.AudioPlaybackService;
 import com.tvxargtec.online.utils.EpgHelper;
 import com.tvxargtec.online.utils.EpgProgramme;
 import com.tvxargtec.online.utils.OfflineManager;
@@ -79,6 +80,10 @@ public class PlayAty extends BaseActivity {
 
     // PiP
     private boolean isInPipMode = false;
+    private TextView btnQuality;
+    private TextView btnAudioMode;
+    private TextView btnSubtitles;
+    private boolean isAudioOnly = false;
 
     // Gesture
     private GestureDetector gestureDetector;
@@ -113,6 +118,9 @@ public class PlayAty extends BaseActivity {
         ImageView btnCast = findViewById(R.id.btnCast);
         ImageView btnDownload = findViewById(R.id.btnDownload);
         ImageView btnSettings = findViewById(R.id.btnSettings);
+        btnQuality = findViewById(R.id.btnQuality);
+        btnAudioMode = findViewById(R.id.btnAudioMode);
+        btnSubtitles = findViewById(R.id.btnSubtitles);
 
         btnBack.setOnClickListener(v -> finish());
         btnLock.setOnClickListener(v -> toggleLock());
@@ -126,6 +134,9 @@ public class PlayAty extends BaseActivity {
         }
         btnPip.setOnClickListener(v -> enterPip());
         btnSettings.setOnClickListener(v -> showSettingsDialog());
+        btnQuality.setOnClickListener(v -> showQualitySelector());
+        btnAudioMode.setOnClickListener(v -> toggleAudioMode());
+        btnSubtitles.setOnClickListener(v -> showTrackSelector("Subtítulos", C.TRACK_TYPE_TEXT));
 
         if (btnDownload != null) {
             btnDownload.setOnClickListener(v -> {
@@ -276,6 +287,8 @@ public class PlayAty extends BaseActivity {
         if (videoTitle != null && !videoTitle.isEmpty()) {
             fetchEpg(videoTitle);
         }
+
+        startSleepTimer();
     }
 
     private void fetchEpg(String channelName) {
@@ -310,6 +323,11 @@ public class PlayAty extends BaseActivity {
         settings.setUserAgentString("Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36");
 
         webViewPlayer.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                view.loadUrl(url);
+                return true;
+            }
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 loadingBar.setVisibility(View.VISIBLE);
@@ -441,6 +459,26 @@ public class PlayAty extends BaseActivity {
 
     // ===== SETTINGS DIALOG =====
 
+    private void showQualitySelector() {
+        showTrackSelector("Calidad", C.TRACK_TYPE_VIDEO);
+    }
+
+    private void toggleAudioMode() {
+        if (player == null || isYouTube) return;
+        isAudioOnly = !isAudioOnly;
+        if (isAudioOnly) {
+            playerView.setVisibility(View.GONE);
+            btnAudioMode.setTextColor(getResources().getColor(R.color.brand_cyan));
+            AudioPlaybackService.start(this, videoUrl, videoTitle != null ? videoTitle : "Tvxargtec");
+            showToast("Modo solo audio activado");
+        } else {
+            playerView.setVisibility(View.VISIBLE);
+            btnAudioMode.setTextColor(getResources().getColor(R.color.text_primary));
+            AudioPlaybackService.stop(this);
+            showToast("Modo video activado");
+        }
+    }
+
     private void showSettingsDialog() {
         BottomSheetDialog dialog = new BottomSheetDialog(this);
         View view = getLayoutInflater().inflate(R.layout.dialog_player_settings, null);
@@ -566,6 +604,29 @@ public class PlayAty extends BaseActivity {
         }
     }
 
+    // ===== SLEEP TIMER =====
+    private final Handler sleepHandler = new Handler(Looper.getMainLooper());
+    private boolean sleepDialogShown = false;
+
+    private void startSleepTimer() {
+        sleepHandler.removeCallbacksAndMessages(null);
+        sleepHandler.postDelayed(() -> {
+            if (!sleepDialogShown) {
+                sleepDialogShown = true;
+                new android.app.AlertDialog.Builder(this)
+                    .setTitle("⏰ Tiempo de uso")
+                    .setMessage("Llevas más de 5 horas usando la app. Descansa un poco, tus ojos lo agradecerán ❤️")
+                    .setPositiveButton("Seguir viendo", (d, w) -> {
+                        sleepDialogShown = false;
+                        startSleepTimer();
+                    })
+                    .setNegativeButton("Salir", (d, w) -> finish())
+                    .setCancelable(false)
+                    .show();
+            }
+        }, 5 * 60 * 60 * 1000L);
+    }
+
     // ===== LIFECYCLE =====
 
     @Override
@@ -611,5 +672,6 @@ public class PlayAty extends BaseActivity {
             webViewPlayer.removeAllViews();
             webViewPlayer.destroy();
         }
+        AudioPlaybackService.stop(this);
     }
 }

@@ -15,9 +15,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.widget.EditText;
+import android.widget.Toast;
 import com.tvxargtec.online.R;
 import com.tvxargtec.online.activity.MainAty;
+import com.tvxargtec.online.utils.ChannelDataManager;
 import com.tvxargtec.online.utils.UpdateManager;
+
 
 public class SettingsFragment extends Fragment {
 
@@ -39,6 +43,7 @@ public class SettingsFragment extends Fragment {
         MaterialCardView llAbout = view.findViewById(R.id.llAbout);
         MaterialCardView llLogout = view.findViewById(R.id.llLogout);
         MaterialCardView llCheckUpdate = view.findViewById(R.id.llCheckUpdate);
+        MaterialCardView llPlaylist = view.findViewById(R.id.llPlaylist);
         tvUpdateStatus = view.findViewById(R.id.tvUpdateStatus);
 
         try {
@@ -48,6 +53,10 @@ public class SettingsFragment extends Fragment {
         } catch (PackageManager.NameNotFoundException ignored) {}
 
         updateManager = new UpdateManager(requireContext(), "lpmadre14-coder", "tvxargtec");
+
+        if (llPlaylist != null) {
+            llPlaylist.setOnClickListener(v -> showPlaylistDialog());
+        }
 
         if (tvLanguage != null) {
             tvLanguage.setOnClickListener(v -> pushFragment(new LanguageFragment()));
@@ -102,6 +111,39 @@ public class SettingsFragment extends Fragment {
                 .replace(R.id.fragment_container, fragment)
                 .addToBackStack(null)
                 .commit();
+    }
+
+    private void showPlaylistDialog() {
+        EditText input = new EditText(requireContext());
+        input.setHint("https://ejemplo.com/lista.m3u8");
+        input.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_URI);
+        String saved = requireContext().getSharedPreferences("playlist_prefs", 0).getString("custom_m3u_url", "");
+        input.setText(saved);
+        input.setSelection(input.getText().length());
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Playlist personalizada")
+                .setMessage("Ingresa la URL de tu lista M3U/M3U8 para agregar canales adicionales")
+                .setView(input)
+                .setPositiveButton("Guardar", (dialog, which) -> {
+                    String url = input.getText().toString().trim();
+                    if (!url.isEmpty() && (url.startsWith("http://") || url.startsWith("https://"))) {
+                        requireContext().getSharedPreferences("playlist_prefs", 0)
+                                .edit().putString("custom_m3u_url", url).apply();
+                        ChannelDataManager.addCustomM3USource(url);
+                        Toast.makeText(getActivity(), "Playlist guardada. Recarga la app para ver los cambios.", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getActivity(), "URL inválida. Debe comenzar con http:// o https://", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Eliminar", (dialog, which) -> {
+                    requireContext().getSharedPreferences("playlist_prefs", 0)
+                            .edit().remove("custom_m3u_url").apply();
+                    ChannelDataManager.clearCustomM3USource();
+                    Toast.makeText(getActivity(), "Playlist eliminada.", Toast.LENGTH_SHORT).show();
+                })
+                .setNeutralButton("Cancelar", null)
+                .show();
     }
 
     private void showUpdateDialog(String version, String notes, String apkUrl) {

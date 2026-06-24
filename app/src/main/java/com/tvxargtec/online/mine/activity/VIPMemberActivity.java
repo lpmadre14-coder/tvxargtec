@@ -57,8 +57,18 @@ public class VIPMemberActivity extends BaseActivity {
 
         TextView tvRedeem = findViewById(R.id.tvRedeem);
         if (tvRedeem != null) {
-            tvRedeem.setOnClickListener(v ->
-                    startActivity(new Intent(this, RedemptionAty.class)));
+            tvRedeem.setOnClickListener(v -> {
+                android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+                builder.setTitle("¿Qué deseas hacer?");
+                builder.setItems(new CharSequence[]{"🎫 Activar código gratuito", "🔑 Ingresar código de canje"}, (dialog, which) -> {
+                    if (which == 0) {
+                        startActivity(new Intent(this, com.tvxargtec.online.activity.ActivationAty.class));
+                    } else {
+                        startActivity(new Intent(this, RedemptionAty.class));
+                    }
+                });
+                builder.show();
+            });
         }
     }
 

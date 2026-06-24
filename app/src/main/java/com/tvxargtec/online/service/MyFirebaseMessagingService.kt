@@ -1,12 +1,15 @@
 package com.tvxargtec.online.service
 
-import android.app.PendingIntent
-import android.content.Intent
 import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import com.tvxargtec.online.utils.ApiClient
+import com.tvxargtec.online.utils.AuthManager
 import com.tvxargtec.online.utils.NotificationHelper
-import kotlin.random.Random
+import org.json.JSONObject
+import java.io.OutputStreamWriter
+import java.net.HttpURLConnection
+import java.net.URL
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
@@ -31,7 +34,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         super.onMessageReceived(message)
         Log.d(TAG, "Mensaje recibido de: ${message.from}")
 
-        // Notificación con datos estructurados
         message.data.let { data ->
             if (data.isNotEmpty()) {
                 handleDataMessage(data)
@@ -39,7 +41,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             }
         }
 
-        // Notificación desde consola Firebase (título + cuerpo)
         message.notification?.let { notification ->
             handleNotificationMessage(
                 notification.title ?: "Tvxargtec",
@@ -83,8 +84,37 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     private fun sendTokenToServer(token: String) {
-        // TODO: Enviar token al backend para asociarlo al usuario
-        // ApiService.post("/fcm/register", mapOf("token" to token))
-        Log.d(TAG, "Token listo para enviar al servidor: $token")
+        try {
+            val authManager = AuthManager.getInstance(this)
+            val authToken = authManager.getToken()
+            if (authToken == null) {
+                Log.d(TAG, "Usuario no autenticado, saltando registro FCM")
+                return
+            }
+
+            val json = JSONObject().apply {
+                put("token", token)
+            }
+
+            val url = URL("https://apitvxargtec.duckdns.org/api/fcm/register")
+            val conn = url.openConnection() as HttpURLConnection
+            conn.requestMethod = "POST"
+            conn.setRequestProperty("Content-Type", "application/json")
+            conn.setRequestProperty("Authorization", "Bearer $authToken")
+            conn.doOutput = true
+            conn.connectTimeout = 15000
+            conn.readTimeout = 15000
+
+            OutputStreamWriter(conn.outputStream).use { writer ->
+                writer.write(json.toString())
+                writer.flush()
+            }
+
+            val responseCode = conn.responseCode
+            Log.d(TAG, "FCM token registrado en servidor: $responseCode")
+            conn.disconnect()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error registrando FCM token: ${e.message}")
+        }
     }
 }

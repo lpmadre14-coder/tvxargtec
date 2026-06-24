@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 	"strings"
@@ -16,6 +17,11 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"golang.org/x/crypto/bcrypt"
+)
+
+var (
+	activationCodes = make(map[string]time.Time)
+	activationMu    sync.RWMutex
 )
 
 // Estructuras de Datos
@@ -111,6 +117,14 @@ func initTables() {
 			duration_days INT NOT NULL,
 			features JSON,
 			is_active BOOLEAN DEFAULT TRUE
+		)`,
+		`CREATE TABLE IF NOT EXISTS fcm_tokens (
+			id INT AUTO_INCREMENT PRIMARY KEY,
+			user_id INT NOT NULL,
+			token TEXT NOT NULL,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+			UNIQUE KEY unique_token (token(255))
 		)`,
 	}
 	for _, q := range tables {
@@ -293,6 +307,9 @@ func main() {
 	http.HandleFunc("/api/favorites", favoritesHandler)
 	http.HandleFunc("/api/history", historyHandler)
 	http.HandleFunc("/api/upgrade", upgradeHandler)
+	http.HandleFunc("/api/fcm/register", fcmRegisterHandler)
+	http.HandleFunc("/api/activation/code", activationCodeHandler)
+	http.HandleFunc("/api/activation/validate", activationValidateHandler)
 
 	fmt.Println("🚀 Servidor TVXargtec corriendo en http://localhost:8081")
 	log.Fatal(http.ListenAndServe(":8081", nil))
@@ -707,7 +724,6 @@ func upgradeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Obtener datos del plan
 	var price float64
 	var durationDays int
 	err := db.QueryRow("SELECT price, duration_days FROM vip_plans WHERE id = ? AND is_active = TRUE", req.PlanID).
@@ -717,7 +733,6 @@ func upgradeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Calcular nueva fecha de expiración
 	expiry := time.Now().AddDate(0, 0, durationDays)
 
 	_, err = db.Exec("UPDATE users SET plan_type = ?, plan_expiry = ? WHERE id = ?", req.PlanID, expiry, userID)
@@ -732,6 +747,110 @@ func upgradeHandler(w http.ResponseWriter, r *http.Request) {
 		"data": map[string]interface{}{
 			"planType":   req.PlanID,
 			"planExpiry": expiry.Format("2006-01-02"),
+		},
+	})
+}
+
+func fcmRegisterHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method != http.MethodPost {
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 405, "message": "Método no permitido"})
+		return
+	}
+
+	userID := extractUserID(r)
+	if userID == "" {
+		http.Error(w, "No autorizado", http.StatusUnauthorized)
+		return
+	}
+
+	var req struct {
+		Token string `json:"token"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || req.Token == "" {
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 400, "message": "Token requerido"})
+		return
+	}
+
+	_, err := db.Exec(`INSERT INTO fcm_tokens (user_id, token) VALUES (?, ?)
+		ON DUPLICATE KEY UPDATE updated_at = NOW()`, userID, req.Token)
+	if err != nil {
+		// Crear tabla si no existe
+		db.Exec(`CREATE TABLE IF NOT EXISTS fcm_tokens (
+			id INT AUTO_INCREMENT PRIMARY KEY,
+			user_id INT NOT NULL,
+			token TEXT NOT NULL,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+			UNIQUE KEY unique_token (token(255))
+		)`)
+		db.Exec("INSERT INTO fcm_tokens (user_id, token) VALUES (?, ?) ON DUPLICATE KEY UPDATE updated_at = NOW()", userID, req.Token)
+	}
+
+	json.NewEncoder(w).Encode(map[string]interface{}{"code": 200, "message": "Token registrado"})
+}
+
+func activationCodeHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method != http.MethodGet {
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 405, "message": "Método no permitido"})
+		return
+	}
+
+	code := fmt.Sprintf("%06d", rand.Intn(1000000))
+
+	activationMu.Lock()
+	activationCodes[code] = time.Now().Add(20 * time.Second)
+	activationMu.Unlock()
+
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"code":    200,
+		"message": "Código generado",
+		"data": map[string]interface{}{
+			"code":      code,
+			"expiresIn": 20,
+		},
+	})
+}
+
+func activationValidateHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method != http.MethodPost {
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 405, "message": "Método no permitido"})
+		return
+	}
+
+	var req struct {
+		Code string `json:"code"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || req.Code == "" {
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 400, "message": "Código requerido"})
+		return
+	}
+
+	activationMu.RLock()
+	expiry, exists := activationCodes[req.Code]
+	activationMu.RUnlock()
+
+	if !exists || time.Now().After(expiry) {
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 400, "message": "Código inválido o expirado"})
+		return
+	}
+
+	// Limpiar código usado
+	activationMu.Lock()
+	delete(activationCodes, req.Code)
+	activationMu.Unlock()
+
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"code":    200,
+		"message": "Código válido",
+		"data": map[string]interface{}{
+			"planType": "free",
+			"valid":    true,
 		},
 	})
 }

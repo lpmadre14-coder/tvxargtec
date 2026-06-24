@@ -95,6 +95,11 @@
             border: 1px solid rgba(255,255,255,0.1);
         }
         .btn-secondary:hover { background: rgba(255,255,255,0.1); }
+        .btn-outline {
+            background: transparent; color: var(--cyan);
+            border: 1px solid var(--cyan);
+        }
+        .btn-outline:hover { background: rgba(0,212,255,0.1); }
         .hero-stats {
             display: flex; gap: 3rem; flex-wrap: wrap; justify-content: center;
             margin-top: 4rem; padding: 2rem; border-top: 1px solid var(--border);
@@ -155,7 +160,6 @@
         .span-full { grid-column: 1 / -1; }
         .row-2 { grid-row: span 2; }
 
-        /* Featured bento - hero card */
         .bento-featured {
             background: linear-gradient(135deg, var(--card), rgba(124,58,237,0.08));
             border: 1px solid rgba(124,58,237,0.2);
@@ -219,27 +223,7 @@
         .pricing-card ul li::before { content: '✓'; color: var(--green); font-weight: 700; }
         .pricing-card .btn { width: 100%; justify-content: center; }
 
-        /* ── Download ── */
-        .download-section {
-            background:
-                radial-gradient(ellipse 80% 50% at 50% 50%, rgba(124,58,237,0.1) 0%, transparent 70%),
-                var(--card);
-            border-radius: 32px; padding: 4rem; text-align: center;
-            border: 1px solid var(--border); margin-top: 4rem;
-        }
-        .download-section h2 { font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; }
-        .download-section p { color: var(--muted); max-width: 500px; margin: 0 auto 2rem; }
-        .badge-group { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
-        .badge {
-            background: var(--bg2); padding: 1rem 2rem; border-radius: 14px;
-            border: 1px solid var(--border); text-decoration: none; color: var(--text);
-            display: flex; align-items: center; gap: .8rem; font-weight: 600;
-            transition: all .3s;
-        }
-        .badge:hover { border-color: var(--violet); transform: translateY(-2px); }
-        .badge svg { width: 24px; height: 24px; }
-
-        /* ── Security ── */
+        /* ── Security (mismo hover que bento) ── */
         .security-grid {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
@@ -247,10 +231,87 @@
         .security-item {
             background: var(--card); border-radius: 16px; padding: 1.5rem;
             border: 1px solid var(--border); text-align: center;
+            transition: all .4s;
+        }
+        .security-item:hover {
+            border-color: rgba(124,58,237,0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 20px 60px rgba(124,58,237,0.1);
         }
         .security-item .icon { font-size: 2rem; margin-bottom: .8rem; }
         .security-item h4 { font-size: .95rem; margin-bottom: .4rem; }
         .security-item p { font-size: .8rem; color: var(--muted); line-height: 1.5; }
+
+        /* ── Modal ── */
+        .modal-overlay {
+            position: fixed; inset: 0; z-index: 1000;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+            display: none; align-items: center; justify-content: center;
+            padding: 1rem;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: var(--card); border-radius: 32px; padding: 2.5rem;
+            max-width: 420px; width: 100%; border: 1px solid var(--border);
+            text-align: center; position: relative;
+        }
+        .modal h2 { font-size: 1.5rem; margin-bottom: .5rem; }
+        .modal p { color: var(--muted); font-size: .9rem; margin-bottom: 1.5rem; }
+        .activation-code {
+            font-size: 3rem; font-weight: 900; letter-spacing: 12px;
+            color: var(--cyan); margin: 1rem 0;
+        }
+        .timer {
+            font-size: 1.2rem; font-weight: 700; color: var(--crimson);
+            margin: 1rem 0;
+        }
+        .timer.warning { color: var(--gold); }
+        .code-inputs {
+            display: flex; gap: .5rem; justify-content: center; margin: 1.5rem 0;
+        }
+        .code-inputs input {
+            width: 48px; height: 56px; text-align: center; font-size: 1.5rem; font-weight: 700;
+            background: var(--bg2); border: 2px solid var(--border); border-radius: 12px;
+            color: var(--text); outline: none; transition: border-color .3s;
+        }
+        .code-inputs input:focus { border-color: var(--cyan); }
+        .code-inputs input.filled { border-color: var(--green); }
+        .modal-close {
+            position: absolute; top: 1rem; right: 1rem;
+            background: none; border: none; color: var(--muted); font-size: 1.5rem;
+            cursor: pointer;
+        }
+        .modal-close:hover { color: var(--text); }
+
+        /* ── Auth / Credentials section ── */
+        .auth-section {
+            background: var(--card);
+            border-radius: 24px; padding: 2.5rem;
+            border: 1px solid var(--border); text-align: center;
+            margin-bottom: 3rem;
+        }
+        .auth-section h3 { font-size: 1.3rem; margin-bottom: .5rem; }
+        .auth-section p { color: var(--muted); font-size: .9rem; margin-bottom: 1.5rem; }
+        .auth-form {
+            display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+            max-width: 500px; margin: 0 auto;
+        }
+        .auth-form input {
+            flex: 1; min-width: 180px;
+            padding: .9rem 1.2rem; border-radius: 12px;
+            background: var(--bg2); border: 1px solid var(--border);
+            color: var(--text); font-size: .95rem; outline: none;
+            transition: border-color .3s;
+        }
+        .auth-form input:focus { border-color: var(--violet); }
+        .auth-form input::placeholder { color: var(--muted); }
+        .auth-divider {
+            display: flex; align-items: center; gap: 1rem;
+            margin: 1.5rem 0; color: var(--muted); font-size: .85rem;
+        }
+        .auth-divider::before, .auth-divider::after {
+            content: ''; flex: 1; height: 1px; background: var(--border);
+        }
 
         /* ── Footer ── */
         footer {
@@ -266,6 +327,7 @@
             .span-2, .span-3 { grid-column: span 1; }
             nav .links a { margin-left: 1rem; font-size: .8rem; }
             .download-section { padding: 2rem; }
+            .code-inputs input { width: 40px; height: 48px; font-size: 1.2rem; }
         }
     </style>
 </head>
@@ -347,7 +409,7 @@
         <div class="bento-item crimson-icon">
             <div class="icon">🛡</div>
             <h3>VIP Plans</h3>
-            <p>Free, Básico, Premium y Familiar. Pagos vía Stripe con beneficios escalonados.</p>
+            <p>Mensual, Anual y Vitalicio. Pagos vía Stripe con beneficios escalonados.</p>
         </div>
     </div>
 </section>
@@ -359,9 +421,7 @@
     <p class="section-sub">Streams verificados de Argentina, Chile, México, España, USA y más. Actualizados constantemente.</p>
 
     <div class="marquee-wrap">
-        <div class="marquee" id="channelMarquee">
-            <!-- Populated by JS -->
-        </div>
+        <div class="marquee" id="channelMarquee"></div>
     </div>
 
     <div style="margin-top:2rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem">
@@ -380,41 +440,53 @@
     <h2 class="section-title">Elegí tu plan<br>sin compromiso</h2>
     <p class="section-sub">Todos los planes incluyen acceso instantáneo. Cancelá cuando quieras.</p>
 
+    <!-- Credenciales -->
+    <div class="auth-section">
+        <h3>🔑 Accedé a tu cuenta</h3>
+        <p>Ingresá tus credenciales para desbloquear los planes o activar tu código gratuito.</p>
+        <form class="auth-form" onsubmit="return handleAuth(event)">
+            <input type="email" id="authEmail" placeholder="Email" required>
+            <input type="password" id="authPass" placeholder="Contraseña" required>
+            <button type="submit" class="btn btn-primary">Ingresar</button>
+        </form>
+        <div class="auth-divider">o</div>
+        <button class="btn btn-outline" onclick="openActivation()">🎫 Activar código gratuito</button>
+    </div>
+
     <div class="pricing-grid">
         <div class="pricing-card">
-            <div class="plan-name">Free</div>
-            <div class="price">$0 <span>/mes</span></div>
+            <div class="plan-name">Mensual</div>
+            <div class="price">$4.99 <span>/mes</span></div>
             <ul>
-                <li>Canales básicos SD</li>
-                <li>Publicidad</li>
-                <li>1 dispositivo</li>
-                <li>Soporte email</li>
-            </ul>
-            <a href="#download" class="btn btn-secondary">Empezar</a>
-        </div>
-        <div class="pricing-card popular">
-            <div class="plan-name">Premium</div>
-            <div class="price">$9.99 <span>/mes</span></div>
-            <ul>
-                <li>300+ canales HD</li>
+                <li>Acceso a todos los canales</li>
+                <li>Calidad HD</li>
                 <li>Sin anuncios</li>
-                <li>2 dispositivos</li>
-                <li>Calidad Full HD</li>
                 <li>Soporte prioritario</li>
             </ul>
-            <a href="#download" class="btn btn-primary">Elegir Premium</a>
+            <a href="#download" class="btn btn-secondary">Elegir Mensual</a>
+        </div>
+        <div class="pricing-card popular">
+            <div class="plan-name">Anual</div>
+            <div class="price">$29.99 <span>/año</span></div>
+            <ul>
+                <li>Todo lo del plan Mensual</li>
+                <li>Ahorra 50%</li>
+                <li>Calidad 4K</li>
+                <li>EPG completo</li>
+                <li>Multi-dispositivo</li>
+            </ul>
+            <a href="#download" class="btn btn-primary">Elegir Anual</a>
         </div>
         <div class="pricing-card">
-            <div class="plan-name">Familiar</div>
-            <div class="price">$14.99 <span>/mes</span></div>
+            <div class="plan-name">Vitalicio</div>
+            <div class="price">$49.99 <span>pago único</span></div>
             <ul>
-                <li>Todos los canales 4K</li>
-                <li>Sin anuncios</li>
-                <li>5 dispositivos</li>
-                <li>Series + Películas</li>
-                <li>Soporte 24/7</li>
+                <li>Todo lo del plan Anual</li>
+                <li>Pago único</li>
+                <li>Actualizaciones gratis</li>
+                <li>Acceso de por vida</li>
             </ul>
-            <a href="#download" class="btn btn-secondary">Elegir Familiar</a>
+            <a href="#download" class="btn btn-secondary">Elegir Vitalicio</a>
         </div>
     </div>
 </section>
@@ -477,10 +549,22 @@
     </div>
 </section>
 
+<!-- Modal Activación -->
+<div class="modal-overlay" id="activationModal">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <h2>🎫 Activación Gratuita</h2>
+        <p>Usá este código de 6 dígitos para activar el plan Free en la app. Vence en 20 segundos.</p>
+        <div class="activation-code" id="activationCode">------</div>
+        <div class="timer" id="timer">⏱ 20s</div>
+        <p style="font-size:.8rem;color:var(--muted)">El código se regenera automáticamente al vencer.</p>
+    </div>
+</div>
+
 <!-- Footer -->
 <footer>
     <p>© 2026 <strong>TVXargtec</strong>. Hecho con ❤️ en Argentina.  
-    <br><a href="https://apitvxargtec.duckdns.org/api/health">API Status</a> · <a href="https://github.com/lpmadre14-coder/tvxargtec">GitHub</a></p>
+    <br><a href="https://apitvxargtec.ducknss.org/api/health">API Status</a> · <a href="https://github.com/lpmadre14-coder/tvxargtec">GitHub</a></p>
 </footer>
 
 <script>
@@ -499,6 +583,71 @@
         `<div class="chip"><img src="${c.logo}" alt="" loading="lazy"><span>${c.name}</span></div>`
     ).join('');
     marquee.innerHTML = items;
+
+    /* ── Auth ── */
+    function handleAuth(e) {
+        e.preventDefault();
+        const email = document.getElementById('authEmail').value;
+        const pass = document.getElementById('authPass').value;
+        fetch('https://apitvxargtec.duckdns.org/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password: pass })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.token) {
+                alert('✅ Sesión iniciada. Descargá la app para disfrutar.');
+            } else {
+                alert('❌ ' + (data.message || 'Credenciales inválidas'));
+            }
+        })
+        .catch(() => alert('❌ Error de conexión'));
+        return false;
+    }
+
+    /* ── Activación 20s ── */
+    let timerInterval = null;
+    let timeLeft = 20;
+    let currentCode = '';
+
+    function generateCode() {
+        return Math.floor(100000 + Math.random() * 900000).toString();
+    }
+
+    function updateTimer() {
+        const el = document.getElementById('timer');
+        el.textContent = `⏱ ${timeLeft}s`;
+        el.className = 'timer' + (timeLeft <= 5 ? ' warning' : '');
+        if (timeLeft <= 0) {
+            currentCode = generateCode();
+            document.getElementById('activationCode').textContent = currentCode;
+            timeLeft = 20;
+            updateTimer();
+        }
+    }
+
+    function openActivation() {
+        document.getElementById('activationModal').classList.add('active');
+        currentCode = generateCode();
+        document.getElementById('activationCode').textContent = currentCode;
+        timeLeft = 20;
+        updateTimer();
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            updateTimer();
+        }, 1000);
+    }
+
+    function closeModal() {
+        document.getElementById('activationModal').classList.remove('active');
+        clearInterval(timerInterval);
+    }
+
+    document.getElementById('activationModal').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+    });
 </script>
 </body>
 </html>

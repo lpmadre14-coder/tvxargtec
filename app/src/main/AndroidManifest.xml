@@ -60,6 +60,7 @@
 
         <activity android:exported="false" android:name=".activity.OnboardingAty" android:screenOrientation="fullSensor" android:theme="@style/Theme.Tvxargtec.Onboarding" />
         <activity android:exported="false" android:name=".activity.PinAty" android:screenOrientation="fullSensor" />
+        <activity android:exported="false" android:name=".activity.ActivationAty" android:screenOrientation="fullSensor" />
         
         <!-- Main Activity: Quitamos portrait para que gire en TV -->
         <activity 

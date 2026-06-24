@@ -1,7 +1,6 @@
 package com.tvxargtec.online.fragment;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -19,14 +18,10 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.card.MaterialCardView;
 import com.tvxargtec.online.R;
 import com.tvxargtec.online.activity.MainAty;
-import com.tvxargtec.online.activity.MyFavListActivity;
 import com.tvxargtec.online.activity.RecordsAty;
-import com.tvxargtec.online.fragment.DownloadsFragment;
-import com.tvxargtec.online.fragment.SettingsFragment;
-import com.tvxargtec.online.fragment.BenefitsFragment;
 import com.tvxargtec.online.mine.activity.LoginAty;
 import com.tvxargtec.online.mine.activity.VIPMemberActivity;
-import com.tvxargtec.online.utils.ApiClient;
+import com.tvxargtec.online.utils.AuthManager;
 
 public class ProfileFragment extends Fragment {
 
@@ -34,19 +29,18 @@ public class ProfileFragment extends Fragment {
     private MaterialCardView cardPlanStatus;
     private TextView tvUserName, tvUserEmail, tvPlanStatus, tvPlanExpiry;
     private ImageView ivAvatar;
-    private SharedPreferences sharedPreferences;
-    private static final String PREF_NAME = "user_data";
+    private AuthManager authManager;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
-        sharedPreferences = getActivity().getSharedPreferences(PREF_NAME, android.content.Context.MODE_PRIVATE);
-        
+        authManager = AuthManager.getInstance(requireContext());
+
         initViews(view);
         loadUserData();
         setupListeners();
-        
+
         return view;
     }
 
@@ -58,7 +52,7 @@ public class ProfileFragment extends Fragment {
         btnSettings = view.findViewById(R.id.btnSettings);
         btnLogout = view.findViewById(R.id.btnLogout);
         cardPlanStatus = view.findViewById(R.id.cardPlanStatus);
-        
+
         tvUserName = view.findViewById(R.id.tvUserName);
         tvUserEmail = view.findViewById(R.id.tvUserEmail);
         ivAvatar = view.findViewById(R.id.ivAvatar);
@@ -74,70 +68,70 @@ public class ProfileFragment extends Fragment {
     }
 
     private void loadUserData() {
-        if (getActivity() == null) return;
-        
-        try {
-            // Cargar datos del SharedPreferences
-            String userName = sharedPreferences.getString("user_name", "Usuario");
-            String userEmail = sharedPreferences.getString("user_email", "usuario@email.com");
-            String avatarUrl = sharedPreferences.getString("user_avatar", "");
-            String planStatus = sharedPreferences.getString("plan_status", "Free");
-            String planExpiry = sharedPreferences.getString("plan_expiry", "N/A");
-            
-            // Actualizar UI con datos locales
-            if (tvUserName != null) tvUserName.setText(userName);
-            if (tvUserEmail != null) tvUserEmail.setText(userEmail);
-            
-            // Cargar avatar con Glide
-            if (!avatarUrl.isEmpty() && ivAvatar != null) {
-                Glide.with(this)
-                    .load(avatarUrl)
-                    .placeholder(R.drawable.ic_account)
-                    .error(R.drawable.ic_account)
-                    .circleCrop()
-                    .into(ivAvatar);
-            }
-            
-            // Actualizar estado del plan
-            updatePlanStatus(planStatus, planExpiry);
-            
-            // Intentar cargar datos del backend si está disponible
-            fetchUserDataFromBackend();
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(getActivity(), "Error al cargar datos", Toast.LENGTH_SHORT).show();
+        if (!authManager.isLoggedIn()) {
+            if (tvUserName != null) tvUserName.setText("Invitado");
+            if (tvUserEmail != null) tvUserEmail.setText("Toca para iniciar sesión");
+            updatePlanStatus("Free", "");
+            btnLogout.setVisibility(View.GONE);
+            return;
         }
+
+        String userName = authManager.getUserName();
+        String userEmail = authManager.getEmail();
+        String planStatus = authManager.getPlanType();
+        String planExpiry = authManager.getPlanExpiry();
+
+        if (tvUserName != null) tvUserName.setText(userName != null ? userName : "Usuario");
+        if (tvUserEmail != null) tvUserEmail.setText(userEmail != null ? userEmail : "");
+        updatePlanStatus(planStatus, planExpiry);
+        btnLogout.setVisibility(View.VISIBLE);
+
+        fetchUserDataFromBackend();
     }
 
     private void updatePlanStatus(String status, String expiry) {
         if (cardPlanStatus != null) {
             TextView planText = cardPlanStatus.findViewById(R.id.tvPlanType);
             TextView expiryText = cardPlanStatus.findViewById(R.id.tvPlanExpiry);
-            
-            if (planText != null) planText.setText(status);
-            if (expiryText != null) expiryText.setText("Vencimiento: " + expiry);
+            if (planText != null) planText.setText(status != null ? status : "Free");
+            if (expiryText != null) {
+                expiryText.setText(expiry != null && !expiry.isEmpty() ? "Vencimiento: " + expiry : "");
+            }
         }
     }
 
     private void fetchUserDataFromBackend() {
-        // TODO: Implementar llamada a API para obtener datos del usuario
-        // ApiClient.getInstance().getUserProfile(userId, new Callback<UserProfile>() {
-        //     @Override
-        //     public void onSuccess(UserProfile profile) {
-        //         updateUserUI(profile);
-        //         saveUserDataLocally(profile);
-        //     }
-        //     
-        //     @Override
-        //     public void onError(String error) {
-        //         // Usar datos locales si hay error
-        //     }
-        // });
+        authManager.fetchProfile(new AuthManager.ProfileCallback() {
+            @Override
+            public void onSuccess(com.tvxargtec.online.models.UserProfile profile) {
+                if (tvUserName != null && profile.getName() != null) tvUserName.setText(profile.getName());
+                if (tvUserEmail != null && profile.getEmail() != null) tvUserEmail.setText(profile.getEmail());
+                updatePlanStatus(profile.getPlanType(), profile.getPlanExpiry());
+                if (profile.getAvatarUrl() != null && !profile.getAvatarUrl().isEmpty() && ivAvatar != null) {
+                    Glide.with(ProfileFragment.this)
+                        .load(profile.getAvatarUrl())
+                        .placeholder(R.drawable.ic_account)
+                        .error(R.drawable.ic_account)
+                        .circleCrop()
+                        .into(ivAvatar);
+                }
+            }
+
+            @Override
+            public void onError(String error) {
+                // Datos locales ya cargados, continuar offline
+            }
+        });
     }
 
     private void setupListeners() {
-        btnMyAccount.setOnClickListener(v -> navigateToActivity(LoginAty.class));
+        btnMyAccount.setOnClickListener(v -> {
+            if (authManager.isLoggedIn()) {
+                startActivity(new Intent(getActivity(), VIPMemberActivity.class));
+            } else {
+                startActivity(new Intent(getActivity(), LoginAty.class));
+            }
+        });
         btnFavorites.setOnClickListener(v -> {
             MainAty mainAty = MainAty.getInstance();
             if (mainAty != null) {
@@ -145,8 +139,6 @@ public class ProfileFragment extends Fragment {
             }
         });
         btnHistory.setOnClickListener(v -> navigateToActivity(RecordsAty.class));
-        
-        // Navegar a Fragmentos usando MainAty para mantener la barra inferior actualizada
         btnDownloads.setOnClickListener(v -> {
             MainAty mainAty = MainAty.getInstance();
             if (mainAty != null) {
@@ -160,29 +152,31 @@ public class ProfileFragment extends Fragment {
             }
         });
         cardPlanStatus.setOnClickListener(v -> {
-            MainAty mainAty = MainAty.getInstance();
-            if (mainAty != null) {
-                mainAty.switchFragment(new BenefitsFragment(), R.id.nav_profile);
+            if (authManager.isLoggedIn()) {
+                MainAty mainAty = MainAty.getInstance();
+                if (mainAty != null) {
+                    mainAty.switchFragment(new BenefitsFragment(), R.id.nav_profile);
+                }
+            } else {
+                startActivity(new Intent(getActivity(), LoginAty.class));
             }
         });
-
         btnLogout.setOnClickListener(v -> logout());
     }
 
     private void logout() {
-        if (getActivity() != null) {
-            // Limpiar SharedPreferences
-            sharedPreferences.edit().clear().apply();
-            
-            // Mostrar confirmación
-            Toast.makeText(getActivity(), "Sesión cerrada", Toast.LENGTH_SHORT).show();
-            
-            // Navegar a Login
-            Intent intent = new Intent(getActivity(), LoginAty.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            getActivity().finish();
-        }
+        authManager.logout(new AuthManager.LogoutCallback() {
+            @Override
+            public void onDone() {
+                if (getActivity() != null) {
+                    Toast.makeText(getActivity(), "Sesión cerrada", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getActivity(), LoginAty.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    getActivity().finish();
+                }
+            }
+        });
     }
 
     private void navigateToActivity(Class<?> cls) {

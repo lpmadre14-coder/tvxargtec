@@ -13,8 +13,8 @@ android {
         applicationId = "com.tvxargtec.online"
         minSdk = 21
         targetSdk = 34
-        versionCode = 5
-        versionName = "1.1.0"
+        versionCode = 6
+        versionName = "1.2.0"
     }
 
     signingConfigs {
@@ -93,6 +93,9 @@ dependencies {
     // Retrofit2
     implementation("com.squareup.retrofit2:retrofit:2.10.0")
     implementation("com.squareup.retrofit2:converter-gson:2.10.0")
+
+    // Encrypted SharedPreferences
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
     
     // Testing - Unit Tests
     testImplementation("junit:junit:4.13.2")

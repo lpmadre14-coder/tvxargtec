@@ -22,42 +22,19 @@ public class LoginResponse {
     public LoginResponse() {
     }
 
-    public LoginResponse(boolean success, String message, String token, UserProfile user) {
-        this.success = success;
-        this.message = message;
-        this.token = token;
-        this.user = user;
-    }
-
     public boolean isSuccess() {
-        return success;
-    }
-
-    public void setSuccess(boolean success) {
-        this.success = success;
+        return true;
     }
 
     public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
+        return message != null ? message : "";
     }
 
     public String getToken() {
         return token;
     }
 
-    public void setToken(String token) {
-        this.token = token;
-    }
-
     public UserProfile getUser() {
         return user;
-    }
-
-    public void setUser(UserProfile user) {
-        this.user = user;
     }
 }

@@ -12,18 +12,19 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.tvxargtec.online.R;
-
-import static android.content.Context.MODE_PRIVATE;
+import com.tvxargtec.online.utils.AuthManager;
 
 public class BenefitsFragment extends Fragment {
 
     private TextView tvTotalPoints, tvVipStatus, tvVipExpiry, tvEmptyHistory;
     private Button btnRedeem;
+    private AuthManager authManager;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_my_benefits, container, false);
+        authManager = AuthManager.getInstance(requireActivity());
         initView(view);
         loadUserBenefits();
         return view;
@@ -52,26 +53,51 @@ public class BenefitsFragment extends Fragment {
     private void loadUserBenefits() {
         if (getActivity() == null) return;
         try {
-            int totalPoints = getActivity().getSharedPreferences("user_data", MODE_PRIVATE)
-                .getInt("total_points", 0);
-            String vipStatus = getActivity().getSharedPreferences("user_data", MODE_PRIVATE)
-                .getString("vip_status", "Miembro Gratis");
-            String vipExpiry = getActivity().getSharedPreferences("user_data", MODE_PRIVATE)
-                .getString("vip_expiry", "Actualiza a VIP para obtener más beneficios");
-            String planStatus = getActivity().getSharedPreferences("user_data", MODE_PRIVATE)
-                .getString("plan_status", "Free");
+            String vipStatus = authManager.getPlanType();
+            String vipExpiry = authManager.getPlanExpiry();
+            String username = authManager.getUserName();
+            String email = authManager.getEmail();
 
-            if (tvTotalPoints != null) tvTotalPoints.setText(String.valueOf(totalPoints));
-            if (tvVipStatus != null) tvVipStatus.setText(vipStatus);
-            if (tvVipExpiry != null) tvVipExpiry.setText(vipExpiry);
-            if (tvEmptyHistory != null) {
-                tvEmptyHistory.setText(totalPoints == 0 ? 
-                    "No hay historial de puntos disponible" : 
-                    "Historial de puntos cargado");
+            boolean isLoggedIn = authManager.isLoggedIn();
+
+            if (tvTotalPoints != null) {
+                if (isLoggedIn) {
+                    tvTotalPoints.setText(username != null ? username : "Usuario");
+                } else {
+                    tvTotalPoints.setText("Invitado");
+                }
             }
-            
-            // Cargar beneficios del plan desde backend
-            // TODO: Implementar llamada a API para obtener beneficios
+
+            if (tvVipStatus != null) {
+                if (isLoggedIn && vipStatus != null && !vipStatus.equals("free")) {
+                    String displayName;
+                    switch (vipStatus) {
+                        case "plan_monthly": displayName = "VIP Mensual"; break;
+                        case "plan_yearly": displayName = "VIP Anual"; break;
+                        case "plan_lifetime": displayName = "VIP Vitalicio"; break;
+                        default: displayName = "Miembro VIP";
+                    }
+                    tvVipStatus.setText(displayName);
+                } else {
+                    tvVipStatus.setText(isLoggedIn ? "Miembro Gratis" : "Invitado");
+                }
+            }
+
+            if (tvVipExpiry != null) {
+                if (isLoggedIn && vipExpiry != null && !vipExpiry.isEmpty()) {
+                    tvVipExpiry.setText("Vence: " + vipExpiry);
+                } else {
+                    tvVipExpiry.setText(isLoggedIn ? "Actualiza a VIP para obtener más beneficios" : "Inicia sesión para acceder");
+                }
+            }
+
+            if (tvEmptyHistory != null) {
+                if (isLoggedIn) {
+                    tvEmptyHistory.setText(email != null ? email : "Historial de puntos cargado");
+                } else {
+                    tvEmptyHistory.setText("No hay historial de puntos disponible");
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

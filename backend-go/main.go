@@ -98,6 +98,36 @@ func initDB() {
 		log.Printf("⚠️ No se pudo conectar a MySQL: %v. Usando modo mock.", err)
 	} else {
 		fmt.Println("✅ Conectado a MySQL con éxito")
+		initTables()
+	}
+}
+
+func initTables() {
+	tables := []string{
+		`CREATE TABLE IF NOT EXISTS vip_plans (
+			id VARCHAR(50) PRIMARY KEY,
+			name VARCHAR(100) NOT NULL,
+			price DECIMAL(10,2) NOT NULL,
+			duration_days INT NOT NULL,
+			features JSON,
+			is_active BOOLEAN DEFAULT TRUE
+		)`,
+	}
+	for _, q := range tables {
+		if _, err := db.Exec(q); err != nil {
+			log.Printf("⚠️ Error creando tabla: %v", err)
+		}
+	}
+
+	// Seed data (solo si tabla vacía)
+	var count int
+	db.QueryRow("SELECT COUNT(*) FROM vip_plans").Scan(&count)
+	if count == 0 {
+		db.Exec(`INSERT INTO vip_plans (id, name, price, duration_days, features) VALUES
+			('plan_monthly', 'Mensual', 4.99, 30, '["Acceso a todos los canales", "Calidad HD", "Sin anuncios", "Soporte prioritario"]'),
+			('plan_yearly', 'Anual', 29.99, 365, '["Todo lo del plan Mensual", "Ahorra 50%", "Calidad 4K", "EPG completo", "Multi-dispositivo"]'),
+			('plan_lifetime', 'Vitalicio', 49.99, 36500, '["Todo lo del plan Anual", "Pago único", "Actualizaciones gratis", "Acceso de por vida"]')`)
+		fmt.Println("✅ VIP plans seeded")
 	}
 }
 
@@ -262,6 +292,7 @@ func main() {
 	http.HandleFunc("/api/vip/plans", vipPlansHandler)
 	http.HandleFunc("/api/favorites", favoritesHandler)
 	http.HandleFunc("/api/history", historyHandler)
+	http.HandleFunc("/api/upgrade", upgradeHandler)
 
 	fmt.Println("🚀 Servidor TVXargtec corriendo en http://localhost:8081")
 	log.Fatal(http.ListenAndServe(":8081", nil))
@@ -645,6 +676,62 @@ func profileHandler(w http.ResponseWriter, r *http.Request) {
 			"planType":   user.PlanType,
 			"planExpiry": user.PlanExpiry.Format("2006-01-02"),
 			"avatarUrl":  user.AvatarURL,
+		},
+	})
+}
+
+func upgradeHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method != http.MethodPost {
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 405, "message": "Método no permitido"})
+		return
+	}
+
+	userID := extractUserID(r)
+	if userID == "" {
+		http.Error(w, "No autorizado", http.StatusUnauthorized)
+		return
+	}
+
+	var req struct {
+		PlanID string `json:"planId"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 400, "message": "Solicitud inválida"})
+		return
+	}
+
+	if req.PlanID == "" {
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 400, "message": "planId requerido"})
+		return
+	}
+
+	// Obtener datos del plan
+	var price float64
+	var durationDays int
+	err := db.QueryRow("SELECT price, duration_days FROM vip_plans WHERE id = ? AND is_active = TRUE", req.PlanID).
+		Scan(&price, &durationDays)
+	if err != nil {
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 404, "message": "Plan no encontrado"})
+		return
+	}
+
+	// Calcular nueva fecha de expiración
+	expiry := time.Now().AddDate(0, 0, durationDays)
+
+	_, err = db.Exec("UPDATE users SET plan_type = ?, plan_expiry = ? WHERE id = ?", req.PlanID, expiry, userID)
+	if err != nil {
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 500, "message": "Error al actualizar plan"})
+		return
+	}
+
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"code":    200,
+		"message": "Plan actualizado correctamente",
+		"data": map[string]interface{}{
+			"planType":   req.PlanID,
+			"planExpiry": expiry.Format("2006-01-02"),
 		},
 	})
 }

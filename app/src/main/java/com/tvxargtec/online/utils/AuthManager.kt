@@ -139,6 +139,13 @@ class AuthManager private constructor(context: Context) {
             .apply()
     }
 
+    fun updatePlanLocally(planType: String, planExpiry: String) {
+        prefs.edit()
+            .putString(KEY_PLAN, planType)
+            .putString(KEY_PLAN_EXPIRY, planExpiry)
+            .apply()
+    }
+
     fun clearSession() {
         prefs.edit().clear().apply()
     }

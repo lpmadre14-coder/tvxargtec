@@ -2,7 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
-    // id("com.google.firebase.crashlytics") // Deshabilitado hasta tener google-services.json real
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -13,8 +13,8 @@ android {
         applicationId = "com.tvxargtec.online"
         minSdk = 21
         targetSdk = 34
-        versionCode = 8
-        versionName = "1.3.1"
+        versionCode = 9
+        versionName = "1.4.0"
     }
 
     signingConfigs {
@@ -55,9 +55,9 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
     implementation("com.google.firebase:firebase-messaging")
     implementation("com.google.firebase:firebase-analytics")
-    // implementation("com.google.firebase:firebase-crashlytics") // Deshabilitado
-    // implementation("com.google.firebase:firebase-dynamic-links") // Deshabilitado
-    // implementation("com.google.firebase:firebase-inappmessaging-display") // Deshabilitado
+    implementation("com.google.firebase:firebase-crashlytics")
+    implementation("com.google.firebase:firebase-dynamic-links")
+    implementation("com.google.firebase:firebase-inappmessaging-display")
 
     // Stripe
     implementation("com.stripe:stripe-android:20.46.0")

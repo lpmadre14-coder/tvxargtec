@@ -104,6 +104,38 @@
 
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- Control parental -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/llParentalControl"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginVertical="3dp"
+            app:cardBackgroundColor="@color/card_bg"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="1dp"
+            app:strokeColor="@color/surface_light"
+            app:strokeWidth="0.5dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingHorizontal="16dp">
+
+                <TextView
+                    android:id="@+id/tvParentalControl"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:drawableEnd="@drawable/ic_arrow"
+                    android:gravity="center_vertical"
+                    android:text="Control parental"
+                    android:textColor="@color/text_primary"
+                    android:textSize="15sp" />
+
+            </RelativeLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
         <!-- Custom Playlist -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/llPlaylist"

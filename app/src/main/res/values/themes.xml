@@ -162,6 +162,12 @@
     </style>
 
     <!-- Badge style (Micro HUD tags) -->
+    <style name="Widget.Tvxargtec.Switch" parent="Theme.MaterialComponents.DayNight">
+        <item name="colorControlActivated">@color/brand_violet</item>
+        <item name="colorSwitchThumbNormal">@color/text_secondary</item>
+        <item name="android:colorForeground">@color/bg_surface</item>
+    </style>
+
     <style name="Widget.Tvxargtec.Badge">
         <item name="android:background">@drawable/bg_badge</item>
         <item name="android:paddingHorizontal">8dp</item>

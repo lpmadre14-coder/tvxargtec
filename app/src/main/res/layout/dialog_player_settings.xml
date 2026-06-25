@@ -78,6 +78,38 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/equalizerList"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@drawable/bg_setting_item"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Ecualizador"
+            android:textColor="@color/text_primary"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/tvEqStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Off"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp" />
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_arrow"
+            android:rotation="0" />
+
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/subtitleList"
         android:layout_width="match_parent"
         android:layout_height="56dp"

@@ -1,6 +1,8 @@
 package com.tvxargtec.online.fragment;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,39 +15,69 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.tvxargtec.online.R;
+import com.tvxargtec.online.adapter.DownloadsAdapter;
+import com.tvxargtec.online.utils.OfflineManager;
 
 public class DownloadsFragment extends Fragment {
 
     private RecyclerView rvDownloads;
     private TextView tvEmptyState;
+    private DownloadsAdapter adapter;
+    private OfflineManager offlineManager;
+    private final Handler handler = new Handler(Looper.getMainLooper());
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_downloads, container, false);
-        
+
         rvDownloads = view.findViewById(R.id.rvDownloads);
         tvEmptyState = view.findViewById(R.id.tvEmpty);
-        
+
+        offlineManager = OfflineManager.Companion.getInstance(requireContext());
         setupRecyclerView();
-        loadDownloads();
-        
+        refreshDownloads();
+
         return view;
     }
 
     private void setupRecyclerView() {
-        if (rvDownloads != null) {
-            rvDownloads.setLayoutManager(new LinearLayoutManager(getContext()));
-            // TODO: Implementar adapter para mostrar descargas
-        }
+        rvDownloads.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new DownloadsAdapter(requireContext(), offlineManager.getDownloads());
+        rvDownloads.setAdapter(adapter);
     }
 
-    private void loadDownloads() {
-        // TODO: Cargar descargas desde backend o base de datos local
-        // Por ahora mostrar estado vacío
-        if (tvEmptyState != null) {
+    private void refreshDownloads() {
+        if (!isAdded()) return;
+        var downloads = offlineManager.getDownloads();
+        if (downloads.isEmpty()) {
             tvEmptyState.setVisibility(View.VISIBLE);
-            tvEmptyState.setText("No hay descargas disponibles");
+            rvDownloads.setVisibility(View.GONE);
+        } else {
+            tvEmptyState.setVisibility(View.GONE);
+            rvDownloads.setVisibility(View.VISIBLE);
+            if (adapter != null) {
+                adapter.updateDownloads(downloads);
+            }
         }
+        handler.postDelayed(this::refreshDownloads, 2000);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        refreshDownloads();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        handler.removeCallbacksAndMessages(null);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        handler.removeCallbacksAndMessages(null);
     }
 }

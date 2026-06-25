@@ -15,12 +15,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.LinearLayout;
 import com.tvxargtec.online.R;
 import com.tvxargtec.online.activity.MainAty;
 import com.tvxargtec.online.utils.ChannelDataManager;
+import com.tvxargtec.online.utils.ParentalControlHelper;
 import com.tvxargtec.online.utils.UpdateManager;
+
+import java.util.HashSet;
+import java.util.Set;
 
 
 public class SettingsFragment extends Fragment {
@@ -44,6 +49,7 @@ public class SettingsFragment extends Fragment {
         MaterialCardView llLogout = view.findViewById(R.id.llLogout);
         MaterialCardView llCheckUpdate = view.findViewById(R.id.llCheckUpdate);
         MaterialCardView llPlaylist = view.findViewById(R.id.llPlaylist);
+        MaterialCardView llParentalControl = view.findViewById(R.id.llParentalControl);
         tvUpdateStatus = view.findViewById(R.id.tvUpdateStatus);
 
         try {
@@ -66,6 +72,10 @@ public class SettingsFragment extends Fragment {
             tvNotifications.setOnClickListener(v -> pushFragment(new NotificationSettingsFragment()));
         }
 
+        if (llParentalControl != null) {
+            llParentalControl.setOnClickListener(v -> showParentalControlDialog());
+        }
+
         if (llCheckUpdate != null) {
             llCheckUpdate.setOnClickListener(v -> checkForUpdates());
         }
@@ -78,6 +88,77 @@ public class SettingsFragment extends Fragment {
             llLogout.setOnClickListener(v ->
                 Toast.makeText(getActivity(), "Sesión cerrada", Toast.LENGTH_SHORT).show());
         }
+    }
+
+    private void showParentalControlDialog() {
+        ParentalControlHelper pcHelper = new ParentalControlHelper(requireContext());
+        String currentPin = pcHelper.getPin();
+        Set<String> blocked = pcHelper.getBlockedCategories();
+
+        EditText pinInput = new EditText(requireContext());
+        pinInput.setHint("PIN de 6 dígitos");
+        pinInput.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+        pinInput.setText(currentPin);
+        pinInput.setSelection(pinInput.getText().length());
+
+        String[] allCategories = {"movies", "series", "sports", "news", "entertainment", "music",
+                "documentaries", "kids", "education", "anime"};
+        String[] categoryLabels = {"Películas", "Series", "Deportes", "Noticias", "Entretenimiento",
+                "Música", "Documentales", "Infantil", "Educación", "Anime"};
+        boolean[] checked = new boolean[allCategories.length];
+        for (int i = 0; i < allCategories.length; i++) {
+            checked[i] = blocked.contains(allCategories[i]);
+        }
+
+        LinearLayout layout = new LinearLayout(requireContext());
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(40, 16, 40, 16);
+
+        TextView tvPinLabel = new TextView(requireContext());
+        tvPinLabel.setText("PIN de control parental");
+        tvPinLabel.setTextColor(getResources().getColor(R.color.text_secondary));
+        tvPinLabel.setTextSize(13f);
+        layout.addView(tvPinLabel);
+        layout.addView(pinInput);
+
+        TextView tvBlockLabel = new TextView(requireContext());
+        tvBlockLabel.setText("Categorías bloqueadas:");
+        tvBlockLabel.setTextColor(getResources().getColor(R.color.text_secondary));
+        tvBlockLabel.setTextSize(13f);
+        tvBlockLabel.setPadding(0, 24, 0, 0);
+        layout.addView(tvBlockLabel);
+
+        for (int i = 0; i < allCategories.length; i++) {
+            CheckBox cb = new CheckBox(requireContext());
+            cb.setText(categoryLabels[i]);
+            cb.setTextColor(getResources().getColor(R.color.text_primary));
+            cb.setChecked(checked[i]);
+            final int idx = i;
+            cb.setOnCheckedChangeListener((buttonView, isChecked) -> checked[idx] = isChecked);
+            layout.addView(cb);
+        }
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Control parental")
+                .setView(layout)
+                .setPositiveButton("Guardar", (dialog, which) -> {
+                    String newPin = pinInput.getText().toString().trim();
+                    if (newPin.length() < 4) {
+                        Toast.makeText(getActivity(), "El PIN debe tener al menos 4 dígitos", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    pcHelper.setPin(newPin);
+                    Set<String> newBlocked = new java.util.HashSet<>();
+                    for (int i = 0; i < allCategories.length; i++) {
+                        if (checked[i]) newBlocked.add(allCategories[i]);
+                    }
+                    pcHelper.setBlockedCategories(newBlocked);
+                    int count = newBlocked.size();
+                    String msg = count > 0 ? count + " categorías bloqueadas" : "Control parental desactivado";
+                    Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
     }
 
     private void checkForUpdates() {

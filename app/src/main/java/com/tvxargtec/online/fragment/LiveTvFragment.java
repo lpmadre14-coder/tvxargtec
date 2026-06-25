@@ -6,18 +6,19 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.app.AlertDialog;
+import android.content.Intent;
+import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.Toast;
-
-import android.view.ViewGroup;
-
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Collections;
-import java.util.Comparator;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,8 +30,24 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.google.android.material.chip.Chip;
 import com.tvxargtec.online.R;
 import com.tvxargtec.online.adapter.ChannelAdapter;
+import com.tvxargtec.online.activity.PlayAty;
 import com.tvxargtec.online.utils.Channel;
 import com.tvxargtec.online.utils.ChannelDataManager;
+import com.tvxargtec.online.utils.ParentalControlHelper;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+
+import kotlin.Unit;
+
+import com.tvxargtec.online.utils.Channel;
+import com.tvxargtec.online.utils.ChannelDataManager;
+import com.tvxargtec.online.utils.ParentalControlHelper;
+import com.tvxargtec.online.activity.PlayAty;
 
 import java.util.List;
 import kotlin.Unit;
@@ -95,6 +112,34 @@ public class LiveTvFragment extends Fragment {
         int first = Character.toUpperCase(code.charAt(0)) - 'A' + 0x1F1E6;
         int second = Character.toUpperCase(code.charAt(1)) - 'A' + 0x1F1E6;
         return new String(Character.toChars(first)) + new String(Character.toChars(second));
+    }
+
+    private void showParentalPinDialog(Channel channel) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Control parental");
+        builder.setMessage("Esta categoría está bloqueada. Ingresa el PIN para ver este canal.");
+
+        EditText pinInput = new EditText(requireContext());
+        pinInput.setHint("PIN");
+        pinInput.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+        builder.setView(pinInput);
+
+        builder.setPositiveButton("Ver", (dialog, which) -> {
+            String input = pinInput.getText().toString().trim();
+            ParentalControlHelper pcHelper = new ParentalControlHelper(requireContext());
+            if (pcHelper.verifyPin(input)) {
+                pcHelper.unblockForSession(channel.getCategoryId());
+                Intent intent = new Intent(requireContext(), PlayAty.class);
+                intent.putExtra("url", channel.getUrl());
+                intent.putExtra("title", channel.getTitle());
+                startActivity(intent);
+            } else {
+                Toast.makeText(requireContext(), "PIN incorrecto", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setNegativeButton("Cancelar", null);
+        builder.show();
     }
 
     private static String getCountryDisplayName(String code) {
@@ -243,7 +288,8 @@ public class LiveTvFragment extends Fragment {
             public void onDataLoaded(List<Channel> channels) {
                 allChannels = ChannelDataManager.getChannels(requireContext(), "");
                 if (adapter == null) {
-                    adapter = new ChannelAdapter(requireContext(), allChannels, channel -> Unit.INSTANCE);
+                    Consumer<Channel> blockedHandler = channel -> showParentalPinDialog(channel);
+                    adapter = new ChannelAdapter(requireContext(), allChannels, channel -> Unit.INSTANCE, blockedHandler);
                     rvChannels.setAdapter(adapter);
                 } else {
                     adapter.updateChannels(allChannels);
@@ -257,7 +303,8 @@ public class LiveTvFragment extends Fragment {
             public void onError(Exception e) {
                 allChannels = ChannelDataManager.getChannels(requireContext(), "");
                 if (adapter == null) {
-                    adapter = new ChannelAdapter(requireContext(), allChannels, channel -> Unit.INSTANCE);
+                    Consumer<Channel> blockedHandler = channel -> showParentalPinDialog(channel);
+                    adapter = new ChannelAdapter(requireContext(), allChannels, channel -> Unit.INSTANCE, blockedHandler);
                     rvChannels.setAdapter(adapter);
                 } else {
                     adapter.updateChannels(allChannels);
@@ -340,6 +387,16 @@ public class LiveTvFragment extends Fragment {
                 return a.getTitle().compareToIgnoreCase(b.getTitle());
             });
         }
+
+        // Parental control filter
+        ParentalControlHelper pcHelper = new ParentalControlHelper(requireContext());
+        List<Channel> pcFiltered = new java.util.ArrayList<>();
+        for (Channel c : filtered) {
+            if (!pcHelper.isCategoryBlocked(c.getCategoryId())) {
+                pcFiltered.add(c);
+            }
+        }
+        filtered = pcFiltered;
 
         adapter.updateChannels(filtered);
     }

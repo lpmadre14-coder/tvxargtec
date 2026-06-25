@@ -23,6 +23,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -43,12 +44,15 @@ import androidx.media3.ui.AspectRatioFrameLayout;
 import androidx.media3.ui.PlayerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.tvxargtec.online.R;
 import com.tvxargtec.online.base.BaseActivity;
 import com.tvxargtec.online.cast.CastManager;
 import com.tvxargtec.online.service.AudioPlaybackService;
 import com.tvxargtec.online.utils.EpgHelper;
 import com.tvxargtec.online.utils.EpgProgramme;
+import com.tvxargtec.online.utils.EqualizerHelper;
 import com.tvxargtec.online.utils.OfflineManager;
 
 import java.util.ArrayList;
@@ -88,6 +92,10 @@ public class PlayAty extends BaseActivity {
     // Gesture
     private GestureDetector gestureDetector;
 
+    // Equalizer
+    private EqualizerHelper equalizerHelper;
+    private TextView btnEqualizer;
+
     @Override
     protected int getLayoutResId() {
         return R.layout.activity_play;
@@ -121,6 +129,7 @@ public class PlayAty extends BaseActivity {
         btnQuality = findViewById(R.id.btnQuality);
         btnAudioMode = findViewById(R.id.btnAudioMode);
         btnSubtitles = findViewById(R.id.btnSubtitles);
+        btnEqualizer = findViewById(R.id.btnEqualizer);
 
         btnBack.setOnClickListener(v -> finish());
         btnLock.setOnClickListener(v -> toggleLock());
@@ -137,6 +146,7 @@ public class PlayAty extends BaseActivity {
         btnQuality.setOnClickListener(v -> showQualitySelector());
         btnAudioMode.setOnClickListener(v -> toggleAudioMode());
         btnSubtitles.setOnClickListener(v -> showTrackSelector("Subtítulos", C.TRACK_TYPE_TEXT));
+        btnEqualizer.setOnClickListener(v -> showEqualizerDialog());
 
         if (btnDownload != null) {
             btnDownload.setOnClickListener(v -> {
@@ -427,7 +437,21 @@ public class PlayAty extends BaseActivity {
 
         player.prepare();
         player.setPlayWhenReady(true);
+        initEqualizer();
         showControlsTemporarily();
+    }
+
+    private void initEqualizer() {
+        try {
+            int sessionId = player.getAudioComponent().getAudioSessionId();
+            equalizerHelper = new EqualizerHelper(this, sessionId);
+            if (equalizerHelper.init()) {
+                boolean wasEnabled = equalizerHelper.isEnabled();
+                if (wasEnabled) equalizerHelper.setEnabled(true);
+            }
+        } catch (Exception e) {
+            equalizerHelper = null;
+        }
     }
 
     private void showControlsTemporarily() {
@@ -479,6 +503,87 @@ public class PlayAty extends BaseActivity {
         }
     }
 
+    private void showEqualizerDialog() {
+        if (equalizerHelper == null) {
+            showToast("Ecualizador no disponible");
+            return;
+        }
+        BottomSheetDialog dialog = new BottomSheetDialog(this);
+        View view = getLayoutInflater().inflate(R.layout.dialog_equalizer, null);
+        dialog.setContentView(view);
+
+        SwitchMaterial eqSwitch = view.findViewById(R.id.eqSwitch);
+        LinearLayout bandsContainer = view.findViewById(R.id.eqBandsContainer);
+        TextView tvNoBands = view.findViewById(R.id.tvEqNoBands);
+        MaterialButton btnReset = view.findViewById(R.id.btnEqReset);
+
+        eqSwitch.setChecked(equalizerHelper.isEnabled());
+        updateEqButtonColor();
+
+        List<EqualizerHelper.Band> bands = equalizerHelper.getBands();
+
+        if (bands.isEmpty()) {
+            tvNoBands.setVisibility(View.VISIBLE);
+            bandsContainer.setVisibility(View.GONE);
+            btnReset.setVisibility(View.GONE);
+        } else {
+            tvNoBands.setVisibility(View.GONE);
+            bandsContainer.setVisibility(View.VISIBLE);
+            btnReset.setVisibility(View.VISIBLE);
+
+            for (EqualizerHelper.Band band : bands) {
+                View itemView = getLayoutInflater().inflate(R.layout.item_equalizer_band, bandsContainer, false);
+                TextView tvFreq = itemView.findViewById(R.id.tvBandFreq);
+                SeekBar seekBar = itemView.findViewById(R.id.bandSeekBar);
+                TextView tvLevel = itemView.findViewById(R.id.tvBandLevel);
+
+                int bandIndex = band.getIndex();
+                tvFreq.setText(band.freqLabel());
+                tvLevel.setText(formatEqLevel(band.getLevel()));
+                seekBar.setProgress((int) (band.levelPercent() * 1000));
+
+                seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar s, int progress, boolean fromUser) {
+                        if (!fromUser) return;
+                        short level = band.levelFromPercent(progress / 1000f);
+                        equalizerHelper.setBandLevel(bandIndex, level);
+                        tvLevel.setText(formatEqLevel(level));
+                    }
+                    @Override public void onStartTrackingTouch(SeekBar s) {}
+                    @Override public void onStopTrackingTouch(SeekBar s) {}
+                });
+
+                bandsContainer.addView(itemView);
+            }
+
+            btnReset.setOnClickListener(v -> {
+                equalizerHelper.resetToFlat();
+                dialog.dismiss();
+                showEqualizerDialog();
+            });
+        }
+
+        eqSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            equalizerHelper.setEnabled(isChecked);
+            updateEqButtonColor();
+        });
+
+        dialog.show();
+    }
+
+    private String formatEqLevel(short level) {
+        return String.valueOf(level / 100);
+    }
+
+    private void updateEqButtonColor() {
+        if (btnEqualizer != null) {
+            btnEqualizer.setTextColor(getResources().getColor(
+                equalizerHelper != null && equalizerHelper.isEnabled()
+                    ? R.color.brand_cyan : R.color.text_primary));
+        }
+    }
+
     private void showSettingsDialog() {
         BottomSheetDialog dialog = new BottomSheetDialog(this);
         View view = getLayoutInflater().inflate(R.layout.dialog_player_settings, null);
@@ -487,6 +592,7 @@ public class PlayAty extends BaseActivity {
         LinearLayout qualityList = view.findViewById(R.id.qualityList);
         LinearLayout subtitleList = view.findViewById(R.id.subtitleList);
         LinearLayout audioList = view.findViewById(R.id.audioList);
+        LinearLayout equalizerList = view.findViewById(R.id.equalizerList);
 
         // Quality
         qualityList.setOnClickListener(v -> {
@@ -504,6 +610,16 @@ public class PlayAty extends BaseActivity {
         audioList.setOnClickListener(v -> {
             showTrackSelector("Audio", C.TRACK_TYPE_AUDIO);
             dialog.dismiss();
+        });
+
+        // Equalizer
+        TextView tvEqStatus = view.findViewById(R.id.tvEqStatus);
+        if (tvEqStatus != null) {
+            tvEqStatus.setText(equalizerHelper != null && equalizerHelper.isEnabled() ? "On" : "Off");
+        }
+        equalizerList.setOnClickListener(v -> {
+            dialog.dismiss();
+            showEqualizerDialog();
         });
 
         dialog.show();
@@ -664,6 +780,7 @@ public class PlayAty extends BaseActivity {
         super.onDestroy();
         controlsHandler.removeCallbacksAndMessages(null);
         if (castManager != null) castManager.destroy();
+        if (equalizerHelper != null) equalizerHelper.release();
         if (player != null) {
             player.release();
             player = null;

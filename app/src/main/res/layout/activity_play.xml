@@ -225,6 +225,17 @@
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
+            <TextView
+                android:id="@+id/btnEqualizer"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginHorizontal="12dp"
+                android:gravity="center"
+                android:text="EQ"
+                android:textColor="@color/text_primary"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
         </LinearLayout>
 
         <!-- Bottom bar with time + PiP button -->

@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.tvxargtec.online.R
@@ -19,12 +20,14 @@ import com.tvxargtec.online.utils.Channel
 import com.tvxargtec.online.utils.EpgHelper
 import com.tvxargtec.online.utils.EpgProgramme
 import com.tvxargtec.online.utils.LocalDataManager
+import com.tvxargtec.online.utils.ParentalControlHelper
 import java.util.HashSet
 
-class ChannelAdapter(
+class ChannelAdapter @JvmOverloads constructor(
     private val context: Context,
     private var channels: List<Channel>,
-    private val listener: (Channel) -> Unit
+    private val listener: (Channel) -> Unit,
+    private val onBlockedClick: java.util.function.Consumer<Channel>? = null
 ) : RecyclerView.Adapter<ChannelAdapter.ViewHolder>() {
 
     private val dataManager = LocalDataManager(context)
@@ -35,11 +38,28 @@ class ChannelAdapter(
         for (fav in db.favoriteDao().getAllFavorites()) {
             favoriteIds.add(fav.contentId)
         }
+        setHasStableIds(true)
     }
 
     fun updateChannels(newChannels: List<Channel>) {
+        val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+            override fun getOldListSize() = channels.size
+            override fun getNewListSize() = newChannels.size
+            override fun areItemsTheSame(oldPos: Int, newPos: Int): Boolean {
+                return channels[oldPos].id == newChannels[newPos].id
+            }
+            override fun areContentsTheSame(oldPos: Int, newPos: Int): Boolean {
+                val old = channels[oldPos]
+                val new = newChannels[newPos]
+                return old.title == new.title && old.url == new.url && old.logo == new.logo
+            }
+        })
         channels = newChannels
-        notifyDataSetChanged()
+        diffResult.dispatchUpdatesTo(this)
+    }
+
+    override fun getItemId(position: Int): Long {
+        return channels[position].id.hashCode().toLong()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -89,17 +109,22 @@ class ChannelAdapter(
             }
 
             itemView.setOnClickListener {
-                listener(channel)
-                val intent = Intent(context, PlayAty::class.java).apply {
-                    putExtra("url", channel.url)
-                    putExtra("title", channel.title)
-                }
-                context.startActivity(intent)
-                dataManager.addToHistory(
-                    com.tvxargtec.online.utils.ChannelItem(
-                        channel.id, channel.title, channel.url, channel.logo, channel.categoryName
+                val pcHelper = ParentalControlHelper(context)
+                if (pcHelper.isCategoryBlocked(channel.categoryId)) {
+                    onBlockedClick?.accept(channel)
+                } else {
+                    listener(channel)
+                    val intent = Intent(context, PlayAty::class.java).apply {
+                        putExtra("url", channel.url)
+                        putExtra("title", channel.title)
+                    }
+                    context.startActivity(intent)
+                    dataManager.addToHistory(
+                        com.tvxargtec.online.utils.ChannelItem(
+                            channel.id, channel.title, channel.url, channel.logo, channel.categoryName
+                        )
                     )
-                )
+                }
             }
 
             fetchEpg(channel)

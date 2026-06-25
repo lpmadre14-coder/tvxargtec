@@ -26,11 +26,9 @@
         android:textSize="16sp"
         android:visibility="gone" />
 
-    <ListView
-        android:id="@+id/listView"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvDownloads"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:divider="@color/border_card"
-        android:dividerHeight="1dp" />
+        android:layout_height="match_parent" />
 
 </LinearLayout>

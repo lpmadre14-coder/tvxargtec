@@ -56,8 +56,6 @@ dependencies {
     implementation("com.google.firebase:firebase-messaging")
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-crashlytics")
-    implementation("com.google.firebase:firebase-dynamic-links")
-    implementation("com.google.firebase:firebase-inappmessaging-display")
 
     // Stripe
     implementation("com.stripe:stripe-android:20.46.0")

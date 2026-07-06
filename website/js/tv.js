@@ -455,8 +455,14 @@ function applyTranslations() {
     if (modalDesc) modalDesc.textContent = t('modalDesc');
     const modalAuto = document.querySelector('.modal p:last-of-type');
     if (modalAuto) modalAuto.textContent = t('modalAuto');
+    if (typeof twemoji !== 'undefined') {
+        twemoji.parse(document.body, { folder: 'svg', ext: '.svg' });
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     setLang(currentLang);
+    if (typeof twemoji !== 'undefined') {
+        twemoji.parse(document.body, { folder: 'svg', ext: '.svg' });
+    }
 });

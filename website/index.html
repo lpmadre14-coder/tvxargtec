@@ -6,7 +6,8 @@
     <title>TVXARGTEC — Streaming Premium</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
-     <link href="css/tv.css" rel="stylesheet">
+      <link href="css/tv.css" rel="stylesheet">
+    <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -24,9 +25,9 @@
     <div class="lang-dropdown">
         <button class="lang-btn lang-current" onclick="toggleLang(event)">ES ▾</button>
         <div class="lang-menu" id="langMenu">
-            <button onclick="setLang('es')" class="lang-opt" data-lang="es">🇪🇸 ES — Español</button>
-            <button onclick="setLang('en')" class="lang-opt" data-lang="en">🇬🇧 EN — English</button>
-            <button onclick="setLang('pt')" class="lang-opt" data-lang="pt">🇧🇷 PT — Português</button>
+            <button onclick="setLang('es')" class="lang-opt" data-lang="es"><img src="img/lang/es.svg" alt="" class="flag-icon"> ES — Español</button>
+            <button onclick="setLang('en')" class="lang-opt" data-lang="en"><img src="img/lang/en.svg" alt="" class="flag-icon"> EN — English</button>
+            <button onclick="setLang('pt')" class="lang-opt" data-lang="pt"><img src="img/lang/pt.svg" alt="" class="flag-icon"> PT — Português</button>
         </div>
     </div>
 </nav>
@@ -238,7 +239,7 @@
 <section id="changelog">
     <div class="section-tag" data-i18n="changelogTag">✦ Versiones</div>
     <h2 class="section-title" data-i18n="changelogTitle">Historial de Versiones</h2>
-    <p class="section-sub" data-i18n="changelogSub">Evolución y mejoras de TVXargtec.</p>
+    <p class="section-sub" data-i18n="changelogSub">Evolución y mejoras de TVXARGTEC.</p>
     <div class="changelog-grid">
         <div class="changelog-card current">
             <div class="changelog-version">v1.4.1</div>
@@ -292,7 +293,7 @@
 
 <!-- Footer -->
 <footer>
-    <p>© 2026 <strong>TVXargtec</strong>. <span data-i18n="footer">Hecho con ❤️ en Argentina.</span>  
+    <p>© 2026 <strong>TVXARGTEC</strong>. <span data-i18n="footer">Hecho con ❤️ en Argentina.</span>  
     <br><a href="https://apitvxargtec.duckdns.org/api/health" data-i18n="apiStatus">API Status</a> · <a href="https://github.com/lpmadre14-coder/tvxargtec">GitHub</a></p>
 </footer>
 

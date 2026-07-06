@@ -183,6 +183,22 @@ nav .links a:hover {
   background: rgba(0,212,255,.1);
 }
 
+.flag-icon {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  margin-right: 8px;
+  border-radius: 3px;
+}
+
+img.emoji {
+  height: 1.2em;
+  width: 1.2em;
+  margin: 0 .05em 0 .1em;
+  vertical-align: -0.2em;
+  display: inline;
+}
+
 /* ==============================
    HERO
 ================================= */

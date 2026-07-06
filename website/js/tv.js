@@ -407,16 +407,30 @@ function t(key) {
     return translations[currentLang]?.[key] || translations['es']?.[key] || key;
 }
 
+function toggleLang(e) {
+    e.stopPropagation();
+    document.getElementById('langMenu').classList.toggle('open');
+}
+
 function setLang(lang) {
     if (!translations[lang]) return;
     currentLang = lang;
     localStorage.setItem('tvxargtec_lang', lang);
-    document.querySelectorAll('.lang-btn').forEach(btn => {
+    const names = { es: 'ES', en: 'EN', pt: 'PT' };
+    document.querySelector('.lang-current').textContent = names[lang] + ' ▾';
+    document.querySelectorAll('.lang-opt').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.lang === lang);
     });
+    document.getElementById('langMenu').classList.remove('open');
     document.documentElement.lang = lang === 'en' ? 'en' : lang === 'pt' ? 'pt' : 'es';
     applyTranslations();
 }
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.lang-dropdown')) {
+        document.getElementById('langMenu').classList.remove('open');
+    }
+});
 
 function applyTranslations() {
     document.querySelectorAll('[data-i18n]').forEach(el => {

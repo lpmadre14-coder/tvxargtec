@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TVXargtec — Streaming Premium</title>
+    <title>TVXARGTEC — Streaming Premium</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
      <link href="css/tv.css" rel="stylesheet">
@@ -12,7 +12,7 @@
 
 <!-- Nav -->
 <nav>
-    <div class="logo">◆ TVXargtec</div>
+    <div class="logo">◆ TVXARGTEC</div>
     <div class="links">
         <a href="#features" data-i18n="navFeatures">Features</a>
         <a href="#channels" data-i18n="navChannels">Canales</a>
@@ -21,10 +21,13 @@
         <a href="#download" data-i18n="navDownload">Descargar</a>
         <a href="#changelog" data-i18n="navVersiones">Versiones</a>
     </div>
-    <div class="lang-switch">
-        <button onclick="setLang('es')" class="lang-btn active" data-lang="es">ES</button>
-        <button onclick="setLang('en')" class="lang-btn" data-lang="en">EN</button>
-        <button onclick="setLang('pt')" class="lang-btn" data-lang="pt">PT</button>
+    <div class="lang-dropdown">
+        <button class="lang-btn lang-current" onclick="toggleLang(event)">ES ▾</button>
+        <div class="lang-menu" id="langMenu">
+            <button onclick="setLang('es')" class="lang-opt" data-lang="es">🇪🇸 ES — Español</button>
+            <button onclick="setLang('en')" class="lang-opt" data-lang="en">🇬🇧 EN — English</button>
+            <button onclick="setLang('pt')" class="lang-opt" data-lang="pt">🇧🇷 PT — Português</button>
+        </div>
     </div>
 </nav>
 

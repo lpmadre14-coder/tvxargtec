@@ -116,34 +116,71 @@ nav .links a:hover {
   background: rgba(255, 255, 255, 0.075);
 }
 
-.lang-switch {
-  display: flex;
-  gap: 4px;
+.lang-dropdown {
+  position: relative;
   margin-left: 8px;
 }
 
-.lang-btn {
-  padding: 6px 10px;
+.lang-current {
+  padding: 6px 14px;
   border-radius: 8px;
-  border: 1px solid transparent;
-  background: transparent;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.06);
   color: var(--muted);
-  font-size: .72rem;
+  font-size: .78rem;
   font-weight: 800;
   cursor: pointer;
   transition: .2s ease;
   letter-spacing: .04em;
+  min-width: 56px;
 }
 
-.lang-btn:hover {
+.lang-current:hover {
   color: #fff;
-  border-color: var(--border);
+  background: rgba(255,255,255,.12);
 }
 
-.lang-btn.active {
+.lang-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 170px;
+  background: #151927;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 6px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.5);
+  z-index: 200;
+}
+
+.lang-menu.open {
+  display: block;
+}
+
+.lang-opt {
+  display: block;
+  width: 100%;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
+  font-size: .85rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: .15s ease;
+}
+
+.lang-opt:hover {
+  color: #fff;
+  background: rgba(255,255,255,.08);
+}
+
+.lang-opt[data-lang].active {
   color: var(--cyan);
-  border-color: rgba(0,212,255,.35);
-  background: rgba(0,212,255,.08);
+  background: rgba(0,212,255,.1);
 }
 
 /* ==============================

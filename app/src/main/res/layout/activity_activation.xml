@@ -26,13 +26,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Ingresá el código de 6 dígitos para activar el plan Free"
+        android:text="Ingresá el código de 6 dígitos de la web para activar el plan Free"
         android:textColor="@color/text_secondary"
         android:textSize="14sp"
         android:gravity="center" />
 
     <!-- Código a mostrar -->
     <TextView
+        android:id="@+id/tvCodeLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"

@@ -144,6 +144,12 @@ func initTables() {
 			data JSON NOT NULL,
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		)`,
+		`CREATE TABLE IF NOT EXISTS admin_users (
+			id INT AUTO_INCREMENT PRIMARY KEY,
+			email VARCHAR(255) NOT NULL UNIQUE,
+			password_hash VARCHAR(255) NOT NULL,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+		)`,
 	}
 	for _, q := range tables {
 		if _, err := db.Exec(q); err != nil {
@@ -160,6 +166,15 @@ func initTables() {
 			('plan_yearly', 'Anual', 29.99, 365, '["Todo lo del plan Mensual", "Ahorra 50%", "Calidad 4K", "EPG completo", "Multi-dispositivo"]'),
 			('plan_lifetime', 'Vitalicio', 49.99, 36500, '["Todo lo del plan Anual", "Pago único", "Actualizaciones gratis", "Acceso de por vida"]')`)
 		fmt.Println("✅ VIP plans seeded")
+	}
+
+	var adminCount int
+	db.QueryRow("SELECT COUNT(*) FROM admin_users").Scan(&adminCount)
+	if adminCount == 0 {
+		defaultHash, _ := bcrypt.GenerateFromPassword([]byte("admin2026"), bcrypt.DefaultCost)
+		db.Exec("INSERT INTO admin_users (email, password_hash) VALUES (?, ?)", "admin@tvxargtec.com", string(defaultHash))
+		fmt.Println("✅ Admin user seeded (admin@tvxargtec.com / admin2026)")
+	}
 	}
 }
 
@@ -331,6 +346,11 @@ func main() {
 	http.HandleFunc("/api/notifications/send", sendNotificationHandler)
 	http.HandleFunc("/api/backup", backupHandler)
 	http.HandleFunc("/api/channel/report", channelReportHandler)
+	http.HandleFunc("/api/admin/login", adminLoginHandler)
+	http.HandleFunc("/api/admin/content", adminContentHandler)
+	http.HandleFunc("/api/admin/content/", adminContentWithIDHandler)
+	http.HandleFunc("/api/admin/reports", adminReportsHandler)
+	http.HandleFunc("/api/user/activate-free", activateFreeHandler)
 
 	fmt.Println("🚀 Servidor TVXargtec corriendo en http://localhost:8081")
 	log.Fatal(http.ListenAndServe(":8081", nil))
@@ -872,6 +892,199 @@ func activationValidateHandler(w http.ResponseWriter, r *http.Request) {
 		"data": map[string]interface{}{
 			"planType": "free",
 			"valid":    true,
+		},
+	})
+}
+
+func adminLoginHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method != http.MethodPost {
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 405, "message": "Método no permitido"})
+		return
+	}
+
+	var req LoginRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 400, "message": "JSON inválido"})
+		return
+	}
+
+	var id int
+	var hash string
+	err := db.QueryRow("SELECT id, password_hash FROM admin_users WHERE email = ?", req.Email).Scan(&id, &hash)
+	if err != nil {
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 401, "message": "Credenciales inválidas"})
+		return
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(req.Password)); err != nil {
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 401, "message": "Credenciales inválidas"})
+		return
+	}
+
+	token := fmt.Sprintf("tvx-admin-%d-%d", id, time.Now().Unix())
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"code":    200,
+		"token":   token,
+		"message": "Inicio de sesión exitoso",
+	})
+}
+
+func extractAdminID(r *http.Request) string {
+	auth := r.Header.Get("Authorization")
+	if auth == "" || !strings.HasPrefix(auth, "Bearer ") {
+		return ""
+	}
+	parts := strings.Split(auth, " ")
+	tokenParts := strings.Split(parts[1], "-")
+	if len(tokenParts) < 3 || tokenParts[1] != "admin" {
+		return ""
+	}
+	return tokenParts[2]
+}
+
+func adminContentHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	adminID := extractAdminID(r)
+	if adminID == "" {
+		http.Error(w, `{"code":401,"message":"No autorizado"}`, http.StatusUnauthorized)
+		return
+	}
+
+	if r.Method != http.MethodPost {
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 405, "message": "Método no permitido"})
+		return
+	}
+
+	var req struct {
+		Title      string `json:"title"`
+		URL        string `json:"url"`
+		Logo       string `json:"logo"`
+		CategoryID string `json:"categoryId"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || req.Title == "" {
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 400, "message": "title requerido"})
+		return
+	}
+
+	id := fmt.Sprintf("ch_%d", time.Now().UnixNano())
+	_, err := db.Exec("INSERT INTO content (id, title, url, logo, category_id, is_live) VALUES (?, ?, ?, ?, ?, TRUE)",
+		id, req.Title, req.URL, req.Logo, req.CategoryID)
+	if err != nil {
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 500, "message": "Error al crear canal"})
+		return
+	}
+
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"code":    200,
+		"message": "Canal creado",
+		"data":    map[string]string{"id": id},
+	})
+}
+
+func adminContentWithIDHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	adminID := extractAdminID(r)
+	if adminID == "" {
+		http.Error(w, `{"code":401,"message":"No autorizado"}`, http.StatusUnauthorized)
+		return
+	}
+
+	id := strings.TrimPrefix(r.URL.Path, "/api/admin/content/")
+	if id == "" || id == r.URL.Path {
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 400, "message": "ID requerido"})
+		return
+	}
+
+	switch r.Method {
+	case http.MethodPut:
+		var req struct {
+			Title      string `json:"title"`
+			URL        string `json:"url"`
+			Logo       string `json:"logo"`
+			CategoryID string `json:"categoryId"`
+		}
+		json.NewDecoder(r.Body).Decode(&req)
+
+		_, err := db.Exec("UPDATE content SET title=COALESCE(NULLIF(?,''), title), url=COALESCE(NULLIF(?,''), url), logo=COALESCE(NULLIF(?,''), logo), category_id=COALESCE(NULLIF(?,''), category_id) WHERE id=?",
+			req.Title, req.URL, req.Logo, req.CategoryID, id)
+		if err != nil {
+			json.NewEncoder(w).Encode(map[string]interface{}{"code": 500, "message": "Error al actualizar"})
+			return
+		}
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 200, "message": "Canal actualizado"})
+
+	case http.MethodDelete:
+		_, err := db.Exec("DELETE FROM content WHERE id=?", id)
+		if err != nil {
+			json.NewEncoder(w).Encode(map[string]interface{}{"code": 500, "message": "Error al eliminar"})
+			return
+		}
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 200, "message": "Canal eliminado"})
+
+	default:
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 405, "message": "Método no permitido"})
+	}
+}
+
+func adminReportsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	adminID := extractAdminID(r)
+	if adminID == "" {
+		http.Error(w, `{"code":401,"message":"No autorizado"}`, http.StatusUnauthorized)
+		return
+	}
+
+	channelReportsMu.RLock()
+	defer channelReportsMu.RUnlock()
+
+	var reports []map[string]interface{}
+	for key, t := range channelReports {
+		parts := strings.SplitN(key, "-", 2)
+		reports = append(reports, map[string]interface{}{
+			"userId":     parts[0],
+			"channelUrl": parts[1],
+			"reportedAt": t.Format(time.RFC3339),
+		})
+	}
+	if reports == nil {
+		reports = []map[string]interface{}{}
+	}
+
+	json.NewEncoder(w).Encode(map[string]interface{}{"code": 200, "data": reports})
+}
+
+func activateFreeHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method != http.MethodPost {
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 405, "message": "Método no permitido"})
+		return
+	}
+
+	userID := extractUserID(r)
+	if userID == "" {
+		http.Error(w, `{"code":401,"message":"No autorizado"}`, http.StatusUnauthorized)
+		return
+	}
+
+	expiry := time.Now().AddDate(0, 1, 0)
+	_, err := db.Exec("UPDATE users SET plan_type = 'free', plan_expiry = ? WHERE id = ?", expiry, userID)
+	if err != nil {
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 500, "message": "Error al activar plan"})
+		return
+	}
+
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"code":    200,
+		"message": "Plan Free activado",
+		"data": map[string]interface{}{
+			"planType":   "free",
+			"planExpiry": expiry.Format("2006-01-02"),
 		},
 	})
 }

@@ -790,7 +790,7 @@
 <!-- Footer -->
 <footer>
     <p>© 2026 <strong>TVXargtec</strong>. Hecho con ❤️ en Argentina.  
-    <br><a href="https://apitvxargtec.ducknss.org/api/health">API Status</a> · <a href="https://github.com/lpmadre14-coder/tvxargtec">GitHub</a></p>
+    <br><a href="https://apitvxargtec.duckdns.org/api/health">API Status</a> · <a href="https://github.com/lpmadre14-coder/tvxargtec">GitHub</a></p>
 </footer>
 
 <script>
@@ -837,29 +837,45 @@
     let timeLeft = 20;
     let currentCode = '';
 
-    function generateCode() {
-        return Math.floor(100000 + Math.random() * 900000).toString();
+    function fetchCodeFromBackend() {
+        return fetch('https://apitvxargtec.duckdns.org/api/activation/code')
+            .then(r => r.json())
+            .then(data => {
+                if (data.data && data.data.code) {
+                    currentCode = data.data.code;
+                    document.getElementById('activationCode').textContent = currentCode;
+                    timeLeft = data.data.expiresIn || 20;
+                    updateTimer();
+                    return currentCode;
+                }
+                return fallbackCode();
+            })
+            .catch(() => fallbackCode());
+    }
+
+    function fallbackCode() {
+        currentCode = Math.floor(100000 + Math.random() * 900000).toString();
+        document.getElementById('activationCode').textContent = currentCode;
+        timeLeft = 20;
+        updateTimer();
+        return currentCode;
     }
 
     function updateTimer() {
         const el = document.getElementById('timer');
+        if (!el) return;
         el.textContent = `⏱ ${timeLeft}s`;
         el.className = 'timer' + (timeLeft <= 5 ? ' warning' : '');
         if (timeLeft <= 0) {
-            currentCode = generateCode();
-            document.getElementById('activationCode').textContent = currentCode;
-            timeLeft = 20;
-            updateTimer();
+            fetchCodeFromBackend();
         }
     }
 
     function openActivation() {
         document.getElementById('activationModal').classList.add('active');
-        currentCode = generateCode();
-        document.getElementById('activationCode').textContent = currentCode;
         timeLeft = 20;
-        updateTimer();
         clearInterval(timerInterval);
+        fetchCodeFromBackend();
         timerInterval = setInterval(() => {
             timeLeft--;
             updateTimer();
@@ -876,24 +892,35 @@
     });
 
     /* ── Admin ── */
-    const ADMIN_CREDENTIALS = { email: 'admin@tvxargtec.com', password: 'admin123' };
+    let adminToken = '';
     let channelsData = [];
 
     function adminLogin(e) {
         e.preventDefault();
         const email = document.getElementById('adminEmail').value;
         const pass = document.getElementById('adminPass').value;
-        if (email === ADMIN_CREDENTIALS.email && pass === ADMIN_CREDENTIALS.password) {
-            document.getElementById('adminLogin').style.display = 'none';
-            document.getElementById('adminPanel').style.display = 'block';
-            fetchChannels();
-        } else {
-            alert('❌ Credenciales inválidas');
-        }
+        fetch('https://apitvxargtec.duckdns.org/api/admin/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password: pass })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.token) {
+                adminToken = data.token;
+                document.getElementById('adminLogin').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+                fetchChannels();
+            } else {
+                alert('❌ ' + (data.message || 'Credenciales inválidas'));
+            }
+        })
+        .catch(err => alert('❌ Error de conexión: ' + err.message));
         return false;
     }
 
     function adminLogout() {
+        adminToken = '';
         document.getElementById('adminLogin').style.display = 'block';
         document.getElementById('adminPanel').style.display = 'none';
     }
@@ -930,7 +957,7 @@
         }
         tbody.innerHTML = channelsData.map((ch, i) => {
             const title = ch.title || ch.name || '—';
-            const category = ch.category || ch.group || 'General';
+            const category = ch.category || ch.categoryId || ch.group || 'General';
             const status = ch.status !== undefined ? ch.status : (ch.online !== undefined ? ch.online : true);
             const isOnline = status === true || status === 'online' || status === 'active' || status === 1;
             const isDeleted = ch._deleted;
@@ -955,14 +982,15 @@
         const catCell = row.querySelector('.cell-category');
         const actionsCell = row.querySelector('td:last-child');
         const currentTitle = ch.title || ch.name || '';
-        const currentCat = ch.category || ch.group || '';
+        const currentCat = ch.category || ch.categoryId || ch.group || '';
         titleCell.innerHTML = `<input class="inline-edit" type="text" value="${currentTitle.replace(/"/g,'&quot;')}" data-field="title">`;
         catCell.innerHTML = `<input class="inline-edit" type="text" value="${currentCat.replace(/"/g,'&quot;')}" data-field="category">`;
         actionsCell.innerHTML = `<button class="action-btn save" onclick="saveChannel(${index})">✓ Guardar</button>
                                 <button class="action-btn" onclick="fetchChannels()">✕ Cancelar</button>`;
     }
 
-    function saveChannel(index) {
+    async function saveChannel(index) {
+        if (!adminToken) { alert('❌ Sesión expirada'); return; }
         const row = document.querySelector(`tr[data-index="${index}"]`);
         if (!row) return;
         const inputs = row.querySelectorAll('.inline-edit');
@@ -971,30 +999,81 @@
             if (field === 'title') channelsData[index].title = inp.value;
             if (field === 'category') channelsData[index].category = inp.value;
         });
-        renderChannels();
+        const ch = channelsData[index];
+        const chId = ch.id || '';
+        if (!chId) { renderChannels(); return; }
+        const title = ch.title || ch.name || '';
+        const category = ch.category || ch.group || '';
+        try {
+            const res = await fetch('https://apitvxargtec.duckdns.org/api/admin/content/' + chId, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + adminToken },
+                body: JSON.stringify({ title, categoryId: category })
+            });
+            const data = await res.json();
+            if (data.code === 200) {
+                renderChannels();
+            } else {
+                alert('❌ ' + (data.message || 'Error al guardar'));
+                renderChannels();
+            }
+        } catch (err) {
+            alert('❌ Error: ' + err.message);
+            renderChannels();
+        }
     }
 
-    function deleteChannel(index) {
+    async function deleteChannel(index) {
+        if (!adminToken) { alert('❌ Sesión expirada'); return; }
         if (!confirm('¿Eliminar este canal?')) return;
-        channelsData[index]._deleted = true;
-        renderChannels();
+        const ch = channelsData[index];
+        const chId = ch.id || '';
+        if (!chId) { channelsData.splice(index, 1); renderChannels(); return; }
+        try {
+            const res = await fetch('https://apitvxargtec.duckdns.org/api/admin/content/' + chId, {
+                method: 'DELETE',
+                headers: { 'Authorization': 'Bearer ' + adminToken }
+            });
+            const data = await res.json();
+            if (data.code === 200) {
+                channelsData.splice(index, 1);
+                renderChannels();
+            } else {
+                alert('❌ ' + (data.message || 'Error al eliminar'));
+            }
+        } catch (err) {
+            alert('❌ Error: ' + err.message);
+        }
     }
 
     async function addChannel(e) {
         e.preventDefault();
+        if (!adminToken) { alert('❌ Sesión expirada'); return; }
         const msg = document.getElementById('addChannelMsg');
         const url = document.getElementById('newUrl').value;
         const title = document.getElementById('newTitle').value;
         const category = document.getElementById('newCategory').value;
         const logo = document.getElementById('newLogo').value || '';
-        const newCh = { title, category, url, logo, _deleted: false, _pending: true };
-        channelsData.unshift(newCh);
-        renderChannels();
-        document.getElementById('newUrl').value = '';
-        document.getElementById('newTitle').value = '';
-        document.getElementById('newCategory').value = '';
-        document.getElementById('newLogo').value = '';
-        msg.innerHTML = '<span style="color:var(--green)">✅ Canal agregado localmente. Los cambios se reflejan en la tabla.</span>';
+        try {
+            const res = await fetch('https://apitvxargtec.duckdns.org/api/admin/content', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + adminToken },
+                body: JSON.stringify({ title, url, logo, categoryId: category })
+            });
+            const data = await res.json();
+            if (data.code === 200) {
+                msg.innerHTML = '<span style="color:var(--green)">✅ Canal agregado</span>';
+                document.getElementById('newUrl').value = '';
+                document.getElementById('newTitle').value = '';
+                document.getElementById('newCategory').value = '';
+                document.getElementById('newLogo').value = '';
+                fetchChannels();
+            } else {
+                msg.innerHTML = '<span style="color:var(--crimson)">❌ ' + (data.message || 'Error') + '</span>';
+            }
+        } catch (err) {
+            msg.innerHTML = '<span style="color:var(--crimson)">❌ Error: ' + err.message + '</span>';
+        }
         setTimeout(() => msg.innerHTML = '', 3000);
         return false;
     }
@@ -1002,29 +1081,29 @@
     async function fetchReports() {
         const el = document.getElementById('reportsContent');
         el.innerHTML = 'Consultando reportes...';
+        if (!adminToken) {
+            el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--crimson)">⚠️ Inicia sesión como admin para ver reportes</div>';
+            return;
+        }
         try {
-            const res = await fetch('https://apitvxargtec.duckdns.org/api/reports');
+            const res = await fetch('https://apitvxargtec.duckdns.org/api/admin/reports', {
+                headers: { 'Authorization': 'Bearer ' + adminToken }
+            });
             if (!res.ok) throw new Error('HTTP ' + res.status);
             const data = await res.json();
-            const reports = Array.isArray(data) ? data : (data.reports || data.data || []);
+            const reports = data.data || [];
             if (!reports.length) {
                 el.innerHTML = '<div style="text-align:center;padding:2rem">No hay reportes registrados.</div>';
                 return;
             }
             el.innerHTML = reports.map(r => `
                 <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem;margin-bottom:.8rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem">
-                    <div><strong>${r.channel || r.title || '—'}</strong><br><span style="font-size:.8rem;color:var(--muted)">${r.reason || r.message || 'Sin detalle'}</span></div>
-                    <span style="font-size:.8rem;color:var(--muted)">${r.date || r.created_at || ''}</span>
+                    <div><strong>Canal: ${r.channelUrl || '—'}</strong><br><span style="font-size:.8rem;color:var(--muted)">Usuario: ${r.userId || '—'}</span></div>
+                    <span style="font-size:.8rem;color:var(--muted)">${r.reportedAt || ''}</span>
                 </div>
             `).join('');
         } catch (err) {
-            el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted)">ℹ️ No hay endpoint de reportes disponible. Usá un canal simulado para pruebas.</div>';
-            el.innerHTML += '<div style="display:grid;gap:.8rem;margin-top:1rem">' +
-                ['Canal A24 reportado como offline', 'ESPN señal intermitente', 'HBO sin audio'].map(r => `
-                <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem;display:flex;justify-content:space-between;align-items:center">
-                    <div><strong>${r}</strong></div>
-                    <span style="font-size:.8rem;color:var(--muted)">Hoy</span>
-                </div>`).join('') + '</div>';
+            el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted)">ℹ️ Error al cargar reportes: ' + err.message + '</div>';
         }
     }
 </script>

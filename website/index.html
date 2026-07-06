@@ -6,445 +6,7 @@
     <title>TVXargtec — Streaming Premium</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --bg: #080C14;
-            --bg2: #0D1225;
-            --card: #111827;
-            --card2: #1A1F35;
-            --violet: #7C3AED;
-            --cyan: #00D4FF;
-            --green: #10B981;
-            --crimson: #EF0044;
-            --gold: #F59E0B;
-            --text: #F1F5F9;
-            --muted: #64748B;
-            --border: rgba(124,58,237,0.15);
-        }
-        html { scroll-behavior: smooth; }
-        body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'Inter', -apple-system, sans-serif;
-            overflow-x: hidden;
-        }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--bg); }
-        ::-webkit-scrollbar-thumb { background: var(--violet); border-radius: 4px; }
-
-        /* ── Navigation ── */
-        nav {
-            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-            padding: 1rem 2rem;
-            display: flex; justify-content: space-between; align-items: center;
-            background: rgba(8,12,20,0.85); backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border);
-        }
-        nav .logo {
-            font-size: 1.5rem; font-weight: 900;
-            background: linear-gradient(135deg, var(--cyan), var(--violet));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        nav .links a {
-            color: var(--muted); text-decoration: none; margin-left: 2rem;
-            font-size: 0.9rem; font-weight: 500; transition: color .3s;
-        }
-        nav .links a:hover { color: var(--text); }
-
-        /* ── Hero ── */
-        .hero {
-            min-height: 100vh;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            text-align: center; padding: 2rem; position: relative;
-            background:
-                radial-gradient(ellipse 80% 60% at 50% -10%, rgba(124,58,237,0.15) 0%, transparent 60%),
-                radial-gradient(ellipse 60% 50% at 80% 80%, rgba(0,212,255,0.08) 0%, transparent 50%),
-                var(--bg);
-        }
-        .hero-badge {
-            display: inline-flex; align-items: center; gap: .5rem;
-            padding: .5rem 1.2rem; border-radius: 100px;
-            background: rgba(124,58,237,0.1); border: 1px solid var(--border);
-            font-size: .85rem; color: var(--cyan); margin-bottom: 2rem;
-        }
-        .hero h1 {
-            font-size: clamp(2.8rem, 8vw, 6rem);
-            font-weight: 900; line-height: 1.05; max-width: 900px;
-            background: linear-gradient(135deg, #fff 30%, var(--cyan) 60%, var(--violet));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .hero p {
-            font-size: clamp(1rem, 2vw, 1.3rem);
-            color: var(--muted); max-width: 600px; margin: 1.5rem 0 2.5rem;
-            line-height: 1.7;
-        }
-        .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
-        .btn {
-            padding: 1rem 2.5rem; border-radius: 50px; font-weight: 600;
-            font-size: 1rem; text-decoration: none; transition: all .3s;
-            display: inline-flex; align-items: center; gap: .5rem;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, var(--violet), #A855F7);
-            color: #fff; box-shadow: 0 4px 25px rgba(124,58,237,0.3);
-        }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 35px rgba(124,58,237,0.5); }
-        .btn-secondary {
-            background: rgba(255,255,255,0.05); color: var(--text);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .btn-secondary:hover { background: rgba(255,255,255,0.1); }
-        .btn-outline {
-            background: transparent; color: var(--cyan);
-            border: 1px solid var(--cyan);
-        }
-        .btn-outline:hover { background: rgba(0,212,255,0.1); }
-        .hero-stats {
-            display: flex; gap: 3rem; flex-wrap: wrap; justify-content: center;
-            margin-top: 4rem; padding: 2rem; border-top: 1px solid var(--border);
-        }
-        .hero-stats div { text-align: center; }
-        .hero-stats .num { font-size: 2rem; font-weight: 900; background: linear-gradient(135deg, var(--cyan), var(--violet)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .hero-stats .label { font-size: .85rem; color: var(--muted); margin-top: .3rem; }
-
-        /* ── Sections ── */
-        section { padding: 6rem 2rem; max-width: 1200px; margin: 0 auto; }
-        .section-tag {
-            display: inline-block; font-size: .8rem; font-weight: 600; text-transform: uppercase;
-            letter-spacing: 2px; color: var(--cyan); margin-bottom: 1rem;
-        }
-        .section-title {
-            font-size: clamp(2rem, 4vw, 3rem); font-weight: 800;
-            margin-bottom: 1rem; line-height: 1.2;
-        }
-        .section-sub {
-            color: var(--muted); max-width: 600px; font-size: 1.1rem; line-height: 1.7;
-            margin-bottom: 3rem;
-        }
-
-        /* ── Bento Grid ── */
-        .bento {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1.2rem;
-        }
-        .bento-item {
-            background: var(--card);
-            border-radius: 24px;
-            padding: 2rem;
-            border: 1px solid var(--border);
-            transition: all .4s;
-            position: relative; overflow: hidden;
-        }
-        .bento-item:hover {
-            border-color: rgba(124,58,237,0.3);
-            transform: translateY(-3px);
-            box-shadow: 0 20px 60px rgba(124,58,237,0.1);
-        }
-        .bento-item .icon {
-            width: 48px; height: 48px; border-radius: 14px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem; margin-bottom: 1.2rem;
-        }
-        .bento-item h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: .6rem; }
-        .bento-item p { font-size: .9rem; color: var(--muted); line-height: 1.6; }
-        .bento-item .glow {
-            position: absolute; width: 200px; height: 200px;
-            border-radius: 50%; filter: blur(80px); opacity: .08;
-            top: -50px; right: -50px; pointer-events: none;
-        }
-
-        .span-2 { grid-column: span 2; }
-        .span-3 { grid-column: span 3; }
-        .span-full { grid-column: 1 / -1; }
-        .row-2 { grid-row: span 2; }
-
-        .bento-featured {
-            background: linear-gradient(135deg, var(--card), rgba(124,58,237,0.08));
-            border: 1px solid rgba(124,58,237,0.2);
-        }
-        .bento-featured .icon { background: linear-gradient(135deg, var(--violet), #A855F7); color: #fff; }
-        .violet-icon .icon { background: rgba(124,58,237,0.15); color: var(--violet); }
-        .cyan-icon .icon { background: rgba(0,212,255,0.1); color: var(--cyan); }
-        .green-icon .icon { background: rgba(16,185,129,0.1); color: var(--green); }
-        .gold-icon .icon { background: rgba(245,158,11,0.1); color: var(--gold); }
-        .crimson-icon .icon { background: rgba(239,0,68,0.1); color: var(--crimson); }
-
-        /* ── Channels Marque ── */
-        .marquee-wrap {
-            overflow: hidden; position: relative;
-            background: var(--card); border-radius: 24px; border: 1px solid var(--border);
-            padding: 2rem 0;
-        }
-        .marquee {
-            display: flex; gap: 2rem; animation: scroll 30s linear infinite;
-            width: max-content;
-        }
-        .marquee:hover { animation-play-state: paused; }
-        .marquee .chip {
-            display: flex; align-items: center; gap: .8rem;
-            padding: .8rem 1.5rem; border-radius: 100px;
-            background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-            white-space: nowrap;
-        }
-        .marquee .chip img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
-        .marquee .chip span { font-size: .9rem; font-weight: 500; }
-        @keyframes scroll {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-
-        /* ── Pricing ── */
-        .pricing-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 1.5rem;
-        }
-        .pricing-card {
-            background: var(--card); border-radius: 24px; padding: 2rem;
-            border: 1px solid var(--border); text-align: center; transition: all .4s;
-        }
-        .pricing-card:hover { border-color: var(--violet); transform: translateY(-4px); }
-        .pricing-card.popular {
-            border-color: var(--violet);
-            background: linear-gradient(135deg, var(--card), rgba(124,58,237,0.08));
-            position: relative;
-        }
-        .pricing-card.popular::before {
-            content: 'MÁS POPULAR'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
-            background: var(--violet); color: #fff; font-size: .7rem; font-weight: 700;
-            padding: .3rem 1rem; border-radius: 100px; letter-spacing: 1px;
-        }
-        .pricing-card .plan-name { font-size: 1.1rem; font-weight: 700; margin-bottom: .5rem; }
-        .pricing-card .price { font-size: 2.5rem; font-weight: 900; margin: 1rem 0; }
-        .pricing-card .price span { font-size: 1rem; color: var(--muted); font-weight: 400; }
-        .pricing-card ul { list-style: none; text-align: left; margin: 1.5rem 0; }
-        .pricing-card ul li { padding: .4rem 0; font-size: .9rem; color: var(--muted); display: flex; align-items: center; gap: .5rem; }
-        .pricing-card ul li::before { content: '✓'; color: var(--green); font-weight: 700; }
-        .pricing-card .btn { width: 100%; justify-content: center; }
-
-        /* ── Security (mismo hover que bento) ── */
-        .security-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-        }
-        .security-item {
-            background: var(--card); border-radius: 16px; padding: 1.5rem;
-            border: 1px solid var(--border); text-align: center;
-            transition: all .4s;
-        }
-        .security-item:hover {
-            border-color: rgba(124,58,237,0.3);
-            transform: translateY(-3px);
-            box-shadow: 0 20px 60px rgba(124,58,237,0.1);
-        }
-        .security-item .icon { font-size: 2rem; margin-bottom: .8rem; }
-        .security-item h4 { font-size: .95rem; margin-bottom: .4rem; }
-        .security-item p { font-size: .8rem; color: var(--muted); line-height: 1.5; }
-
-        /* ── Modal ── */
-        .modal-overlay {
-            position: fixed; inset: 0; z-index: 1000;
-            background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
-            display: none; align-items: center; justify-content: center;
-            padding: 1rem;
-        }
-        .modal-overlay.active { display: flex; }
-        .modal {
-            background: var(--card); border-radius: 32px; padding: 2.5rem;
-            max-width: 420px; width: 100%; border: 1px solid var(--border);
-            text-align: center; position: relative;
-        }
-        .modal h2 { font-size: 1.5rem; margin-bottom: .5rem; }
-        .modal p { color: var(--muted); font-size: .9rem; margin-bottom: 1.5rem; }
-        .activation-code {
-            font-size: 3rem; font-weight: 900; letter-spacing: 12px;
-            color: var(--cyan); margin: 1rem 0;
-        }
-        .timer {
-            font-size: 1.2rem; font-weight: 700; color: var(--crimson);
-            margin: 1rem 0;
-        }
-        .timer.warning { color: var(--gold); }
-        .code-inputs {
-            display: flex; gap: .5rem; justify-content: center; margin: 1.5rem 0;
-        }
-        .code-inputs input {
-            width: 48px; height: 56px; text-align: center; font-size: 1.5rem; font-weight: 700;
-            background: var(--bg2); border: 2px solid var(--border); border-radius: 12px;
-            color: var(--text); outline: none; transition: border-color .3s;
-        }
-        .code-inputs input:focus { border-color: var(--cyan); }
-        .code-inputs input.filled { border-color: var(--green); }
-        .modal-close {
-            position: absolute; top: 1rem; right: 1rem;
-            background: none; border: none; color: var(--muted); font-size: 1.5rem;
-            cursor: pointer;
-        }
-        .modal-close:hover { color: var(--text); }
-
-        /* ── Auth / Credentials section ── */
-        .auth-section {
-            background: var(--card);
-            border-radius: 24px; padding: 2.5rem;
-            border: 1px solid var(--border); text-align: center;
-            margin-bottom: 3rem;
-        }
-        .auth-section h3 { font-size: 1.3rem; margin-bottom: .5rem; }
-        .auth-section p { color: var(--muted); font-size: .9rem; margin-bottom: 1.5rem; }
-        .auth-form {
-            display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
-            max-width: 500px; margin: 0 auto;
-        }
-        .auth-form input {
-            flex: 1; min-width: 180px;
-            padding: .9rem 1.2rem; border-radius: 12px;
-            background: var(--bg2); border: 1px solid var(--border);
-            color: var(--text); font-size: .95rem; outline: none;
-            transition: border-color .3s;
-        }
-        .auth-form input:focus { border-color: var(--violet); }
-        .auth-form input::placeholder { color: var(--muted); }
-        .auth-divider {
-            display: flex; align-items: center; gap: 1rem;
-            margin: 1.5rem 0; color: var(--muted); font-size: .85rem;
-        }
-        .auth-divider::before, .auth-divider::after {
-            content: ''; flex: 1; height: 1px; background: var(--border);
-        }
-
-        /* ── Footer ── */
-        footer {
-            border-top: 1px solid var(--border);
-            padding: 3rem 2rem; text-align: center; color: var(--muted);
-            font-size: .9rem;
-        }
-        footer a { color: var(--cyan); text-decoration: none; }
-
-        /* ── Responsive ── */
-        @media (max-width: 768px) {
-            .bento { grid-template-columns: 1fr; }
-            .span-2, .span-3 { grid-column: span 1; }
-            nav .links a { margin-left: 1rem; font-size: .8rem; }
-            .download-section { padding: 2rem; }
-            .code-inputs input { width: 40px; height: 48px; font-size: 1.2rem; }
-        }
-        /* ── Changelog ── */
-        .changelog-grid {
-            display: grid;
-            gap: 1.5rem;
-        }
-        .changelog-card {
-            background: rgba(17, 24, 39, 0.5);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 2rem;
-            transition: all .4s;
-        }
-        .changelog-card:hover {
-            transform: translateY(-2px);
-        }
-        .changelog-card.current {
-            border-color: var(--violet);
-            box-shadow: 0 0 40px rgba(124,58,237,0.12), inset 0 0 60px rgba(124,58,237,0.03);
-        }
-        .changelog-version {
-            font-size: 1.6rem;
-            font-weight: 900;
-            color: var(--violet);
-            margin-bottom: .2rem;
-            letter-spacing: -.5px;
-        }
-        .changelog-date {
-            font-size: .85rem;
-            color: var(--muted);
-            margin-bottom: 1.2rem;
-        }
-        .changelog-list {
-            list-style: none;
-            columns: 2;
-            column-gap: 2rem;
-        }
-        .changelog-list li {
-            padding: .35rem 0;
-            font-size: .9rem;
-            color: var(--muted);
-            display: flex;
-            align-items: center;
-            gap: .6rem;
-            break-inside: avoid;
-        }
-        @media (max-width: 768px) {
-            .changelog-list { columns: 1; }
-        }
-
-        /* ── Admin ── */
-        .admin-tab {
-            animation: fadeIn .3s ease;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .table-wrap {
-            overflow-x: auto;
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            background: var(--card);
-        }
-        .admin-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: .9rem;
-        }
-        .admin-table th {
-            text-align: left;
-            padding: 1rem 1.2rem;
-            font-size: .8rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--muted);
-            border-bottom: 1px solid var(--border);
-            background: rgba(124,58,237,0.03);
-        }
-        .admin-table td {
-            padding: .9rem 1.2rem;
-            border-bottom: 1px solid rgba(255,255,255,0.03);
-            vertical-align: middle;
-        }
-        .admin-table tr:hover td {
-            background: rgba(124,58,237,0.03);
-        }
-        .admin-table .status-dot {
-            width: 10px; height: 10px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-        .admin-table .status-dot.online { background: var(--green); box-shadow: 0 0 8px rgba(16,185,129,0.4); }
-        .admin-table .status-dot.offline { background: var(--crimson); box-shadow: 0 0 8px rgba(239,0,68,0.4); }
-        .admin-table .action-btn {
-            background: none; border: 1px solid var(--border);
-            color: var(--muted); padding: .4rem .8rem; border-radius: 8px;
-            cursor: pointer; font-size: .8rem; transition: all .3s;
-            margin-right: .4rem;
-        }
-        .admin-table .action-btn:hover { border-color: var(--violet); color: var(--text); }
-        .admin-table .action-btn.danger:hover { border-color: var(--crimson); color: var(--crimson); }
-        .admin-table .action-btn.save { border-color: var(--green); color: var(--green); }
-        .admin-table input.inline-edit {
-            background: var(--bg2); border: 1px solid var(--border);
-            color: var(--text); padding: .4rem .6rem; border-radius: 6px;
-            font-size: .9rem; width: 100%; outline: none;
-        }
-        .admin-table input.inline-edit:focus { border-color: var(--violet); }
-        .admin-table .deleted-row td {
-            text-decoration: line-through;
-            opacity: .5;
-        }
-        .admin-table .deleted-row .action-btn { display: none; }
-    </style>
+     <link href="css/tv.css" rel="stylesheet">
 </head>
 <body>
 
@@ -452,55 +14,59 @@
 <nav>
     <div class="logo">◆ TVXargtec</div>
     <div class="links">
-        <a href="#features">Features</a>
-        <a href="#channels">Canales</a>
-        <a href="#pricing">Planes</a>
-        <a href="#security">Seguridad</a>
-        <a href="#download">Descargar</a>
-        <a href="#changelog">Versiones</a>
-        <a href="#admin">Admin</a>
+        <a href="#features" data-i18n="navFeatures">Features</a>
+        <a href="#channels" data-i18n="navChannels">Canales</a>
+        <a href="#pricing" data-i18n="navPlanes">Planes</a>
+        <a href="#security" data-i18n="navSeguridad">Seguridad</a>
+        <a href="#download" data-i18n="navDownload">Descargar</a>
+        <a href="#changelog" data-i18n="navVersiones">Versiones</a>
+    </div>
+    <div class="lang-switch">
+        <button onclick="setLang('es')" class="lang-btn active" data-lang="es">ES</button>
+        <button onclick="setLang('en')" class="lang-btn" data-lang="en">EN</button>
+        <button onclick="setLang('pt')" class="lang-btn" data-lang="pt">PT</button>
     </div>
 </nav>
 
 <!-- Hero -->
 <section class="hero">
-    <div class="hero-badge">✦ 1,895+ canales · 4K · Sin anuncios</div>
-    <h1>Streaming que<br>rompe esquemas</h1>
-    <p>La plataforma IPTV más avanzada. Canales en vivo, series, películas y deportes de todo el mundo con calidad 4K y protección antirrastreo.</p>
+    <div class="hero-badge" data-i18n="heroBadge">✦ 1,895+ canales · 4K · Sin anuncios</div>
+    <h1 data-i18n="heroTitle">Streaming que<br>rompe esquemas</h1>
+    <p data-i18n="heroDesc">La plataforma IPTV más avanzada. Canales en vivo, series, películas y deportes de todo el mundo con calidad 4K y protección antirrastreo.</p>
     <div class="hero-actions">
-        <a href="#download" class="btn btn-primary">📲 Descargar App</a>
-        <a href="#features" class="btn btn-secondary">Explorar →</a>
+        <a href="#download" class="btn btn-primary" data-i18n="heroBtnApp">📲 Descargar App</a>
+        <a href="#features" class="btn btn-secondary" data-i18n="heroBtnExplore">Explorar →</a>
     </div>
     <div class="hero-stats">
-        <div><div class="num">1,895+</div><div class="label">Canales en vivo</div></div>
-        <div><div class="num">90+</div><div class="label">Países</div></div>
-        <div><div class="num">4K</div><div class="label">Calidad máxima</div></div>
-        <div><div class="num">99.9%</div><div class="label">Uptime</div></div>
+        <div><div class="num">1,895+</div><div class="label" data-i18n="heroStat1">Canales en vivo</div></div>
+        <div><div class="num">90+</div><div class="label" data-i18n="heroStat2">Países</div></div>
+        <div><div class="num">4K</div><div class="label" data-i18n="heroStat3">Calidad máxima</div></div>
+        <div><div class="num">99.9%</div><div class="label" data-i18n="heroStat4">Uptime</div></div>
     </div>
 </section>
 
 <!-- Bento Features -->
 <section id="features">
-    <div class="section-tag">✦ Features</div>
-    <h2 class="section-title">Diseñado para<br>experiencias extremas</h2>
-    <p class="section-sub">Cada detalle está optimizado para ofrecerte la mejor experiencia de streaming, con velocidad, seguridad y diseño de primer nivel.</p>
+    <div class="section-tag" data-i18n="featTag">✦ Features</div>
+    <h2 class="section-title" data-i18n="featTitle">Diseñado para<br>experiencias extremas</h2>
+    <p class="section-sub" data-i18n="featSub">Cada detalle está optimizado para ofrecerte la mejor experiencia de streaming, con velocidad, seguridad y diseño de primer nivel.</p>
 
     <div class="bento">
         <div class="bento-item span-2 bento-featured">
             <div class="glow" style="background:var(--violet)"></div>
             <div class="icon">📺</div>
-            <h3>1,895+ Canales en Vivo</h3>
-            <p>Desde Argentina hasta Japón. Canales de 90+ países con streams 4K, Full HD y HD. Actualización automática vía IPTV-org.</p>
+            <h3 data-i18n="feat1Title">1,895+ Canales en Vivo</h3>
+            <p data-i18n="feat1Desc">Desde Argentina hasta Japón. Canales de 90+ países con streams 4K, Full HD y HD. Actualización automática vía IPTV-org.</p>
         </div>
         <div class="bento-item violet-icon">
             <div class="icon">🎬</div>
-            <h3>Series + Películas</h3>
-            <p>Biblioteca en expansión con contenido bajo demanda organizado por categorías.</p>
+            <h3 data-i18n="feat2Title">Series + Películas</h3>
+            <p data-i18n="feat2Desc">Biblioteca en expansión con contenido bajo demanda organizado por categorías.</p>
         </div>
         <div class="bento-item row-2 cyan-icon">
             <div class="icon">🔒</div>
-            <h3>Anti-Rastreo</h3>
-            <p>Protección FLAG_SECURE, PIN de 6 dígitos, tokens JWT, interceptores con refresh automático. Tu privacidad no se negocia.</p>
+            <h3 data-i18n="feat3Title">Anti-Rastreo</h3>
+            <p data-i18n="feat3Desc">Protección FLAG_SECURE, PIN de 6 dígitos, tokens JWT, interceptores con refresh automático. Tu privacidad no se negocia.</p>
             <div style="margin-top:1rem;display:flex;gap:.5rem;flex-wrap:wrap">
                 <span style="background:rgba(0,212,255,0.1);padding:.2rem .6rem;border-radius:6px;font-size:.75rem;color:var(--cyan)">JWT</span>
                 <span style="background:rgba(0,212,255,0.1);padding:.2rem .6rem;border-radius:6px;font-size:.75rem;color:var(--cyan)">SSL Pinning</span>
@@ -510,32 +76,32 @@
         </div>
         <div class="bento-item green-icon">
             <div class="icon">⚡</div>
-            <h3>Auto-Update</h3>
-            <p>Actualizaciones automáticas desde GitHub. Nunca te pierdas una mejora.</p>
+            <h3 data-i18n="feat4Title">Auto-Update</h3>
+            <p data-i18n="feat4Desc">Actualizaciones automáticas desde GitHub. Nunca te pierdas una mejora.</p>
         </div>
         <div class="bento-item gold-icon">
             <div class="icon">📱</div>
-            <h3>Multi-dispositivo</h3>
-            <p>Android TV, tablets y phones. Interfaz adaptativa con navegación inferior.</p>
+            <h3 data-i18n="feat5Title">Multi-dispositivo</h3>
+            <p data-i18n="feat5Desc">Android TV, tablets y phones. Interfaz adaptativa con navegación inferior.</p>
         </div>
         <div class="bento-item span-2 violet-icon">
             <div class="icon">🌐</div>
-            <h3>Backend Go + MySQL</h3>
-            <p>API propia en Go con MySQL, Nginx reverse proxy, rutas protegidas, favoritos e historial sincronizados en la nube.</p>
+            <h3 data-i18n="feat6Title">Backend Go + MySQL</h3>
+            <p data-i18n="feat6Desc">API propia en Go con MySQL, Nginx reverse proxy, rutas protegidas, favoritos e historial sincronizados en la nube.</p>
         </div>
         <div class="bento-item crimson-icon">
             <div class="icon">🛡</div>
-            <h3>VIP Plans</h3>
-            <p>Mensual, Anual y Vitalicio. Pagos vía Stripe con beneficios escalonados.</p>
+            <h3 data-i18n="feat7Title">VIP Plans</h3>
+            <p data-i18n="feat7Desc">Mensual, Anual y Vitalicio. Pagos vía Stripe con beneficios escalonados.</p>
         </div>
     </div>
 </section>
 
 <!-- Channels Marque -->
 <section id="channels">
-    <div class="section-tag">✦ Canales</div>
-    <h2 class="section-title">Canales que<br>realmente funcionan</h2>
-    <p class="section-sub">Streams verificados de Argentina, Chile, México, España, USA y más. Actualizados constantemente.</p>
+    <div class="section-tag" data-i18n="chanTag">✦ Canales</div>
+    <h2 class="section-title" data-i18n="chanTitle">Canales que<br>realmente funcionan</h2>
+    <p class="section-sub" data-i18n="chanSub">Streams verificados de Argentina, Chile, México, España, USA y más. Actualizados constantemente.</p>
 
     <div class="marquee-wrap">
         <div class="marquee" id="channelMarquee"></div>
@@ -553,97 +119,96 @@
 
 <!-- Pricing -->
 <section id="pricing">
-    <div class="section-tag">✦ Planes</div>
-    <h2 class="section-title">Elegí tu plan<br>sin compromiso</h2>
-    <p class="section-sub">Todos los planes incluyen acceso instantáneo. Cancelá cuando quieras.</p>
+    <div class="section-tag" data-i18n="planTag">✦ Planes</div>
+    <h2 class="section-title" data-i18n="planTitle">Elegí tu plan<br>sin compromiso</h2>
+    <p class="section-sub" data-i18n="planSub">Todos los planes incluyen acceso instantáneo. Cancelá cuando quieras.</p>
 
-    <!-- Credenciales -->
     <div class="auth-section">
-        <h3>🔑 Accedé a tu cuenta</h3>
-        <p>Ingresá tus credenciales para desbloquear los planes o activar tu código gratuito.</p>
+        <h3 data-i18n="planLoginTitle">🔑 Accedé a tu cuenta</h3>
+        <p data-i18n="planLoginDesc">Ingresá tus credenciales para desbloquear los planes o activar tu código gratuito.</p>
         <form class="auth-form" onsubmit="return handleAuth(event)">
             <input type="email" id="authEmail" placeholder="Email" required>
-            <input type="password" id="authPass" placeholder="Contraseña" required>
-            <button type="submit" class="btn btn-primary">Ingresar</button>
+            <input type="password" id="authPass" data-i18n-placeholder="planLoginBtn" placeholder="Contraseña" required>
+            <button type="submit" class="btn btn-primary" data-i18n="planLoginBtn">Ingresar</button>
         </form>
         <div class="auth-divider">o</div>
-        <button class="btn btn-outline" onclick="openActivation()">🎫 Activar código gratuito</button>
+        <button class="btn btn-outline" onclick="openActivation()" data-i18n="planActivateBtn">🎫 Activar código gratuito</button>
     </div>
 
     <div class="pricing-grid">
         <div class="pricing-card">
-            <div class="plan-name">Mensual</div>
-            <div class="price">$4.99 <span>/mes</span></div>
+            <div class="plan-name" data-i18n="planMonthly">Mensual</div>
+            <div class="price">$4.99 <span data-i18n="planMonthlyPeriod">/mes</span></div>
             <ul>
-                <li>Acceso a todos los canales</li>
-                <li>Calidad HD</li>
-                <li>Sin anuncios</li>
-                <li>Soporte prioritario</li>
+                <li data-i18n="planFeat1">Acceso a todos los canales</li>
+                <li data-i18n="planFeat2">Calidad HD</li>
+                <li data-i18n="planFeat3">Sin anuncios</li>
+                <li data-i18n="planFeat4">Soporte prioritario</li>
             </ul>
-            <a href="#download" class="btn btn-secondary">Elegir Mensual</a>
+            <a href="#download" class="btn btn-secondary" data-i18n="planBtnMonthly">Elegir Mensual</a>
         </div>
         <div class="pricing-card popular">
-            <div class="plan-name">Anual</div>
-            <div class="price">$29.99 <span>/año</span></div>
+            <div class="plan-name" data-i18n="planYearly">Anual</div>
+            <div class="price">$29.99 <span data-i18n="planYearlyPeriod">/año</span></div>
             <ul>
-                <li>Todo lo del plan Mensual</li>
-                <li>Ahorra 50%</li>
-                <li>Calidad 4K</li>
-                <li>EPG completo</li>
-                <li>Multi-dispositivo</li>
+                <li data-i18n="planFeat5">Todo lo del plan Mensual</li>
+                <li data-i18n="planFeat6">Ahorra 50%</li>
+                <li data-i18n="planFeat7">Calidad 4K</li>
+                <li data-i18n="planFeat8">EPG completo</li>
+                <li data-i18n="planFeat9">Multi-dispositivo</li>
             </ul>
-            <a href="#download" class="btn btn-primary">Elegir Anual</a>
+            <a href="#download" class="btn btn-primary" data-i18n="planBtnYearly">Elegir Anual</a>
         </div>
         <div class="pricing-card">
-            <div class="plan-name">Vitalicio</div>
-            <div class="price">$49.99 <span>pago único</span></div>
+            <div class="plan-name" data-i18n="planLifetime">Vitalicio</div>
+            <div class="price">$49.99 <span data-i18n="planLifetimePeriod">pago único</span></div>
             <ul>
-                <li>Todo lo del plan Anual</li>
-                <li>Pago único</li>
-                <li>Actualizaciones gratis</li>
-                <li>Acceso de por vida</li>
+                <li data-i18n="planFeat5">Todo lo del plan Anual</li>
+                <li data-i18n="planFeat10">Pago único</li>
+                <li data-i18n="planFeat11">Actualizaciones gratis</li>
+                <li data-i18n="planFeat12">Acceso de por vida</li>
             </ul>
-            <a href="#download" class="btn btn-secondary">Elegir Vitalicio</a>
+            <a href="#download" class="btn btn-secondary" data-i18n="planBtnLifetime">Elegir Vitalicio</a>
         </div>
     </div>
 </section>
 
 <!-- Security -->
 <section id="security">
-    <div class="section-tag">🛡 Seguridad</div>
-    <h2 class="section-title">Protegemos tu<br>experiencia</h2>
-    <p class="section-sub">Tu privacidad y seguridad son nuestra prioridad. Cada capa está diseñada para mantenerte protegido.</p>
+    <div class="section-tag" data-i18n="secTag">🛡 Seguridad</div>
+    <h2 class="section-title" data-i18n="secTitle">Protegemos tu<br>experiencia</h2>
+    <p class="section-sub" data-i18n="secSub">Tu privacidad y seguridad son nuestra prioridad. Cada capa está diseñada para mantenerte protegido.</p>
 
     <div class="security-grid">
         <div class="security-item">
             <div class="icon">📵</div>
-            <h4>FLAG_SECURE</h4>
-            <p>Bloqueo de capturas de pantalla en toda la app.</p>
+            <h4 data-i18n="sec1Title">FLAG_SECURE</h4>
+            <p data-i18n="sec1Desc">Bloqueo de capturas de pantalla en toda la app.</p>
         </div>
         <div class="security-item">
             <div class="icon">🔐</div>
-            <h4>PIN 6 dígitos</h4>
-            <p>Control parental con PIN configurable (default 525452).</p>
+            <h4 data-i18n="sec2Title">PIN 6 dígitos</h4>
+            <p data-i18n="sec2Desc">Control parental con PIN configurable (default 525452).</p>
         </div>
         <div class="security-item">
             <div class="icon">🔑</div>
-            <h4>JWT + Refresh</h4>
-            <p>Tokens con auto-refresh y renovación silenciosa.</p>
+            <h4 data-i18n="sec3Title">JWT + Refresh</h4>
+            <p data-i18n="sec3Desc">Tokens con auto-refresh y renovación silenciosa.</p>
         </div>
         <div class="security-item">
             <div class="icon">🛡</div>
-            <h4>ProGuard / R8</h4>
-            <p>Código ofuscado en release. Reverse engineering mitigado.</p>
+            <h4 data-i18n="sec4Title">ProGuard / R8</h4>
+            <p data-i18n="sec4Desc">Código ofuscado en release. Reverse engineering mitigado.</p>
         </div>
         <div class="security-item">
             <div class="icon">☁️</div>
-            <h4>Firebase Security</h4>
-            <p>Crashlytics, Analytics, Messaging con reglas seguras.</p>
+            <h4 data-i18n="sec5Title">Firebase Security</h4>
+            <p data-i18n="sec5Desc">Crashlytics, Analytics, Messaging con reglas seguras.</p>
         </div>
         <div class="security-item">
             <div class="icon">🔒</div>
-            <h4>SSL/TLS</h4>
-            <p>Cifrado extremo a extremo vía Nginx + Let's Encrypt.</p>
+            <h4 data-i18n="sec6Title">SSL/TLS</h4>
+            <p data-i18n="sec6Desc">Cifrado extremo a extremo vía Nginx + Let's Encrypt.</p>
         </div>
     </div>
 </section>
@@ -651,16 +216,16 @@
 <!-- Download -->
 <section id="download">
     <div class="download-section">
-        <h2>Descargá la app</h2>
-        <p>Experimentá TVXargtec en tu dispositivo Android. Streaming sin límites, donde sea.</p>
+        <h2 data-i18n="dlTag">Descargá la app</h2>
+        <p data-i18n="dlDesc">Experimentá TVXargtec en tu dispositivo Android. Streaming sin límites, donde sea.</p>
         <div class="badge-group">
             <a href="#" class="badge" onclick="alert('APK disponible próximamente. Compilá desde GitHub.')">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="7.5 8.5 12 11 16.5 8.5"/></svg>
-                APK Directa
+                <span data-i18n="dlApk">APK Directa</span>
             </a>
             <a href="https://github.com/lpmadre14-coder/tvxargtec" target="_blank" class="badge">
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
-                GitHub
+                <span data-i18n="dlGitHub">GitHub</span>
             </a>
         </div>
     </div>
@@ -668,13 +233,13 @@
 
 <!-- Changelog -->
 <section id="changelog">
-    <div class="section-tag">✦ Versiones</div>
-    <h2 class="section-title">Historial de Versiones</h2>
-    <p class="section-sub">Evolución y mejoras de TVXargtec.</p>
+    <div class="section-tag" data-i18n="changelogTag">✦ Versiones</div>
+    <h2 class="section-title" data-i18n="changelogTitle">Historial de Versiones</h2>
+    <p class="section-sub" data-i18n="changelogSub">Evolución y mejoras de TVXargtec.</p>
     <div class="changelog-grid">
         <div class="changelog-card current">
             <div class="changelog-version">v1.4.1</div>
-            <div class="changelog-date">Julio 2026 — Última versión</div>
+            <div class="changelog-date" data-i18n="changelogCurrent">Julio 2026 — Última versión</div>
             <ul class="changelog-list">
                 <li>🔍 Botón "Reportar canal muerto" en el reproductor</li>
                 <li>✅ Verificación automática de canales (ChannelHealthChecker)</li>
@@ -710,71 +275,6 @@
     </div>
 </section>
 
-<!-- Admin -->
-<section id="admin">
-    <div class="section-tag">⚙ Admin</div>
-    <h2 class="section-title">Panel de Administración — Gestión de Canales</h2>
-    <p class="section-sub">Administrá los canales, verificá reportes y mantené la plataforma actualizada.</p>
-
-    <div class="admin-login" id="adminLogin">
-        <div class="auth-section">
-            <h3>🔐 Acceso Administrativo</h3>
-            <p>Ingresá tus credenciales de administrador.</p>
-            <form class="auth-form" onsubmit="return adminLogin(event)">
-                <input type="email" id="adminEmail" placeholder="Email admin" required>
-                <input type="password" id="adminPass" placeholder="Contraseña" required>
-                <button type="submit" class="btn btn-primary">Ingresar</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="adminPanel" style="display:none">
-        <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2rem">
-            <button class="btn btn-primary" onclick="showAdminTab('channels')">📺 Canales</button>
-            <button class="btn btn-secondary" onclick="showAdminTab('add')">➕ Añadir Canal</button>
-            <button class="btn btn-secondary" onclick="showAdminTab('reports')">📊 Reportes</button>
-            <button class="btn btn-outline" onclick="adminLogout()" style="margin-left:auto">🚪 Salir</button>
-        </div>
-
-        <div id="adminChannels" class="admin-tab">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-                <h3 style="font-size:1.3rem">Canales Registrados</h3>
-                <button class="btn btn-secondary" onclick="fetchChannels()" style="padding:.5rem 1rem;font-size:.85rem">🔄 Refrescar</button>
-            </div>
-            <div class="table-wrap">
-                <table class="admin-table">
-                    <thead>
-                        <tr><th>Estado</th><th>Título</th><th>Categoría</th><th>Acciones</th></tr>
-                    </thead>
-                    <tbody id="channelsBody">
-                        <tr><td colspan="4" style="text-align:center;color:var(--muted);padding:2rem">Cargando canales...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div id="adminAdd" class="admin-tab" style="display:none">
-            <div class="auth-section" style="text-align:left">
-                <h3>➕ Añadir Canal</h3>
-                <p>Completá los datos del nuevo canal.</p>
-                <form class="auth-form" onsubmit="return addChannel(event)" style="max-width:100%">
-                    <input type="url" id="newUrl" placeholder="URL del stream" required style="flex:100%">
-                    <input type="text" id="newTitle" placeholder="Título del canal" required>
-                    <input type="text" id="newCategory" placeholder="Categoría (ej: Noticias)" required>
-                    <input type="url" id="newLogo" placeholder="URL del logo">
-                    <button type="submit" class="btn btn-primary" style="flex:100%">Guardar Canal</button>
-                </form>
-                <div id="addChannelMsg" style="margin-top:1rem;font-size:.9rem"></div>
-            </div>
-        </div>
-
-        <div id="adminReports" class="admin-tab" style="display:none">
-            <h3 style="font-size:1.3rem;margin-bottom:1rem">📊 Reportes de Canales</h3>
-            <div id="reportsContent" style="color:var(--muted);padding:2rem 0">Cargando reportes...</div>
-        </div>
-    </div>
-</section>
-
 <!-- Modal Activación -->
 <div class="modal-overlay" id="activationModal">
     <div class="modal">
@@ -789,323 +289,11 @@
 
 <!-- Footer -->
 <footer>
-    <p>© 2026 <strong>TVXargtec</strong>. Hecho con ❤️ en Argentina.  
-    <br><a href="https://apitvxargtec.duckdns.org/api/health">API Status</a> · <a href="https://github.com/lpmadre14-coder/tvxargtec">GitHub</a></p>
+    <p>© 2026 <strong>TVXargtec</strong>. <span data-i18n="footer">Hecho con ❤️ en Argentina.</span>  
+    <br><a href="https://apitvxargtec.duckdns.org/api/health" data-i18n="apiStatus">API Status</a> · <a href="https://github.com/lpmadre14-coder/tvxargtec">GitHub</a></p>
 </footer>
 
-<script>
-    const channels = [
-        { name: 'A24 Argentina', logo: 'https://i.imgur.com/LnXQkIU.png' },
-        { name: '13C Chile', logo: 'https://i.imgur.com/Zfe2f5j.png' },
-        { name: 'ADN 40', logo: 'https://i.imgur.com/Og17U9N.png' },
-        { name: 'Al Jazeera', logo: 'https://i.imgur.com/7bRVpnu.png' },
-        { name: 'A&E', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/A%26E_Network_logo.svg/960px-A%26E_Network_logo.svg.png' },
-        { name: 'Pluto TV Acapulco', logo: 'https://images.pluto.tv/channels/61a52615cbef2500072876e2/colorLogoPNG_1756972226445.png' },
-        { name: 'ABC Teleshow', logo: 'https://i.imgur.com/cF7gJ2Q.jpeg' },
-        { name: '3ABN', logo: 'https://i.imgur.com/IecOZHR.png' },
-    ];
-    const marquee = document.getElementById('channelMarquee');
-    const items = [...channels, ...channels].map(c =>
-        `<div class="chip"><img src="${c.logo}" alt="" loading="lazy"><span>${c.name}</span></div>`
-    ).join('');
-    marquee.innerHTML = items;
+<script src="js/tv.js"></script> 
 
-    /* ── Auth ── */
-    function handleAuth(e) {
-        e.preventDefault();
-        const email = document.getElementById('authEmail').value;
-        const pass = document.getElementById('authPass').value;
-        fetch('https://apitvxargtec.duckdns.org/api/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password: pass })
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.token) {
-                alert('✅ Sesión iniciada. Descargá la app para disfrutar.');
-            } else {
-                alert('❌ ' + (data.message || 'Credenciales inválidas'));
-            }
-        })
-        .catch(() => alert('❌ Error de conexión'));
-        return false;
-    }
-
-    /* ── Activación 20s ── */
-    let timerInterval = null;
-    let timeLeft = 20;
-    let currentCode = '';
-
-    function fetchCodeFromBackend() {
-        return fetch('https://apitvxargtec.duckdns.org/api/activation/code')
-            .then(r => r.json())
-            .then(data => {
-                if (data.data && data.data.code) {
-                    currentCode = data.data.code;
-                    document.getElementById('activationCode').textContent = currentCode;
-                    timeLeft = data.data.expiresIn || 20;
-                    updateTimer();
-                    return currentCode;
-                }
-                return fallbackCode();
-            })
-            .catch(() => fallbackCode());
-    }
-
-    function fallbackCode() {
-        currentCode = Math.floor(100000 + Math.random() * 900000).toString();
-        document.getElementById('activationCode').textContent = currentCode;
-        timeLeft = 20;
-        updateTimer();
-        return currentCode;
-    }
-
-    function updateTimer() {
-        const el = document.getElementById('timer');
-        if (!el) return;
-        el.textContent = `⏱ ${timeLeft}s`;
-        el.className = 'timer' + (timeLeft <= 5 ? ' warning' : '');
-        if (timeLeft <= 0) {
-            fetchCodeFromBackend();
-        }
-    }
-
-    function openActivation() {
-        document.getElementById('activationModal').classList.add('active');
-        timeLeft = 20;
-        clearInterval(timerInterval);
-        fetchCodeFromBackend();
-        timerInterval = setInterval(() => {
-            timeLeft--;
-            updateTimer();
-        }, 1000);
-    }
-
-    function closeModal() {
-        document.getElementById('activationModal').classList.remove('active');
-        clearInterval(timerInterval);
-    }
-
-    document.getElementById('activationModal').addEventListener('click', function(e) {
-        if (e.target === this) closeModal();
-    });
-
-    /* ── Admin ── */
-    let adminToken = '';
-    let channelsData = [];
-
-    function adminLogin(e) {
-        e.preventDefault();
-        const email = document.getElementById('adminEmail').value;
-        const pass = document.getElementById('adminPass').value;
-        fetch('https://apitvxargtec.duckdns.org/api/admin/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password: pass })
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.token) {
-                adminToken = data.token;
-                document.getElementById('adminLogin').style.display = 'none';
-                document.getElementById('adminPanel').style.display = 'block';
-                fetchChannels();
-            } else {
-                alert('❌ ' + (data.message || 'Credenciales inválidas'));
-            }
-        })
-        .catch(err => alert('❌ Error de conexión: ' + err.message));
-        return false;
-    }
-
-    function adminLogout() {
-        adminToken = '';
-        document.getElementById('adminLogin').style.display = 'block';
-        document.getElementById('adminPanel').style.display = 'none';
-    }
-
-    function showAdminTab(tab) {
-        document.querySelectorAll('.admin-tab').forEach(t => t.style.display = 'none');
-        const map = { channels: 'adminChannels', add: 'adminAdd', reports: 'adminReports' };
-        const el = document.getElementById(map[tab]);
-        if (el) {
-            el.style.display = 'block';
-            if (tab === 'reports') fetchReports();
-        }
-    }
-
-    async function fetchChannels() {
-        const tbody = document.getElementById('channelsBody');
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:2rem">Cargando canales...</td></tr>';
-        try {
-            const res = await fetch('https://apitvxargtec.duckdns.org/api/content');
-            if (!res.ok) throw new Error('HTTP ' + res.status);
-            const data = await res.json();
-            channelsData = Array.isArray(data) ? data : (data.channels || data.data || []);
-            renderChannels();
-        } catch (err) {
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--crimson);padding:2rem">❌ Error al cargar: ' + err.message + '</td></tr>';
-        }
-    }
-
-    function renderChannels() {
-        const tbody = document.getElementById('channelsBody');
-        if (!channelsData.length) {
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:2rem">No hay canales registrados.</td></tr>';
-            return;
-        }
-        tbody.innerHTML = channelsData.map((ch, i) => {
-            const title = ch.title || ch.name || '—';
-            const category = ch.category || ch.categoryId || ch.group || 'General';
-            const status = ch.status !== undefined ? ch.status : (ch.online !== undefined ? ch.online : true);
-            const isOnline = status === true || status === 'online' || status === 'active' || status === 1;
-            const isDeleted = ch._deleted;
-            return `<tr class="${isDeleted ? 'deleted-row' : ''}" data-index="${i}">
-                <td><span class="status-dot ${isOnline ? 'online' : 'offline'}"></span></td>
-                <td class="cell-title">${title}</td>
-                <td class="cell-category">${category}</td>
-                <td>
-                    ${isDeleted ? '<span style="color:var(--crimson);font-size:.8rem">Eliminado</span>' :
-                        `<button class="action-btn" onclick="editChannel(${i})">✎ Editar</button>
-                         <button class="action-btn danger" onclick="deleteChannel(${i})">✕ Eliminar</button>`}
-                </td>
-            </tr>`;
-        }).join('');
-    }
-
-    function editChannel(index) {
-        const ch = channelsData[index];
-        const row = document.querySelector(`tr[data-index="${index}"]`);
-        if (!row) return;
-        const titleCell = row.querySelector('.cell-title');
-        const catCell = row.querySelector('.cell-category');
-        const actionsCell = row.querySelector('td:last-child');
-        const currentTitle = ch.title || ch.name || '';
-        const currentCat = ch.category || ch.categoryId || ch.group || '';
-        titleCell.innerHTML = `<input class="inline-edit" type="text" value="${currentTitle.replace(/"/g,'&quot;')}" data-field="title">`;
-        catCell.innerHTML = `<input class="inline-edit" type="text" value="${currentCat.replace(/"/g,'&quot;')}" data-field="category">`;
-        actionsCell.innerHTML = `<button class="action-btn save" onclick="saveChannel(${index})">✓ Guardar</button>
-                                <button class="action-btn" onclick="fetchChannels()">✕ Cancelar</button>`;
-    }
-
-    async function saveChannel(index) {
-        if (!adminToken) { alert('❌ Sesión expirada'); return; }
-        const row = document.querySelector(`tr[data-index="${index}"]`);
-        if (!row) return;
-        const inputs = row.querySelectorAll('.inline-edit');
-        inputs.forEach(inp => {
-            const field = inp.dataset.field;
-            if (field === 'title') channelsData[index].title = inp.value;
-            if (field === 'category') channelsData[index].category = inp.value;
-        });
-        const ch = channelsData[index];
-        const chId = ch.id || '';
-        if (!chId) { renderChannels(); return; }
-        const title = ch.title || ch.name || '';
-        const category = ch.category || ch.group || '';
-        try {
-            const res = await fetch('https://apitvxargtec.duckdns.org/api/admin/content/' + chId, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + adminToken },
-                body: JSON.stringify({ title, categoryId: category })
-            });
-            const data = await res.json();
-            if (data.code === 200) {
-                renderChannels();
-            } else {
-                alert('❌ ' + (data.message || 'Error al guardar'));
-                renderChannels();
-            }
-        } catch (err) {
-            alert('❌ Error: ' + err.message);
-            renderChannels();
-        }
-    }
-
-    async function deleteChannel(index) {
-        if (!adminToken) { alert('❌ Sesión expirada'); return; }
-        if (!confirm('¿Eliminar este canal?')) return;
-        const ch = channelsData[index];
-        const chId = ch.id || '';
-        if (!chId) { channelsData.splice(index, 1); renderChannels(); return; }
-        try {
-            const res = await fetch('https://apitvxargtec.duckdns.org/api/admin/content/' + chId, {
-                method: 'DELETE',
-                headers: { 'Authorization': 'Bearer ' + adminToken }
-            });
-            const data = await res.json();
-            if (data.code === 200) {
-                channelsData.splice(index, 1);
-                renderChannels();
-            } else {
-                alert('❌ ' + (data.message || 'Error al eliminar'));
-            }
-        } catch (err) {
-            alert('❌ Error: ' + err.message);
-        }
-    }
-
-    async function addChannel(e) {
-        e.preventDefault();
-        if (!adminToken) { alert('❌ Sesión expirada'); return; }
-        const msg = document.getElementById('addChannelMsg');
-        const url = document.getElementById('newUrl').value;
-        const title = document.getElementById('newTitle').value;
-        const category = document.getElementById('newCategory').value;
-        const logo = document.getElementById('newLogo').value || '';
-        try {
-            const res = await fetch('https://apitvxargtec.duckdns.org/api/admin/content', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + adminToken },
-                body: JSON.stringify({ title, url, logo, categoryId: category })
-            });
-            const data = await res.json();
-            if (data.code === 200) {
-                msg.innerHTML = '<span style="color:var(--green)">✅ Canal agregado</span>';
-                document.getElementById('newUrl').value = '';
-                document.getElementById('newTitle').value = '';
-                document.getElementById('newCategory').value = '';
-                document.getElementById('newLogo').value = '';
-                fetchChannels();
-            } else {
-                msg.innerHTML = '<span style="color:var(--crimson)">❌ ' + (data.message || 'Error') + '</span>';
-            }
-        } catch (err) {
-            msg.innerHTML = '<span style="color:var(--crimson)">❌ Error: ' + err.message + '</span>';
-        }
-        setTimeout(() => msg.innerHTML = '', 3000);
-        return false;
-    }
-
-    async function fetchReports() {
-        const el = document.getElementById('reportsContent');
-        el.innerHTML = 'Consultando reportes...';
-        if (!adminToken) {
-            el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--crimson)">⚠️ Inicia sesión como admin para ver reportes</div>';
-            return;
-        }
-        try {
-            const res = await fetch('https://apitvxargtec.duckdns.org/api/admin/reports', {
-                headers: { 'Authorization': 'Bearer ' + adminToken }
-            });
-            if (!res.ok) throw new Error('HTTP ' + res.status);
-            const data = await res.json();
-            const reports = data.data || [];
-            if (!reports.length) {
-                el.innerHTML = '<div style="text-align:center;padding:2rem">No hay reportes registrados.</div>';
-                return;
-            }
-            el.innerHTML = reports.map(r => `
-                <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem;margin-bottom:.8rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem">
-                    <div><strong>Canal: ${r.channelUrl || '—'}</strong><br><span style="font-size:.8rem;color:var(--muted)">Usuario: ${r.userId || '—'}</span></div>
-                    <span style="font-size:.8rem;color:var(--muted)">${r.reportedAt || ''}</span>
-                </div>
-            `).join('');
-        } catch (err) {
-            el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted)">ℹ️ Error al cargar reportes: ' + err.message + '</div>';
-        }
-    }
-</script>
 </body>
 </html>

@@ -417,7 +417,8 @@ function setLang(lang) {
     currentLang = lang;
     localStorage.setItem('tvxargtec_lang', lang);
     const names = { es: 'ES', en: 'EN', pt: 'PT' };
-    document.querySelector('.lang-current').textContent = names[lang] + ' ▾';
+    const flags = { es: 'img/lang/es.svg', en: 'img/lang/en.svg', pt: 'img/lang/pt.svg' };
+    document.querySelector('.lang-current').innerHTML = `<img src="${flags[lang]}" alt="" class="flag-icon">${names[lang]} ▾`;
     document.querySelectorAll('.lang-opt').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.lang === lang);
     });

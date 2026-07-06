@@ -132,7 +132,15 @@ nav .links a:hover {
   cursor: pointer;
   transition: .2s ease;
   letter-spacing: .04em;
-  min-width: 56px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.lang-current .flag-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 2px;
 }
 
 .lang-current:hover {

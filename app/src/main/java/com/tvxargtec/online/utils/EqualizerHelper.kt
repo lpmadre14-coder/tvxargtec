@@ -16,16 +16,44 @@ class EqualizerHelper(private val context: Context, private val audioSessionId: 
     companion object {
         private const val TAG = "EqualizerHelper"
         private const val KEY_ENABLED = "eq_enabled"
+        private const val KEY_PRESET = "eq_preset"
+
+        val PRESETS = listOf(
+            Preset("Plano", "Plano", floatArrayOf(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f)),
+            Preset("Rock", "Rock", floatArrayOf(0.6f, 0.4f, 0.2f, -0.1f, -0.3f, -0.2f, 0.1f, 0.3f, 0.5f, 0.6f)),
+            Preset("Pop", "Pop", floatArrayOf(-0.2f, 0.1f, 0.4f, 0.5f, 0.3f, -0.1f, -0.3f, -0.2f, 0.1f, 0.2f)),
+            Preset("Jazz", "Jazz", floatArrayOf(0.5f, 0.3f, 0.1f, 0.0f, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f)),
+            Preset("Clásico", "Clásico", floatArrayOf(0.6f, 0.5f, 0.3f, 0.1f, 0.0f, -0.1f, -0.1f, 0.0f, 0.2f, 0.4f)),
+            Preset("Voz", "Voz", floatArrayOf(-0.3f, -0.2f, 0.2f, 0.5f, 0.6f, 0.5f, 0.2f, -0.1f, -0.3f, -0.4f)),
+            Preset("Bajos", "Bajos++", floatArrayOf(0.8f, 0.6f, 0.4f, 0.1f, -0.2f, -0.4f, -0.5f, -0.4f, -0.2f, 0.0f)),
+            Preset("Agudos", "Agudos++", floatArrayOf(-0.3f, -0.2f, -0.1f, 0.1f, 0.2f, 0.3f, 0.4f, 0.6f, 0.7f, 0.8f))
+        )
+
+        data class Preset(val name: String, val displayName: String, val levels: FloatArray) {
+            override fun equals(other: Any?): Boolean {
+                if (this === other) return true
+                if (other !is Preset) return false
+                return name == other.name
+            }
+            override fun hashCode() = name.hashCode()
+        }
     }
+
+    private var _currentPreset: String = "Plano"
+    val currentPreset: String get() = _currentPreset
+
+    fun getPresetNames(): List<String> = PRESETS.map { it.displayName }
+    fun getPresetKeys(): List<String> = PRESETS.map { it.name }
 
     fun init(): Boolean {
         return try {
             equalizer?.release()
             equalizer = Equalizer(0, audioSessionId)
+            loadPreset()
             equalizer?.let { eq ->
                 eq.enabled = isEnabled
                 if (isEnabled) {
-                    loadBands(eq)
+                    applyPresetByName(_currentPreset)
                 }
             }
             true
@@ -75,11 +103,33 @@ class EqualizerHelper(private val context: Context, private val audioSessionId: 
     }
 
     fun resetToFlat() {
+        _currentPreset = "Plano"
+        applyPresetByName("Plano")
+        prefs.edit().putString(KEY_PRESET, "Plano").apply()
+    }
+
+    fun applyPresetByName(presetName: String) {
+        val preset = PRESETS.find { it.name == presetName } ?: return
+        _currentPreset = presetName
         val range = getBandLevelRange()
         val mid = ((range.first.toInt() + range.second.toInt()) / 2).toShort()
-        for (i in 0 until getNumberOfBands()) {
-            setBandLevel(i, mid)
+        val halfRange = (range.second - range.first) / 2
+        val numBands = getNumberOfBands()
+        for (i in 0 until numBands) {
+            val presetIdx = (i * preset.levels.size) / numBands
+            val rawLevel = if (presetIdx < preset.levels.size) preset.levels[presetIdx] else 0f
+            val level = (mid + (halfRange * rawLevel).roundToInt()).toShort()
+            try {
+                equalizer?.setBandLevel(i.toShort(), level)
+                prefs.edit().putInt("band_$i", level.toInt()).apply()
+            } catch (_: Exception) {}
         }
+        prefs.edit().putString(KEY_PRESET, presetName).apply()
+    }
+
+    private fun loadPreset() {
+        val saved = prefs.getString(KEY_PRESET, "Plano") ?: "Plano"
+        _currentPreset = saved
     }
 
     fun release() {

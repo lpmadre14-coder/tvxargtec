@@ -45,6 +45,8 @@ import androidx.media3.ui.PlayerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.tvxargtec.online.R;
 import com.tvxargtec.online.base.BaseActivity;
@@ -516,9 +518,32 @@ public class PlayAty extends BaseActivity {
         LinearLayout bandsContainer = view.findViewById(R.id.eqBandsContainer);
         TextView tvNoBands = view.findViewById(R.id.tvEqNoBands);
         MaterialButton btnReset = view.findViewById(R.id.btnEqReset);
+        ChipGroup presetGroup = view.findViewById(R.id.eqPresetGroup);
 
         eqSwitch.setChecked(equalizerHelper.isEnabled());
         updateEqButtonColor();
+
+        String currentPreset = equalizerHelper.getCurrentPreset();
+        for (int p = 0; p < equalizerHelper.getPresetKeys().size(); p++) {
+            Chip chip = new Chip(this);
+            chip.setText(equalizerHelper.getPresetNames().get(p));
+            String presetKey = equalizerHelper.getPresetKeys().get(p);
+            chip.setTag(presetKey);
+            chip.setCheckable(true);
+            chip.setClickable(true);
+            chip.setChipBackgroundColorResource(R.color.bg_card);
+            chip.setTextColor(getResources().getColor(R.color.text_primary));
+            chip.setChipCornerRadius(20f);
+            chip.setChecked(presetKey.equals(currentPreset));
+            int fp = p;
+            int finalP = p;
+            chip.setOnClickListener(v -> {
+                equalizerHelper.applyPresetByName(presetKey);
+                dialog.dismiss();
+                showEqualizerDialog();
+            });
+            presetGroup.addView(chip);
+        }
 
         List<EqualizerHelper.Band> bands = equalizerHelper.getBands();
 

@@ -39,3 +39,4 @@ AndroidManifest.xml
 
 cd.txt
 *-recovery-codes*
+*.pem

@@ -56,9 +56,20 @@ import com.tvxargtec.online.utils.EpgHelper;
 import com.tvxargtec.online.utils.EpgProgramme;
 import com.tvxargtec.online.utils.EqualizerHelper;
 import com.tvxargtec.online.utils.OfflineManager;
+import com.tvxargtec.online.utils.SpeedTestUtil;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class PlayAty extends BaseActivity {
 
@@ -618,6 +629,7 @@ public class PlayAty extends BaseActivity {
         LinearLayout subtitleList = view.findViewById(R.id.subtitleList);
         LinearLayout audioList = view.findViewById(R.id.audioList);
         LinearLayout equalizerList = view.findViewById(R.id.equalizerList);
+        LinearLayout reportDeadList = view.findViewById(R.id.reportDeadChannel);
 
         // Quality
         qualityList.setOnClickListener(v -> {
@@ -647,7 +659,56 @@ public class PlayAty extends BaseActivity {
             showEqualizerDialog();
         });
 
+        // Report dead channel
+        if (reportDeadList != null) {
+            reportDeadList.setOnClickListener(v -> {
+                dialog.dismiss();
+                new android.app.AlertDialog.Builder(this)
+                    .setTitle("Reportar canal muerto")
+                    .setMessage("¿El canal \"" + videoTitle + "\" no está funcionando? Enviaremos un reporte al equipo de soporte.")
+                    .setPositiveButton("Reportar", (d, w) -> reportDeadChannel())
+                    .setNegativeButton("Cancelar", null)
+                    .show();
+            });
+        }
+
         dialog.show();
+    }
+
+    private void reportDeadChannel() {
+        String token = com.tvxargtec.online.utils.AuthManager.getInstance(this).getToken();
+        if (token == null || token.isEmpty()) {
+            showToast("Inicia sesión para reportar canales");
+            return;
+        }
+
+        OkHttpClient client = new OkHttpClient.Builder()
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(15, TimeUnit.SECONDS)
+            .build();
+
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        String json = "{\"url\":\"" + videoUrl + "\",\"title\":\"" + (videoTitle != null ? videoTitle : "") + "\"}";
+        RequestBody body = RequestBody.create(JSON, json);
+        Request request = new Request.Builder()
+            .url("https://apitvxargtec.duckdns.org/api/channel/report")
+            .header("Authorization", "Bearer " + token)
+            .post(body)
+            .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(() -> showToast("Error de red: " + e.getMessage()));
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String msg = response.isSuccessful() ? "Reporte enviado. ¡Gracias!" : "Error: " + response.code();
+                runOnUiThread(() -> showToast(msg));
+                response.close();
+            }
+        });
     }
 
     private void showTrackSelector(String title, @C.TrackType int trackType) {
@@ -655,6 +716,14 @@ public class PlayAty extends BaseActivity {
         Tracks tracks = player.getCurrentTracks();
         List<String> trackNames = new ArrayList<>();
         List<Integer> trackIndices = new ArrayList<>();
+        List<Integer> trackGroupIndices = new ArrayList<>();
+
+        // Add "Automático" option for video tracks
+        if (trackType == C.TRACK_TYPE_VIDEO) {
+            trackNames.add("Automático (adaptativo)");
+            trackIndices.add(-1);
+            trackGroupIndices.add(-1);
+        }
 
         for (int groupIndex = 0; groupIndex < tracks.getGroups().size(); groupIndex++) {
             Tracks.Group group = tracks.getGroups().get(groupIndex);
@@ -663,7 +732,8 @@ public class PlayAty extends BaseActivity {
                     Format format = group.getTrackFormat(trackIndex);
                     String label = buildTrackLabel(format, trackIndex);
                     trackNames.add(label);
-                    trackIndices.add(groupIndex);
+                    trackIndices.add(trackIndex);
+                    trackGroupIndices.add(groupIndex);
                 }
             }
         }
@@ -674,12 +744,45 @@ public class PlayAty extends BaseActivity {
         }
 
         String[] items = trackNames.toArray(new String[0]);
-        int currentTrack = -1;
 
         new android.app.AlertDialog.Builder(this)
                 .setTitle(title)
                 .setItems(items, (dialog, which) -> {
-                    selectTrack(trackType, trackIndices.get(which), which);
+                    if (trackType == C.TRACK_TYPE_VIDEO && which == 0 && trackGroupIndices.get(which) == -1) {
+                        showToast("Midiendo velocidad de conexión...");
+                        SpeedTestUtil.INSTANCE.measureSpeed(speedMbps -> {
+                            String quality = SpeedTestUtil.INSTANCE.getRecommendedQuality(speedMbps);
+                            String category = SpeedTestUtil.INSTANCE.categorizeSpeed(speedMbps);
+                            showToast("Velocidad: " + String.format("%.1f", speedMbps) + " Mbps - Calidad: " + quality + " (" + category + ")");
+
+                            // Try to match the recommended quality in available tracks
+                            int targetHeight = quality.equals("4K") ? 2160 : quality.equals("1080p") ? 1080 : quality.equals("720p") ? 720 : 480;
+                            int bestGroup = -1;
+                            int bestIndex = -1;
+                            int bestHeight = 0;
+
+                            for (int gi = 0; gi < tracks.getGroups().size(); gi++) {
+                                Tracks.Group group = tracks.getGroups().get(gi);
+                                if (group.getType() == C.TRACK_TYPE_VIDEO) {
+                                    for (int ti = 0; ti < group.length; ti++) {
+                                        Format fmt = group.getTrackFormat(ti);
+                                        int h = fmt.height;
+                                        if (h <= targetHeight && h > bestHeight) {
+                                            bestHeight = h;
+                                            bestGroup = gi;
+                                            bestIndex = ti;
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (bestGroup >= 0) {
+                                selectTrack(C.TRACK_TYPE_VIDEO, bestGroup, bestIndex);
+                            }
+                        });
+                    } else {
+                        selectTrack(trackType, trackGroupIndices.get(which), trackIndices.get(which));
+                    }
                 })
                 .show();
     }

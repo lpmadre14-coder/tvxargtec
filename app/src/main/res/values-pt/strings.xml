@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">Tvxargtec</string>
     <string name="default_notification_channel_id">tvxargtec_alerts</string>
+    <string name="license_text">Licença MIT\n\nCopyright (c) 2026 Tvxargtec\n\nA permissão é concedida, gratuitamente, a qualquer pessoa que obtenha uma cópia deste software e arquivos de documentação associados (o "Software"), para lidar com o Software sem restrição, incluindo, sem limitação, os direitos de usar, copiar, modificar, fundir, publicar, distribuir, sublicenciar e/ou vender cópias do Software, e permitir que as pessoas a quem o Software é fornecido o façam, sujeito às seguintes condições:\n\nO aviso de copyright acima e este aviso de permissão devem ser incluídos em todas as cópias ou partes substanciais do Software.\n\nO SOFTWARE É FORNECIDO "NO ESTADO EM QUE SE ENCONTRA", SEM GARANTIA DE QUALQUER TIPO, EXPRESSA OU IMPLÍCITA.</string>
 
     <!-- Onboarding -->
     <string name="onboarding_skip">Pular</string>
@@ -16,7 +17,7 @@
 
     <!-- Navigation -->
     <string name="nav_home">Início</string>
-    <string name="nav_live">TV ao Vivo</string>
+    <string name="nav_live">Ao Vivo</string>
     <string name="nav_series">Séries</string>
     <string name="nav_movies">Filmes</string>
     <string name="nav_profile">Perfil</string>
@@ -26,7 +27,7 @@
     <string name="home_live_channels">Canais ao Vivo</string>
     <string name="home_recommended">Recomendados</string>
     <string name="home_premieres">Estreias</string>
-    <string name="home_trending">Em Alta</string>
+    <string name="home_trending">Tendências</string>
     <string name="home_watch_now">Assistir Agora</string>
     <string name="home_more_info">Mais Informações</string>
     <string name="home_categories">Categorias</string>
@@ -64,10 +65,68 @@
     <string name="settings_general">GERAL</string>
     <string name="settings_language">Idioma</string>
     <string name="settings_notifications">Notificações</string>
-    <string name="settings_info">INFORMAÇÕES</string>
+    <string name="settings_parental_control">Controle parental</string>
+    <string name="settings_playlist">Playlist personalizada (M3U)</string>
+    <string name="settings_custom_categories">Categorias personalizadas</string>
+    <string name="settings_time_limit">Limite de tempo diário</string>
+    <string name="settings_theme">Tema</string>
+    <string name="settings_backup">Backup na nuvem</string>
+    <string name="settings_info">INFORMAÇÃO</string>
+    <string name="settings_check_update">Verificar atualizações</string>
     <string name="settings_about">Sobre</string>
     <string name="settings_logout">Sair</string>
     <string name="settings_version">Versão</string>
+    <string name="settings_no_limit">Sem limite</string>
+    <string name="settings_theme_system">Sistema</string>
+    <string name="settings_theme_light">Claro</string>
+    <string name="settings_theme_dark">Escuro</string>
+
+    <!-- Settings - Parental Control -->
+    <string name="parental_pin_label">PIN de controle parental</string>
+    <string name="parental_blocked">Categorias bloqueadas</string>
+    <string name="parental_save">Salvar</string>
+    <string name="parental_cancel">Cancelar</string>
+    <string name="parental_pin_short">O PIN deve ter pelo menos 4 dígitos</string>
+
+    <!-- Settings - Time Limit -->
+    <string name="time_limit_title">Limite de tempo diário</string>
+    <string name="time_limit_reached">Limite de tempo atingido</string>
+    <string name="time_limit_message">Você atingiu o limite de %d minutos por hoje.</string>
+    <string name="time_limit_got_it">Entendi</string>
+
+    <!-- Settings - Backup -->
+    <string name="backup_title">Backup na nuvem</string>
+    <string name="backup_message">Escolha uma opção para fazer backup ou restaurar seus dados (favoritos, histórico e categorias personalizadas).</string>
+    <string name="backup_now">Fazer backup agora</string>
+    <string name="backup_restore">Restaurar</string>
+    <string name="backup_in_progress">Fazendo backup...</string>
+    <string name="restore_in_progress">Restaurando dados...</string>
+    <string name="backup_success">Backup concluído com sucesso</string>
+    <string name="restore_success">Restauração concluída com sucesso</string>
+    <string name="backup_no_session">Nenhuma sessão ativa</string>
+
+    <!-- EPG -->
+    <string name="epg_title">Guia EPG</string>
+    <string name="epg_today">Hoje</string>
+    <string name="epg_now">AGORA</string>
+    <string name="epg_next">Seguinte</string>
+    <string name="epg_no_info">Sem informação de programação</string>
+
+    <!-- Voice Search -->
+    <string name="voice_search_prompt">Fale para pesquisar canais</string>
+    <string name="voice_search_unavailable">Pesquisa por voz não disponível neste dispositivo</string>
+
+    <!-- Sleep Timer -->
+    <string name="sleep_title">Tempo de uso</string>
+    <string name="sleep_message">Você está usando o app há mais de 5 horas. Descanse um pouco, seus olhos agradecerão.</string>
+    <string name="sleep_continue">Continuar assistindo</string>
+    <string name="sleep_exit">Sair</string>
+
+    <!-- Downloads -->
+    <string name="downloads_title">Downloads</string>
+    <string name="download_empty">Nenhum download</string>
+    <string name="download_delete">Excluir</string>
+    <string name="download_play">Reproduzir</string>
 
     <!-- VIP -->
     <string name="vip_title">Tvxargtec VIP</string>
@@ -75,7 +134,7 @@
     <string name="vip_monthly">Mensal</string>
     <string name="vip_yearly">Anual</string>
     <string name="vip_lifetime">Vitalício</string>
-    <string name="vip_subscribe">Assinar</string>
+    <string name="vip_subscribe">Inscrever-se</string>
     <string name="vip_buy">Comprar</string>
     <string name="vip_redeem">Tem um código de resgate?</string>
     <string name="vip_most_popular">MAIS POPULAR</string>
@@ -89,28 +148,39 @@
     <string name="login_email">E-mail</string>
     <string name="login_password">Senha</string>
     <string name="login_button">Entrar</string>
-    <string name="login_register">Não tem uma conta? Cadastre-se</string>
-    <string name="login_forgot">Esqueceu sua senha?</string>
-    <string name="login_empty">Insira e-mail e senha</string>
+    <string name="login_register">Não tem conta? Cadastre-se</string>
+    <string name="login_forgot">Esqueceu a senha?</string>
+    <string name="login_empty">Digite e-mail e senha</string>
     <string name="login_success">Login bem-sucedido</string>
 
     <!-- Search -->
-    <string name="search_hint">Pesquisar canais...</string>
-    <string name="search_no_results">Nenhum resultado encontrado</string>
+    <string name="search_hint">Pesquisar canais…</string>
+    <string name="search_no_results">Sem resultados</string>
 
     <!-- Favorites -->
     <string name="favorites_title">Meus Favoritos</string>
-    <string name="favorites_empty">Você ainda não tem favoritos</string>
+    <string name="favorites_empty">Nenhum favorito ainda</string>
 
     <!-- History -->
     <string name="history_title">Histórico</string>
     <string name="history_empty">Nenhum histórico ainda</string>
 
     <!-- General -->
-    <string name="loading">Carregando...</string>
+    <string name="loading">Carregando…</string>
     <string name="error_generic">Algo deu errado</string>
     <string name="retry">Tentar novamente</string>
     <string name="cancel">Cancelar</string>
     <string name="confirm">Confirmar</string>
     <string name="splash_tagline">Streaming Premium</string>
+
+    <!-- Update -->
+    <string name="update_checking">Verificando...</string>
+    <string name="update_available">%s disponível!</string>
+    <string name="update_up_to_date">Atualizado</string>
+    <string name="update_error">Erro</string>
+    <string name="update_downloading">Baixando nova versão...</string>
+    <string name="update_title">Atualização disponível: %s</string>
+    <string name="update_message">Nova versão disponível. Baixar?</string>
+    <string name="update_confirm">Atualizar</string>
+    <string name="update_later">Depois</string>
 </resources>

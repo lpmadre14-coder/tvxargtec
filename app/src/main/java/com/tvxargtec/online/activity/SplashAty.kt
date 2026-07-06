@@ -2,6 +2,7 @@ package com.tvxargtec.online.activity
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Handler
 import android.os.Looper
 import android.view.animation.DecelerateInterpolator
@@ -9,6 +10,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.tvxargtec.online.R
 import com.tvxargtec.online.base.BaseActivity
+import com.tvxargtec.online.tv.TvAty
 
 class SplashAty : BaseActivity() {
     override fun getLayoutResId(): Int = R.layout.activity_splash
@@ -42,11 +44,21 @@ class SplashAty : BaseActivity() {
             .start()
 
         Handler(Looper.getMainLooper()).postDelayed({
-            val prefs = getSharedPreferences("onboarding_prefs", Context.MODE_PRIVATE)
-            val completed = prefs.getBoolean("onboarding_completed", false)
-            val target = if (completed) PinAty::class.java else OnboardingAty::class.java
+            val target: Class<*> = when {
+                isTvDevice() -> TvAty::class.java
+                else -> {
+                    val prefs = getSharedPreferences("onboarding_prefs", Context.MODE_PRIVATE)
+                    val completed = prefs.getBoolean("onboarding_completed", false)
+                    if (completed) PinAty::class.java else OnboardingAty::class.java
+                }
+            }
             startActivity(Intent(this, target))
             finish()
         }, 2500)
+    }
+
+    private fun isTvDevice(): Boolean {
+        val uiMode = resources.configuration.uiMode and Configuration.UI_MODE_TYPE_MASK
+        return uiMode == Configuration.UI_MODE_TYPE_TELEVISION
     }
 }

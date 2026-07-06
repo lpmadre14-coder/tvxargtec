@@ -13,8 +13,8 @@ android {
         applicationId = "com.tvxargtec.online"
         minSdk = 21
         targetSdk = 34
-        versionCode = 9
-        versionName = "1.4.0"
+        versionCode = 10
+        versionName = "1.4.1"
     }
 
     signingConfigs {
@@ -60,6 +60,10 @@ dependencies {
 
     // Stripe
     implementation("com.stripe:stripe-android:20.46.0")
+
+    // Leanback (Android TV)
+    implementation("androidx.leanback:leanback:1.0.0")
+    implementation("androidx.leanback:leanback-paging:1.1.0-alpha11")
 
     // Google Cast
     implementation("com.google.android.gms:play-services-cast-framework:21.4.0")

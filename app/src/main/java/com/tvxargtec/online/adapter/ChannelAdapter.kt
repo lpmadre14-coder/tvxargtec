@@ -80,6 +80,8 @@ class ChannelAdapter @JvmOverloads constructor(
         private val tvCategory: TextView = itemView.findViewById(R.id.tvChannelCategory)
         private val tvEpg: TextView = itemView.findViewById(R.id.tvChannelEpg)
         private val ivFavorite: ImageView = itemView.findViewById(R.id.ivFavorite)
+        private val previewOverlay: View = itemView.findViewById(R.id.previewOverlay)
+        private val tvPreviewTitle: TextView = itemView.findViewById(R.id.tvPreviewTitle)
 
         fun bind(channel: Channel) {
             tvTitle.text = channel.title
@@ -127,7 +129,38 @@ class ChannelAdapter @JvmOverloads constructor(
                 }
             }
 
+            // Preview overlay hover/focus
+            tvPreviewTitle.text = channel.title
+
+            itemView.setOnHoverListener { _, event ->
+                when (event.action) {
+                    android.view.MotionEvent.ACTION_HOVER_ENTER -> showPreview()
+                    android.view.MotionEvent.ACTION_HOVER_EXIT -> hidePreview()
+                }
+                false
+            }
+
+            itemView.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) showPreview() else hidePreview()
+            }
+
             fetchEpg(channel)
+        }
+
+        private fun showPreview() {
+            previewOverlay.apply {
+                alpha = 0f
+                visibility = View.VISIBLE
+                animate().alpha(1f).duration = 200
+            }
+        }
+
+        private fun hidePreview() {
+            previewOverlay.animate()
+                .alpha(0f)
+                .setDuration(200)
+                .withEndAction { previewOverlay.visibility = View.GONE }
+                .start()
         }
 
         private fun fetchEpg(channel: Channel) {

@@ -329,6 +329,121 @@
             .download-section { padding: 2rem; }
             .code-inputs input { width: 40px; height: 48px; font-size: 1.2rem; }
         }
+        /* ── Changelog ── */
+        .changelog-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+        .changelog-card {
+            background: rgba(17, 24, 39, 0.5);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2rem;
+            transition: all .4s;
+        }
+        .changelog-card:hover {
+            transform: translateY(-2px);
+        }
+        .changelog-card.current {
+            border-color: var(--violet);
+            box-shadow: 0 0 40px rgba(124,58,237,0.12), inset 0 0 60px rgba(124,58,237,0.03);
+        }
+        .changelog-version {
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: var(--violet);
+            margin-bottom: .2rem;
+            letter-spacing: -.5px;
+        }
+        .changelog-date {
+            font-size: .85rem;
+            color: var(--muted);
+            margin-bottom: 1.2rem;
+        }
+        .changelog-list {
+            list-style: none;
+            columns: 2;
+            column-gap: 2rem;
+        }
+        .changelog-list li {
+            padding: .35rem 0;
+            font-size: .9rem;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            break-inside: avoid;
+        }
+        @media (max-width: 768px) {
+            .changelog-list { columns: 1; }
+        }
+
+        /* ── Admin ── */
+        .admin-tab {
+            animation: fadeIn .3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            background: var(--card);
+        }
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .9rem;
+        }
+        .admin-table th {
+            text-align: left;
+            padding: 1rem 1.2rem;
+            font-size: .8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--muted);
+            border-bottom: 1px solid var(--border);
+            background: rgba(124,58,237,0.03);
+        }
+        .admin-table td {
+            padding: .9rem 1.2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            vertical-align: middle;
+        }
+        .admin-table tr:hover td {
+            background: rgba(124,58,237,0.03);
+        }
+        .admin-table .status-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .admin-table .status-dot.online { background: var(--green); box-shadow: 0 0 8px rgba(16,185,129,0.4); }
+        .admin-table .status-dot.offline { background: var(--crimson); box-shadow: 0 0 8px rgba(239,0,68,0.4); }
+        .admin-table .action-btn {
+            background: none; border: 1px solid var(--border);
+            color: var(--muted); padding: .4rem .8rem; border-radius: 8px;
+            cursor: pointer; font-size: .8rem; transition: all .3s;
+            margin-right: .4rem;
+        }
+        .admin-table .action-btn:hover { border-color: var(--violet); color: var(--text); }
+        .admin-table .action-btn.danger:hover { border-color: var(--crimson); color: var(--crimson); }
+        .admin-table .action-btn.save { border-color: var(--green); color: var(--green); }
+        .admin-table input.inline-edit {
+            background: var(--bg2); border: 1px solid var(--border);
+            color: var(--text); padding: .4rem .6rem; border-radius: 6px;
+            font-size: .9rem; width: 100%; outline: none;
+        }
+        .admin-table input.inline-edit:focus { border-color: var(--violet); }
+        .admin-table .deleted-row td {
+            text-decoration: line-through;
+            opacity: .5;
+        }
+        .admin-table .deleted-row .action-btn { display: none; }
     </style>
 </head>
 <body>
@@ -342,6 +457,8 @@
         <a href="#pricing">Planes</a>
         <a href="#security">Seguridad</a>
         <a href="#download">Descargar</a>
+        <a href="#changelog">Versiones</a>
+        <a href="#admin">Admin</a>
     </div>
 </nav>
 
@@ -549,6 +666,115 @@
     </div>
 </section>
 
+<!-- Changelog -->
+<section id="changelog">
+    <div class="section-tag">✦ Versiones</div>
+    <h2 class="section-title">Historial de Versiones</h2>
+    <p class="section-sub">Evolución y mejoras de TVXargtec.</p>
+    <div class="changelog-grid">
+        <div class="changelog-card current">
+            <div class="changelog-version">v1.4.1</div>
+            <div class="changelog-date">Julio 2026 — Última versión</div>
+            <ul class="changelog-list">
+                <li>🔍 Botón "Reportar canal muerto" en el reproductor</li>
+                <li>✅ Verificación automática de canales (ChannelHealthChecker)</li>
+                <li>🔄 WorkManager para refresh diario de playlists IPTV-org</li>
+                <li>🖥 Panel de administración web</li>
+                <li>📶 Calidad adaptativa según velocidad de conexión</li>
+                <li>👥 Múltiples perfiles de usuario</li>
+                <li>👁 Previsualización de canal al hacer hover</li>
+                <li>🌍 Traducciones: español, inglés, portugués</li>
+                <li>📺 Android TV con Leanback</li>
+                <li>📅 Guía EPG de 7 días</li>
+                <li>⭐ Widget de favoritos</li>
+                <li>🏷 Categorías personalizadas</li>
+                <li>☁️ Backup/Restore en la nube</li>
+                <li>🎤 Búsqueda por voz</li>
+                <li>⏱ Límite de tiempo diario</li>
+                <li>🌗 Tema claro/oscuro</li>
+                <li>🖼 Caché de logos (Glide 50MB)</li>
+                <li>🚀 Release automático via GitHub Actions</li>
+            </ul>
+        </div>
+        <div class="changelog-card">
+            <div class="changelog-version">v1.4.0</div>
+            <div class="changelog-date">Junio 2026</div>
+            <ul class="changelog-list">
+                <li>🔐 Control parental con PIN</li>
+                <li>🎛 Ecualizador con 8 presets</li>
+                <li>📴 Modo offline</li>
+                <li>🗣 Selector de lenguaje</li>
+                <li>⚡ Mejora de rendimiento con DiffUtil</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- Admin -->
+<section id="admin">
+    <div class="section-tag">⚙ Admin</div>
+    <h2 class="section-title">Panel de Administración — Gestión de Canales</h2>
+    <p class="section-sub">Administrá los canales, verificá reportes y mantené la plataforma actualizada.</p>
+
+    <div class="admin-login" id="adminLogin">
+        <div class="auth-section">
+            <h3>🔐 Acceso Administrativo</h3>
+            <p>Ingresá tus credenciales de administrador.</p>
+            <form class="auth-form" onsubmit="return adminLogin(event)">
+                <input type="email" id="adminEmail" placeholder="Email admin" required>
+                <input type="password" id="adminPass" placeholder="Contraseña" required>
+                <button type="submit" class="btn btn-primary">Ingresar</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="adminPanel" style="display:none">
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2rem">
+            <button class="btn btn-primary" onclick="showAdminTab('channels')">📺 Canales</button>
+            <button class="btn btn-secondary" onclick="showAdminTab('add')">➕ Añadir Canal</button>
+            <button class="btn btn-secondary" onclick="showAdminTab('reports')">📊 Reportes</button>
+            <button class="btn btn-outline" onclick="adminLogout()" style="margin-left:auto">🚪 Salir</button>
+        </div>
+
+        <div id="adminChannels" class="admin-tab">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+                <h3 style="font-size:1.3rem">Canales Registrados</h3>
+                <button class="btn btn-secondary" onclick="fetchChannels()" style="padding:.5rem 1rem;font-size:.85rem">🔄 Refrescar</button>
+            </div>
+            <div class="table-wrap">
+                <table class="admin-table">
+                    <thead>
+                        <tr><th>Estado</th><th>Título</th><th>Categoría</th><th>Acciones</th></tr>
+                    </thead>
+                    <tbody id="channelsBody">
+                        <tr><td colspan="4" style="text-align:center;color:var(--muted);padding:2rem">Cargando canales...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="adminAdd" class="admin-tab" style="display:none">
+            <div class="auth-section" style="text-align:left">
+                <h3>➕ Añadir Canal</h3>
+                <p>Completá los datos del nuevo canal.</p>
+                <form class="auth-form" onsubmit="return addChannel(event)" style="max-width:100%">
+                    <input type="url" id="newUrl" placeholder="URL del stream" required style="flex:100%">
+                    <input type="text" id="newTitle" placeholder="Título del canal" required>
+                    <input type="text" id="newCategory" placeholder="Categoría (ej: Noticias)" required>
+                    <input type="url" id="newLogo" placeholder="URL del logo">
+                    <button type="submit" class="btn btn-primary" style="flex:100%">Guardar Canal</button>
+                </form>
+                <div id="addChannelMsg" style="margin-top:1rem;font-size:.9rem"></div>
+            </div>
+        </div>
+
+        <div id="adminReports" class="admin-tab" style="display:none">
+            <h3 style="font-size:1.3rem;margin-bottom:1rem">📊 Reportes de Canales</h3>
+            <div id="reportsContent" style="color:var(--muted);padding:2rem 0">Cargando reportes...</div>
+        </div>
+    </div>
+</section>
+
 <!-- Modal Activación -->
 <div class="modal-overlay" id="activationModal">
     <div class="modal">
@@ -648,6 +874,159 @@
     document.getElementById('activationModal').addEventListener('click', function(e) {
         if (e.target === this) closeModal();
     });
+
+    /* ── Admin ── */
+    const ADMIN_CREDENTIALS = { email: 'admin@tvxargtec.com', password: 'admin123' };
+    let channelsData = [];
+
+    function adminLogin(e) {
+        e.preventDefault();
+        const email = document.getElementById('adminEmail').value;
+        const pass = document.getElementById('adminPass').value;
+        if (email === ADMIN_CREDENTIALS.email && pass === ADMIN_CREDENTIALS.password) {
+            document.getElementById('adminLogin').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'block';
+            fetchChannels();
+        } else {
+            alert('❌ Credenciales inválidas');
+        }
+        return false;
+    }
+
+    function adminLogout() {
+        document.getElementById('adminLogin').style.display = 'block';
+        document.getElementById('adminPanel').style.display = 'none';
+    }
+
+    function showAdminTab(tab) {
+        document.querySelectorAll('.admin-tab').forEach(t => t.style.display = 'none');
+        const map = { channels: 'adminChannels', add: 'adminAdd', reports: 'adminReports' };
+        const el = document.getElementById(map[tab]);
+        if (el) {
+            el.style.display = 'block';
+            if (tab === 'reports') fetchReports();
+        }
+    }
+
+    async function fetchChannels() {
+        const tbody = document.getElementById('channelsBody');
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:2rem">Cargando canales...</td></tr>';
+        try {
+            const res = await fetch('https://apitvxargtec.duckdns.org/api/content');
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const data = await res.json();
+            channelsData = Array.isArray(data) ? data : (data.channels || data.data || []);
+            renderChannels();
+        } catch (err) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--crimson);padding:2rem">❌ Error al cargar: ' + err.message + '</td></tr>';
+        }
+    }
+
+    function renderChannels() {
+        const tbody = document.getElementById('channelsBody');
+        if (!channelsData.length) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:2rem">No hay canales registrados.</td></tr>';
+            return;
+        }
+        tbody.innerHTML = channelsData.map((ch, i) => {
+            const title = ch.title || ch.name || '—';
+            const category = ch.category || ch.group || 'General';
+            const status = ch.status !== undefined ? ch.status : (ch.online !== undefined ? ch.online : true);
+            const isOnline = status === true || status === 'online' || status === 'active' || status === 1;
+            const isDeleted = ch._deleted;
+            return `<tr class="${isDeleted ? 'deleted-row' : ''}" data-index="${i}">
+                <td><span class="status-dot ${isOnline ? 'online' : 'offline'}"></span></td>
+                <td class="cell-title">${title}</td>
+                <td class="cell-category">${category}</td>
+                <td>
+                    ${isDeleted ? '<span style="color:var(--crimson);font-size:.8rem">Eliminado</span>' :
+                        `<button class="action-btn" onclick="editChannel(${i})">✎ Editar</button>
+                         <button class="action-btn danger" onclick="deleteChannel(${i})">✕ Eliminar</button>`}
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+    function editChannel(index) {
+        const ch = channelsData[index];
+        const row = document.querySelector(`tr[data-index="${index}"]`);
+        if (!row) return;
+        const titleCell = row.querySelector('.cell-title');
+        const catCell = row.querySelector('.cell-category');
+        const actionsCell = row.querySelector('td:last-child');
+        const currentTitle = ch.title || ch.name || '';
+        const currentCat = ch.category || ch.group || '';
+        titleCell.innerHTML = `<input class="inline-edit" type="text" value="${currentTitle.replace(/"/g,'&quot;')}" data-field="title">`;
+        catCell.innerHTML = `<input class="inline-edit" type="text" value="${currentCat.replace(/"/g,'&quot;')}" data-field="category">`;
+        actionsCell.innerHTML = `<button class="action-btn save" onclick="saveChannel(${index})">✓ Guardar</button>
+                                <button class="action-btn" onclick="fetchChannels()">✕ Cancelar</button>`;
+    }
+
+    function saveChannel(index) {
+        const row = document.querySelector(`tr[data-index="${index}"]`);
+        if (!row) return;
+        const inputs = row.querySelectorAll('.inline-edit');
+        inputs.forEach(inp => {
+            const field = inp.dataset.field;
+            if (field === 'title') channelsData[index].title = inp.value;
+            if (field === 'category') channelsData[index].category = inp.value;
+        });
+        renderChannels();
+    }
+
+    function deleteChannel(index) {
+        if (!confirm('¿Eliminar este canal?')) return;
+        channelsData[index]._deleted = true;
+        renderChannels();
+    }
+
+    async function addChannel(e) {
+        e.preventDefault();
+        const msg = document.getElementById('addChannelMsg');
+        const url = document.getElementById('newUrl').value;
+        const title = document.getElementById('newTitle').value;
+        const category = document.getElementById('newCategory').value;
+        const logo = document.getElementById('newLogo').value || '';
+        const newCh = { title, category, url, logo, _deleted: false, _pending: true };
+        channelsData.unshift(newCh);
+        renderChannels();
+        document.getElementById('newUrl').value = '';
+        document.getElementById('newTitle').value = '';
+        document.getElementById('newCategory').value = '';
+        document.getElementById('newLogo').value = '';
+        msg.innerHTML = '<span style="color:var(--green)">✅ Canal agregado localmente. Los cambios se reflejan en la tabla.</span>';
+        setTimeout(() => msg.innerHTML = '', 3000);
+        return false;
+    }
+
+    async function fetchReports() {
+        const el = document.getElementById('reportsContent');
+        el.innerHTML = 'Consultando reportes...';
+        try {
+            const res = await fetch('https://apitvxargtec.duckdns.org/api/reports');
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const data = await res.json();
+            const reports = Array.isArray(data) ? data : (data.reports || data.data || []);
+            if (!reports.length) {
+                el.innerHTML = '<div style="text-align:center;padding:2rem">No hay reportes registrados.</div>';
+                return;
+            }
+            el.innerHTML = reports.map(r => `
+                <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem;margin-bottom:.8rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem">
+                    <div><strong>${r.channel || r.title || '—'}</strong><br><span style="font-size:.8rem;color:var(--muted)">${r.reason || r.message || 'Sin detalle'}</span></div>
+                    <span style="font-size:.8rem;color:var(--muted)">${r.date || r.created_at || ''}</span>
+                </div>
+            `).join('');
+        } catch (err) {
+            el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted)">ℹ️ No hay endpoint de reportes disponible. Usá un canal simulado para pruebas.</div>';
+            el.innerHTML += '<div style="display:grid;gap:.8rem;margin-top:1rem">' +
+                ['Canal A24 reportado como offline', 'ESPN señal intermitente', 'HBO sin audio'].map(r => `
+                <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem;display:flex;justify-content:space-between;align-items:center">
+                    <div><strong>${r}</strong></div>
+                    <span style="font-size:.8rem;color:var(--muted)">Hoy</span>
+                </div>`).join('') + '</div>';
+        }
+    }
 </script>
 </body>
 </html>

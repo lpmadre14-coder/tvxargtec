@@ -5,93 +5,139 @@
     android:layout_height="80dp"
     android:layout_marginHorizontal="12dp"
     android:layout_marginVertical="4dp"
+    android:focusable="true"
+    android:clickable="true"
     app:cardBackgroundColor="@color/card_bg"
     app:cardCornerRadius="12dp"
     app:cardElevation="2dp"
     app:strokeColor="@color/surface_light"
     app:strokeWidth="0.5dp">
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="12dp">
+        android:layout_height="match_parent">
 
-        <!-- Channel logo placeholder -->
-        <FrameLayout
-            android:layout_width="52dp"
-            android:layout_height="52dp"
-            android:background="@drawable/bg_channel_logo">
-
-            <ImageView
-                android:id="@+id/ivChannelLogo"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_gravity="center"
-                android:scaleType="centerCrop" />
-
-        </FrameLayout>
-
-        <!-- Text info -->
         <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="12dp">
 
-            <TextView
-                android:id="@+id/tvChannelName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/text_primary"
-                android:textSize="15sp"
-                android:textStyle="bold" />
+            <!-- Channel logo placeholder -->
+            <FrameLayout
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:background="@drawable/bg_channel_logo">
 
+                <ImageView
+                    android:id="@+id/ivChannelLogo"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:scaleType="centerCrop" />
+
+            </FrameLayout>
+
+            <!-- Text info -->
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <View
-                    android:layout_width="6dp"
-                    android:layout_height="6dp"
-                    android:background="@drawable/bg_online_dot" />
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/tvChannelCategory"
+                    android:id="@+id/tvChannelName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="12sp" />
+                    android:textColor="@color/text_primary"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:layout_width="6dp"
+                        android:layout_height="6dp"
+                        android:background="@drawable/bg_online_dot" />
+
+                    <TextView
+                        android:id="@+id/tvChannelCategory"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvChannelEpg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textColor="@color/brand_cyan"
+                    android:textSize="11sp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:visibility="gone" />
 
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/tvChannelEpg"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:textColor="@color/brand_cyan"
-                android:textSize="11sp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:visibility="gone" />
+            <!-- Favorite button -->
+            <ImageView
+                android:id="@+id/ivFavorite"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:padding="6dp"
+                android:tint="@color/accent" />
 
         </LinearLayout>
 
-        <!-- Favorite button -->
-        <ImageView
-            android:id="@+id/ivFavorite"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:padding="6dp"
-            android:tint="@color/accent" />
+        <!-- Hover/Preview overlay -->
+        <FrameLayout
+            android:id="@+id/previewOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_preview_overlay"
+            android:visibility="gone">
 
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvPreviewTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_primary"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_badge"
+                    android:paddingHorizontal="20dp"
+                    android:paddingVertical="6dp"
+                    android:text="▶ VER"
+                    android:textColor="@color/text_on_brand"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+    </FrameLayout>
 
 </com.google.android.material.card.MaterialCardView>

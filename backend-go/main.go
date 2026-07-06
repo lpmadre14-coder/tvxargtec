@@ -31,6 +31,9 @@ import (
 var (
 	activationCodes = make(map[string]time.Time)
 	activationMu    sync.RWMutex
+
+	channelReports   = make(map[string]time.Time)
+	channelReportsMu sync.RWMutex
 )
 
 // Estructuras de Datos
@@ -134,6 +137,12 @@ func initTables() {
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 			updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 			UNIQUE KEY unique_token (token(255))
+		)`,
+		`CREATE TABLE IF NOT EXISTS backups (
+			id INT AUTO_INCREMENT PRIMARY KEY,
+			user_id VARCHAR(255) NOT NULL,
+			data JSON NOT NULL,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		)`,
 	}
 	for _, q := range tables {
@@ -320,6 +329,8 @@ func main() {
 	http.HandleFunc("/api/activation/code", activationCodeHandler)
 	http.HandleFunc("/api/activation/validate", activationValidateHandler)
 	http.HandleFunc("/api/notifications/send", sendNotificationHandler)
+	http.HandleFunc("/api/backup", backupHandler)
+	http.HandleFunc("/api/channel/report", channelReportHandler)
 
 	fmt.Println("🚀 Servidor TVXargtec corriendo en http://localhost:8081")
 	log.Fatal(http.ListenAndServe(":8081", nil))
@@ -948,6 +959,65 @@ func sendNotificationHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func backupHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	userID := extractUserID(r)
+	if userID == "" {
+		http.Error(w, `{"code":401,"message":"No autorizado"}`, http.StatusUnauthorized)
+		return
+	}
+
+	switch r.Method {
+	case http.MethodPost:
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, `{"code":400,"message":"Error leyendo datos"}`, http.StatusBadRequest)
+			return
+		}
+
+		// Validar JSON
+		var data map[string]interface{}
+		if err := json.Unmarshal(body, &data); err != nil {
+			http.Error(w, `{"code":400,"message":"JSON invalido"}`, http.StatusBadRequest)
+			return
+		}
+
+		_, err = db.Exec("INSERT INTO backups (user_id, data) VALUES (?, ?)", userID, string(body))
+		if err != nil {
+			http.Error(w, `{"code":500,"message":"Error guardando respaldo"}`, http.StatusInternalServerError)
+			return
+		}
+
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"code":    200,
+			"message": "Respaldo guardado correctamente",
+		})
+
+	case http.MethodGet:
+		var dataJSON string
+		err := db.QueryRow("SELECT data FROM backups WHERE user_id = ? ORDER BY created_at DESC LIMIT 1", userID).Scan(&dataJSON)
+		if err != nil {
+			json.NewEncoder(w).Encode(map[string]interface{}{
+				"code":    404,
+				"message": "No se encontro respaldo",
+				"data":    nil,
+			})
+			return
+		}
+
+		var data map[string]interface{}
+		json.Unmarshal([]byte(dataJSON), &data)
+
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"code": 200,
+			"data": data,
+		})
+
+	default:
+		http.Error(w, `{"code":405,"message":"Metodo no permitido"}`, http.StatusMethodNotAllowed)
+	}
+}
+
 func getTokens(userID int, all bool) ([]string, error) {
 	var tokens []string
 	var rows *sql.Rows
@@ -973,6 +1043,48 @@ func getTokens(userID int, all bool) ([]string, error) {
 		}
 	}
 	return tokens, nil
+}
+
+func channelReportHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method != http.MethodPost {
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 405, "message": "Método no permitido"})
+		return
+	}
+
+	userID := extractUserID(r)
+	if userID == "" {
+		http.Error(w, "No autorizado", http.StatusUnauthorized)
+		return
+	}
+
+	var req struct {
+		URL   string `json:"url"`
+		Title string `json:"title"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 400, "message": "Solicitud inválida"})
+		return
+	}
+
+	if req.URL == "" {
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 400, "message": "url requerido"})
+		return
+	}
+
+	key := fmt.Sprintf("%s-%s", userID, req.URL)
+	channelReportsMu.Lock()
+	channelReports[key] = time.Now()
+	channelReportsMu.Unlock()
+
+	log.Printf("Reporte de canal muerto - Usuario: %s, URL: %s, Título: %s, Total reportes: %d",
+		userID, req.URL, req.Title, len(channelReports))
+
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"code":    200,
+		"message": "Reporte recibido",
+	})
 }
 
 type serviceAccount struct {

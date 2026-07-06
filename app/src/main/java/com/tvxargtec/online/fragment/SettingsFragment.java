@@ -1,6 +1,7 @@
 package com.tvxargtec.online.fragment;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import com.google.android.material.card.MaterialCardView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 
 import android.widget.CheckBox;
@@ -20,6 +22,9 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import com.tvxargtec.online.R;
 import com.tvxargtec.online.activity.MainAty;
+import com.tvxargtec.online.utils.BackupManager;
+import com.tvxargtec.online.utils.BackupCallback;
+import com.tvxargtec.online.utils.BackupManager;
 import com.tvxargtec.online.utils.ChannelDataManager;
 import com.tvxargtec.online.utils.ParentalControlHelper;
 import com.tvxargtec.online.utils.UpdateManager;
@@ -32,6 +37,8 @@ public class SettingsFragment extends Fragment {
 
     private UpdateManager updateManager;
     private TextView tvUpdateStatus;
+    private TextView tvTimeLimitValue;
+    private TextView tvThemeValue;
 
     @Nullable
     @Override
@@ -49,8 +56,14 @@ public class SettingsFragment extends Fragment {
         MaterialCardView llLogout = view.findViewById(R.id.llLogout);
         MaterialCardView llCheckUpdate = view.findViewById(R.id.llCheckUpdate);
         MaterialCardView llPlaylist = view.findViewById(R.id.llPlaylist);
+        MaterialCardView llCustomCategories = view.findViewById(R.id.llCustomCategories);
         MaterialCardView llParentalControl = view.findViewById(R.id.llParentalControl);
+        MaterialCardView llBackup = view.findViewById(R.id.llBackup);
+        MaterialCardView llTimeLimit = view.findViewById(R.id.llTimeLimit);
+        MaterialCardView llTheme = view.findViewById(R.id.llTheme);
         tvUpdateStatus = view.findViewById(R.id.tvUpdateStatus);
+        tvTimeLimitValue = view.findViewById(R.id.tvTimeLimitValue);
+        tvThemeValue = view.findViewById(R.id.tvThemeValue);
 
         try {
             String vn = requireContext().getPackageManager()
@@ -64,6 +77,10 @@ public class SettingsFragment extends Fragment {
             llPlaylist.setOnClickListener(v -> showPlaylistDialog());
         }
 
+        if (llBackup != null) {
+            llBackup.setOnClickListener(v -> showBackupDialog());
+        }
+
         if (tvLanguage != null) {
             tvLanguage.setOnClickListener(v -> pushFragment(new LanguageFragment()));
         }
@@ -72,8 +89,20 @@ public class SettingsFragment extends Fragment {
             tvNotifications.setOnClickListener(v -> pushFragment(new NotificationSettingsFragment()));
         }
 
+        if (llCustomCategories != null) {
+            llCustomCategories.setOnClickListener(v -> pushFragment(new CustomCategoriesFragment()));
+        }
+
         if (llParentalControl != null) {
             llParentalControl.setOnClickListener(v -> showParentalControlDialog());
+        }
+
+        if (llTimeLimit != null) {
+            llTimeLimit.setOnClickListener(v -> showTimeLimitDialog());
+        }
+
+        if (llTheme != null) {
+            llTheme.setOnClickListener(v -> showThemeDialog());
         }
 
         if (llCheckUpdate != null) {
@@ -88,6 +117,79 @@ public class SettingsFragment extends Fragment {
             llLogout.setOnClickListener(v ->
                 Toast.makeText(getActivity(), "Sesión cerrada", Toast.LENGTH_SHORT).show());
         }
+
+        updateTimeLimitDisplay();
+        updateThemeDisplay();
+    }
+
+    private void updateTimeLimitDisplay() {
+        if (tvTimeLimitValue == null) return;
+        ParentalControlHelper pc = new ParentalControlHelper(requireContext());
+        int limit = pc.getTimeLimitMinutes();
+        if (limit <= 0) {
+            tvTimeLimitValue.setText("Sin límite");
+        } else {
+            int remaining = pc.remainingTimeMinutes();
+            if (remaining == Integer.MAX_VALUE) {
+                tvTimeLimitValue.setText(limit + " min");
+            } else {
+                tvTimeLimitValue.setText(limit + " min (" + remaining + " restantes)");
+            }
+        }
+    }
+
+    private void updateThemeDisplay() {
+        if (tvThemeValue == null) return;
+        int mode = requireContext().getSharedPreferences("theme_prefs", 0).getInt("theme_mode", 0);
+        switch (mode) {
+            case 1: tvThemeValue.setText("Claro"); break;
+            case 2: tvThemeValue.setText("Oscuro"); break;
+            default: tvThemeValue.setText("Sistema"); break;
+        }
+    }
+
+    private void showTimeLimitDialog() {
+        ParentalControlHelper pc = new ParentalControlHelper(requireContext());
+        int currentLimit = pc.getTimeLimitMinutes();
+
+        String[] options = {"Sin límite", "30 min", "60 min", "90 min", "120 min", "180 min"};
+        int[] values = {0, 30, 60, 90, 120, 180};
+        int checked = 0;
+        for (int i = 0; i < values.length; i++) {
+            if (values[i] == currentLimit) { checked = i; break; }
+        }
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Límite de tiempo diario")
+                .setSingleChoiceItems(options, checked, (dialog, which) -> {
+                    pc.setTimeLimitMinutes(values[which]);
+                    updateTimeLimitDisplay();
+                    dialog.dismiss();
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
+    }
+
+    private void showThemeDialog() {
+        int current = requireContext().getSharedPreferences("theme_prefs", 0).getInt("theme_mode", 0);
+        String[] options = {"Sistema", "Claro", "Oscuro"};
+        int[] modes = {0, 1, 2};
+        int checked = 0;
+        for (int i = 0; i < modes.length; i++) {
+            if (modes[i] == current) { checked = i; break; }
+        }
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Tema de la app")
+                .setSingleChoiceItems(options, checked, (dialog, which) -> {
+                    requireContext().getSharedPreferences("theme_prefs", 0)
+                            .edit().putInt("theme_mode", modes[which]).apply();
+                    updateThemeDisplay();
+                    dialog.dismiss();
+                    requireActivity().recreate();
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
     }
 
     private void showParentalControlDialog() {
@@ -192,6 +294,44 @@ public class SettingsFragment extends Fragment {
                 .replace(R.id.fragment_container, fragment)
                 .addToBackStack(null)
                 .commit();
+    }
+
+    private void showBackupDialog() {
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Respaldo en la nube")
+                .setMessage("Elige una opcion para respaldar o restaurar tus datos (favoritos, historial y categorias personalizadas).")
+                .setPositiveButton("Respaldar ahora", (dialog, which) -> {
+                    ProgressDialog progress = new ProgressDialog(requireContext());
+                    progress.setMessage("Respaldando datos...");
+                    progress.setCancelable(false);
+                    progress.show();
+                    new BackupManager(requireContext()).backup(new BackupCallback() {
+                        @Override
+                        public void onComplete(boolean success, String message) {
+                            requireActivity().runOnUiThread(() -> {
+                                progress.dismiss();
+                                Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+                            });
+                        }
+                    });
+                })
+                .setNegativeButton("Restaurar", (dialog, which) -> {
+                    ProgressDialog progress = new ProgressDialog(requireContext());
+                    progress.setMessage("Restaurando datos...");
+                    progress.setCancelable(false);
+                    progress.show();
+                    new BackupManager(requireContext()).restore(new BackupCallback() {
+                        @Override
+                        public void onComplete(boolean success, String message) {
+                            requireActivity().runOnUiThread(() -> {
+                                progress.dismiss();
+                                Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+                            });
+                        }
+                    });
+                })
+                .setNeutralButton("Cancelar", null)
+                .show();
     }
 
     private void showPlaylistDialog() {

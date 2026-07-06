@@ -1,11 +1,18 @@
 package com.tvxargtec.online
 
 import android.app.Application
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.google.android.gms.cast.framework.CastContext
 import com.tvxargtec.online.database.AppDatabase
 import com.tvxargtec.online.database.entity.FavoriteEntity
 import com.tvxargtec.online.utils.LocalDataManager
 import com.tvxargtec.online.utils.NotificationHelper
+import com.tvxargtec.online.worker.IptvRefreshWorker
+import java.util.concurrent.TimeUnit
 
 class TvxargtecApp : Application() {
     override fun onCreate() {
@@ -19,6 +26,18 @@ class TvxargtecApp : Application() {
         try {
             migrateFavoritesToRoom()
         } catch (_: Exception) {}
+        scheduleIptvRefresh()
+    }
+
+    private fun scheduleIptvRefresh() {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+        val request = PeriodicWorkRequestBuilder<IptvRefreshWorker>(1, TimeUnit.DAYS)
+            .setConstraints(constraints)
+            .build()
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            "iptv_refresh", ExistingPeriodicWorkPolicy.KEEP, request)
     }
 
     private fun migrateFavoritesToRoom() {

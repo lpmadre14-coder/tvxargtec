@@ -8,12 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
@@ -35,6 +29,7 @@ import com.tvxargtec.online.utils.Channel;
 import com.tvxargtec.online.utils.ChannelDataManager;
 import com.tvxargtec.online.utils.ParentalControlHelper;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -42,14 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import kotlin.Unit;
-
-import com.tvxargtec.online.utils.Channel;
-import com.tvxargtec.online.utils.ChannelDataManager;
-import com.tvxargtec.online.utils.ParentalControlHelper;
-import com.tvxargtec.online.activity.PlayAty;
-
-import java.util.List;
 import kotlin.Unit;
 
 public class LiveTvFragment extends Fragment {
@@ -152,6 +139,7 @@ public class LiveTvFragment extends Fragment {
     private FrameLayout loadingContainer;
     private EditText etSearch;
     private ImageView btnClearSearch;
+    private ImageView btnVoiceSearch;
     private Chip chipAll, chipMovies, chipSeries, chipSports, chipNews, chipEntertainment, chipMusic;
     private Chip chipCountryAll;
     private Chip selectedChip, selectedCountryChip;
@@ -181,6 +169,7 @@ public class LiveTvFragment extends Fragment {
         countryChipContainer = view.findViewById(R.id.countryChipContainer);
         etSearch = view.findViewById(R.id.etSearch);
         btnClearSearch = view.findViewById(R.id.btnClearSearch);
+        btnVoiceSearch = view.findViewById(R.id.btnVoiceSearch);
 
         int spanCount = ChannelDataManager.isTelevision(requireContext()) ? 4 : 2;
         rvChannels.setLayoutManager(new GridLayoutManager(getContext(), spanCount));
@@ -267,7 +256,9 @@ public class LiveTvFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String query = s.toString().trim();
-                btnClearSearch.setVisibility(query.isEmpty() ? View.GONE : View.VISIBLE);
+                boolean hasText = !query.isEmpty();
+                btnClearSearch.setVisibility(hasText ? View.VISIBLE : View.GONE);
+                if (btnVoiceSearch != null) btnVoiceSearch.setVisibility(hasText ? View.GONE : View.VISIBLE);
                 filterChannels();
             }
 
@@ -278,6 +269,38 @@ public class LiveTvFragment extends Fragment {
             etSearch.setText("");
             filterChannels();
         });
+
+        if (btnVoiceSearch != null) {
+            btnVoiceSearch.setOnClickListener(v -> startVoiceSearch());
+            btnVoiceSearch.setVisibility(etSearch.getText().toString().isEmpty() ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    private void startVoiceSearch() {
+        try {
+            Intent intent = new Intent(android.speech.RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+            intent.putExtra(android.speech.RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                    android.speech.RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+            intent.putExtra(android.speech.RecognizerIntent.EXTRA_PROMPT, "Habla para buscar canales");
+            startActivityForResult(intent, 1001);
+        } catch (android.content.ActivityNotFoundException e) {
+            Toast.makeText(requireContext(), "Búsqueda por voz no disponible en este dispositivo", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1001 && resultCode == getActivity().RESULT_OK && data != null) {
+            ArrayList<String> results = data.getStringArrayListExtra(
+                    android.speech.RecognizerIntent.EXTRA_RESULTS);
+            if (results != null && !results.isEmpty()) {
+                String query = results.get(0);
+                etSearch.setText(query);
+                etSearch.setSelection(query.length());
+                filterChannels();
+            }
+        }
     }
 
     private void loadChannels() {

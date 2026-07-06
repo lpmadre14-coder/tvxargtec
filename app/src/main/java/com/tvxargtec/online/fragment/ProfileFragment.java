@@ -25,7 +25,7 @@ import com.tvxargtec.online.utils.AuthManager;
 
 public class ProfileFragment extends Fragment {
 
-    private MaterialCardView btnMyAccount, btnFavorites, btnHistory, btnDownloads, btnSettings, btnLogout;
+    private MaterialCardView btnMyAccount, btnFavorites, btnHistory, btnDownloads, btnSettings, btnLogout, btnSwitchProfile;
     private MaterialCardView cardPlanStatus;
     private TextView tvUserName, tvUserEmail, tvPlanStatus, tvPlanExpiry;
     private ImageView ivAvatar;
@@ -51,6 +51,7 @@ public class ProfileFragment extends Fragment {
         btnDownloads = view.findViewById(R.id.btnDownloads);
         btnSettings = view.findViewById(R.id.btnSettings);
         btnLogout = view.findViewById(R.id.btnLogout);
+        btnSwitchProfile = view.findViewById(R.id.btnSwitchProfile);
         cardPlanStatus = view.findViewById(R.id.cardPlanStatus);
 
         tvUserName = view.findViewById(R.id.tvUserName);
@@ -161,6 +162,14 @@ public class ProfileFragment extends Fragment {
                 startActivity(new Intent(getActivity(), LoginAty.class));
             }
         });
+        if (btnSwitchProfile != null) {
+            btnSwitchProfile.setOnClickListener(v -> {
+                MainAty mainAty = MainAty.getInstance();
+                if (mainAty != null) {
+                    mainAty.switchFragment(new ProfileSwitcherFragment(), R.id.nav_profile);
+                }
+            });
+        }
         btnLogout.setOnClickListener(v -> logout());
     }
 

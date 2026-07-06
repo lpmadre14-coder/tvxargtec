@@ -65,10 +65,68 @@
     <string name="settings_general">GENERAL</string>
     <string name="settings_language">Idioma</string>
     <string name="settings_notifications">Notificaciones</string>
+    <string name="settings_parental_control">Control parental</string>
+    <string name="settings_playlist">Playlist personalizada (M3U)</string>
+    <string name="settings_custom_categories">Categorías personalizadas</string>
+    <string name="settings_time_limit">Límite de tiempo diario</string>
+    <string name="settings_theme">Tema</string>
+    <string name="settings_backup">Respaldo en la nube</string>
     <string name="settings_info">INFORMACIÓN</string>
+    <string name="settings_check_update">Buscar actualizaciones</string>
     <string name="settings_about">Acerca de</string>
     <string name="settings_logout">Cerrar Sesión</string>
     <string name="settings_version">Versión</string>
+    <string name="settings_no_limit">Sin límite</string>
+    <string name="settings_theme_system">Sistema</string>
+    <string name="settings_theme_light">Claro</string>
+    <string name="settings_theme_dark">Oscuro</string>
+
+    <!-- Settings - Parental Control -->
+    <string name="parental_pin_label">PIN de control parental</string>
+    <string name="parental_blocked">Categorías bloqueadas</string>
+    <string name="parental_save">Guardar</string>
+    <string name="parental_cancel">Cancelar</string>
+    <string name="parental_pin_short">El PIN debe tener al menos 4 dígitos</string>
+
+    <!-- Settings - Time Limit -->
+    <string name="time_limit_title">Límite de tiempo diario</string>
+    <string name="time_limit_reached">Límite de tiempo alcanzado</string>
+    <string name="time_limit_message">Has alcanzado el límite de %d minutos por hoy.</string>
+    <string name="time_limit_got_it">Entendido</string>
+
+    <!-- Settings - Backup -->
+    <string name="backup_title">Respaldo en la nube</string>
+    <string name="backup_message">Elige una opción para respaldar o restaurar tus datos (favoritos, historial y categorías personalizadas).</string>
+    <string name="backup_now">Respaldar ahora</string>
+    <string name="backup_restore">Restaurar</string>
+    <string name="backup_in_progress">Respaldando datos...</string>
+    <string name="restore_in_progress">Restaurando datos...</string>
+    <string name="backup_success">Respaldo completado exitosamente</string>
+    <string name="restore_success">Restauración completada exitosamente</string>
+    <string name="backup_no_session">No hay sesión activa</string>
+
+    <!-- EPG -->
+    <string name="epg_title">Guía EPG</string>
+    <string name="epg_today">Hoy</string>
+    <string name="epg_now">AHORA</string>
+    <string name="epg_next">Siguiente</string>
+    <string name="epg_no_info">Sin información de programación</string>
+
+    <!-- Voice Search -->
+    <string name="voice_search_prompt">Habla para buscar canales</string>
+    <string name="voice_search_unavailable">Búsqueda por voz no disponible en este dispositivo</string>
+
+    <!-- Sleep Timer -->
+    <string name="sleep_title">Tiempo de uso</string>
+    <string name="sleep_message">Llevas más de 5 horas usando la app. Descansa un poco, tus ojos lo agradecerán.</string>
+    <string name="sleep_continue">Seguir viendo</string>
+    <string name="sleep_exit">Salir</string>
+
+    <!-- Downloads -->
+    <string name="downloads_title">Descargas</string>
+    <string name="download_empty">No hay descargas</string>
+    <string name="download_delete">Eliminar</string>
+    <string name="download_play">Reproducir</string>
 
     <!-- VIP -->
     <string name="vip_title">Tvxargtec VIP</string>
@@ -114,4 +172,15 @@
     <string name="cancel">Cancelar</string>
     <string name="confirm">Confirmar</string>
     <string name="splash_tagline">Streaming Premium</string>
+
+    <!-- Update -->
+    <string name="update_checking">Verificando...</string>
+    <string name="update_available">¡%s disponible!</string>
+    <string name="update_up_to_date">Actualizado</string>
+    <string name="update_error">Error</string>
+    <string name="update_downloading">Descargando nueva versión...</string>
+    <string name="update_title">Actualización disponible: %s</string>
+    <string name="update_message">Nueva versión disponible. ¿Descargar?</string>
+    <string name="update_confirm">Actualizar</string>
+    <string name="update_later">Más tarde</string>
 </resources>

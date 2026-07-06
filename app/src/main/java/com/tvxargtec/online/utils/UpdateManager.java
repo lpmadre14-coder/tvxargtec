@@ -3,22 +3,25 @@ package com.tvxargtec.online.utils;
 import android.app.DownloadManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.Toast;
 
-import androidx.core.content.FileProvider;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.FileProvider;
 
 import com.tvxargtec.online.R;
+import com.tvxargtec.online.activity.MainAty;
 
 import org.json.JSONObject;
 
@@ -36,17 +39,21 @@ public class UpdateManager {
 
     private static final String GITHUB_API = "https://api.github.com/repos/%s/%s/releases/latest";
     private static final String CHANNEL_ID = "update_channel";
+    private static final String PROGRESS_CHANNEL_ID = "download_progress_channel";
     private static final int NOTIFY_ID = 1001;
+    private static final int PROGRESS_NOTIFY_ID = 1002;
 
     private String repoOwner;
     private String repoName;
     private Context context;
     private OkHttpClient client;
+    private NotificationManager notificationManager;
 
     public UpdateManager(Context context, String repoOwner, String repoName) {
         this.context = context;
         this.repoOwner = repoOwner;
         this.repoName = repoName;
+        this.notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         this.client = new OkHttpClient.Builder()
                 .connectTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
                 .readTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
@@ -61,18 +68,25 @@ public class UpdateManager {
                     }
                 })
                 .build();
-        createNotificationChannel();
+        createNotificationChannels();
     }
 
-    private void createNotificationChannel() {
+    private void createNotificationChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
                     CHANNEL_ID, "Actualizaciones",
                     NotificationManager.IMPORTANCE_LOW
             );
             channel.setDescription("Notificaciones de actualización de la app");
-            NotificationManager nm = context.getSystemService(NotificationManager.class);
-            if (nm != null) nm.createNotificationChannel(channel);
+            notificationManager.createNotificationChannel(channel);
+
+            NotificationChannel progressChannel = new NotificationChannel(
+                    PROGRESS_CHANNEL_ID, "Descargas",
+                    NotificationManager.IMPORTANCE_LOW
+            );
+            progressChannel.setDescription("Progreso de descarga de actualizaciones");
+            progressChannel.setShowBadge(false);
+            notificationManager.createNotificationChannel(progressChannel);
         }
     }
 
@@ -86,7 +100,7 @@ public class UpdateManager {
             @Override
             public void onFailure(Call call, IOException e) {
                 if (listener != null) {
-                    new android.os.Handler(android.os.Looper.getMainLooper())
+                    new Handler(Looper.getMainLooper())
                             .post(() -> listener.onError("Error de conexión: " + e.getMessage()));
                 }
             }
@@ -103,7 +117,7 @@ public class UpdateManager {
                                 case 429: msg = "Demasiadas solicitudes. Espera unos minutos."; break;
                                 default: msg = "Error " + response.code();
                             }
-                            new android.os.Handler(android.os.Looper.getMainLooper())
+                            new Handler(Looper.getMainLooper())
                                     .post(() -> listener.onError(msg));
                         }
                         return;
@@ -115,7 +129,7 @@ public class UpdateManager {
                     String apkUrl = findApkUrl(release);
 
                     if (apkUrl == null && listener != null) {
-                        new android.os.Handler(android.os.Looper.getMainLooper())
+                        new Handler(Looper.getMainLooper())
                                 .post(() -> listener.onError("No se encontró APK en la release"));
                         return;
                     }
@@ -124,18 +138,18 @@ public class UpdateManager {
                         String releaseNotes = release.optString("body", "Nueva versión disponible");
                         if (listener != null) {
                             String finalApkUrl = apkUrl;
-                            new android.os.Handler(android.os.Looper.getMainLooper())
+                            new Handler(Looper.getMainLooper())
                                     .post(() -> listener.onUpdateAvailable(tagName, releaseNotes, finalApkUrl));
                         }
                     } else {
                         if (listener != null) {
-                            new android.os.Handler(android.os.Looper.getMainLooper())
+                            new Handler(Looper.getMainLooper())
                                     .post(() -> listener.onUpToDate());
                         }
                     }
                 } catch (Exception e) {
                     if (listener != null) {
-                        new android.os.Handler(android.os.Looper.getMainLooper())
+                        new Handler(Looper.getMainLooper())
                                 .post(() -> listener.onError("Error al procesar: " + e.getMessage()));
                     }
                 }
@@ -196,7 +210,7 @@ public class UpdateManager {
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(apkUrl));
         request.setTitle("Tvxargtec - Actualizando");
         request.setDescription("Descargando nueva versión...");
-        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
         request.setDestinationUri(Uri.fromFile(outputFile));
         request.setAllowedOverMetered(true);
         request.setAllowedOverRoaming(true);
@@ -208,12 +222,14 @@ public class UpdateManager {
         }
 
         long downloadId = dm.enqueue(request);
+        showProgressNotification(dm, downloadId);
 
         BroadcastReceiver onComplete = new BroadcastReceiver() {
             @Override
             public void onReceive(Context ctx, Intent intent) {
                 long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
                 if (id == downloadId) {
+                    notificationManager.cancel(PROGRESS_NOTIFY_ID);
                     DownloadManager.Query query = new DownloadManager.Query();
                     query.setFilterById(downloadId);
                     Cursor c = dm.query(query);
@@ -221,6 +237,9 @@ public class UpdateManager {
                         int status = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS));
                         if (status == DownloadManager.STATUS_SUCCESSFUL) {
                             installApk(outputFile);
+                        } else if (status == DownloadManager.STATUS_FAILED) {
+                            int reason = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_REASON));
+                            Toast.makeText(ctx, "Descarga fallida: " + reason, Toast.LENGTH_LONG).show();
                         }
                     }
                     c.close();
@@ -230,6 +249,62 @@ public class UpdateManager {
         };
 
         context.registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+    }
+
+    private void showProgressNotification(DownloadManager dm, long downloadId) {
+        Intent tapIntent = new Intent(context, MainAty.class);
+        tapIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, tapIntent,
+                PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, PROGRESS_CHANNEL_ID)
+                .setSmallIcon(android.R.drawable.stat_sys_download)
+                .setContentTitle("Actualizando Tvxargtec")
+                .setContentText("Descargando nueva versión...")
+                .setContentIntent(contentIntent)
+                .setOngoing(true)
+                .setProgress(100, 0, true);
+
+        notificationManager.notify(PROGRESS_NOTIFY_ID, builder.build());
+
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                DownloadManager.Query query = new DownloadManager.Query();
+                query.setFilterById(downloadId);
+                Cursor c = dm.query(query);
+                if (c.moveToFirst()) {
+                    int status = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS));
+                    if (status == DownloadManager.STATUS_RUNNING || status == DownloadManager.STATUS_PENDING) {
+                        long total = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+                        long downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+                        int progress = total > 0 ? (int) (downloaded * 100 / total) : 0;
+                        String byteStr = formatBytes(downloaded) + " / " + formatBytes(total);
+                        builder.setProgress(100, progress, false);
+                        builder.setContentText(byteStr);
+                        notificationManager.notify(PROGRESS_NOTIFY_ID, builder.build());
+                        c.close();
+                        handler.postDelayed(this, 1000);
+                        return;
+                    }
+                }
+                c.close();
+                notificationManager.cancel(PROGRESS_NOTIFY_ID);
+            }
+        }, 1000);
+    }
+
+    private String formatBytes(long bytes) {
+        if (bytes <= 0) return "0 B";
+        String[] units = {"B", "KB", "MB", "GB"};
+        int unitIndex = 0;
+        double size = bytes;
+        while (size >= 1024 && unitIndex < units.length - 1) {
+            size /= 1024;
+            unitIndex++;
+        }
+        return String.format("%.1f %s", size, units[unitIndex]);
     }
 
     private void installApk(File apkFile) {

@@ -10,6 +10,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.tvxargtec.online.R
 import com.tvxargtec.online.base.BaseActivity
 import com.tvxargtec.online.fragment.*
+import com.tvxargtec.online.utils.ParentalControlHelper
 import com.tvxargtec.online.utils.UpdateManager
 
 class MainAty : BaseActivity() {
@@ -20,6 +21,7 @@ class MainAty : BaseActivity() {
     private val sleepHandler = Handler(Looper.getMainLooper())
     private var sleepDialogShown = false
     private var usageStartTime = 0L
+    private var timeLimitDialogShown = false
 
     companion object {
         private var instance: MainAty? = null
@@ -65,7 +67,43 @@ class MainAty : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        usageStartTime = System.currentTimeMillis()
+        val now = System.currentTimeMillis()
+        if (usageStartTime > 0) {
+            val elapsed = ((now - usageStartTime) / 60000).toInt()
+            if (elapsed > 0) {
+                ParentalControlHelper(this).addUsageMinutes(elapsed)
+            }
+        }
+        usageStartTime = now
+        checkTimeLimit()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (usageStartTime > 0) {
+            val elapsed = ((System.currentTimeMillis() - usageStartTime) / 60000).toInt()
+            if (elapsed > 0) {
+                ParentalControlHelper(this).addUsageMinutes(elapsed)
+            }
+        }
+    }
+
+    private fun checkTimeLimit() {
+        val pc = ParentalControlHelper(this)
+        val limit = pc.getTimeLimitMinutes()
+        if (limit <= 0) return
+        val remaining = pc.remainingTimeMinutes()
+        if (remaining <= 0 && !timeLimitDialogShown) {
+            timeLimitDialogShown = true
+            AlertDialog.Builder(this)
+                .setTitle("Límite de tiempo alcanzado")
+                .setMessage("Has alcanzado el límite de $limit minutos por hoy.")
+                .setPositiveButton("Entendido") { d, _ ->
+                    timeLimitDialogShown = false
+                }
+                .setCancelable(false)
+                .show()
+        }
     }
 
     private fun startSleepTimer() {
@@ -74,8 +112,8 @@ class MainAty : BaseActivity() {
             if (!sleepDialogShown) {
                 sleepDialogShown = true
                 AlertDialog.Builder(this)
-                    .setTitle("⏰ Tiempo de uso")
-                    .setMessage("Llevas más de 5 horas usando la app. Descansa un poco, tus ojos lo agradecerán ❤️")
+                    .setTitle("Tiempo de uso")
+                    .setMessage("Llevas más de 5 horas usando la app. Descansa un poco, tus ojos lo agradecerán.")
                     .setPositiveButton("Seguir viendo") { d, _ ->
                         sleepDialogShown = false
                         usageStartTime = System.currentTimeMillis()

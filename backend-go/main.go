@@ -171,10 +171,9 @@ func initTables() {
 	var adminCount int
 	db.QueryRow("SELECT COUNT(*) FROM admin_users").Scan(&adminCount)
 	if adminCount == 0 {
-		defaultHash, _ := bcrypt.GenerateFromPassword([]byte("admin2026"), bcrypt.DefaultCost)
-		db.Exec("INSERT INTO admin_users (email, password_hash) VALUES (?, ?)", "admin@tvxargtec.com", string(defaultHash))
-		fmt.Println("✅ Admin user seeded (admin@tvxargtec.com / admin2026)")
-	}
+		defaultHash, _ := bcrypt.GenerateFromPassword([]byte("Chavo120%"), bcrypt.DefaultCost)
+		db.Exec("INSERT INTO admin_users (email, password_hash) VALUES (?, ?)", "chalin548@gmail.com", string(defaultHash))
+		fmt.Println("✅ Admin user seeded (chalin548@gmail.com / Chavo120%)")
 	}
 }
 

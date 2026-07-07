@@ -110,9 +110,13 @@ public class ActivationAty extends BaseActivity {
                     });
                     activateFreePlan();
                 } else {
+                    String msg = json.optString("message", "Código inválido o expirado");
+                    String httpCode = "(HTTP " + response.code() + ")";
                     runOnUiThread(() -> {
                         tvStatus.setTextColor(getResources().getColor(R.color.semantic_error, getTheme()));
-                        tvStatus.setText("❌ " + json.optString("message", "Código inválido o expirado"));
+                        tvStatus.setText("❌ " + msg + " " + httpCode);
+                        tvStatus.setMaxLines(4);
+                        tvStatus.setEllipsize(null);
                         clearInputs();
                         isValidating = false;
                     });
@@ -120,7 +124,9 @@ public class ActivationAty extends BaseActivity {
             } catch (Exception e) {
                 runOnUiThread(() -> {
                     tvStatus.setTextColor(getResources().getColor(R.color.semantic_error, getTheme()));
-                    tvStatus.setText("❌ Error de conexión");
+                    tvStatus.setText("❌ Error de conexión: " + e.getClass().getSimpleName() + " - " + e.getMessage());
+                    tvStatus.setMaxLines(4);
+                    tvStatus.setEllipsize(null);
                     clearInputs();
                     isValidating = false;
                 });

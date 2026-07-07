@@ -343,6 +343,7 @@ func main() {
 	http.HandleFunc("/api/activation/code", activationCodeHandler)
 	http.HandleFunc("/api/activation/validate", activationValidateHandler)
 	http.HandleFunc("/api/activation/register-fallback", activationRegisterFallbackHandler)
+	http.HandleFunc("/api/activation/debug", activationDebugHandler)
 	http.HandleFunc("/api/notifications/send", sendNotificationHandler)
 	http.HandleFunc("/api/backup", backupHandler)
 	http.HandleFunc("/api/channel/report", channelReportHandler)
@@ -857,6 +858,7 @@ func activationCodeHandler(w http.ResponseWriter, r *http.Request) {
 
 	activationMu.Lock()
 	activationCodes[code] = time.Now().Add(120 * time.Second)
+	log.Printf("[CODE] generated='%s' map_size=%d", code, len(activationCodes))
 	activationMu.Unlock()
 
 	json.NewEncoder(w).Encode(map[string]interface{}{
@@ -911,9 +913,13 @@ func activationValidateHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Printf("[VALIDATE] code='%s' len=%d", req.Code, len(req.Code))
+
 	activationMu.RLock()
 	expiry, exists := activationCodes[req.Code]
 	activationMu.RUnlock()
+
+	log.Printf("[VALIDATE] exists=%v map_size=%d", exists, len(activationCodes))
 
 	if !exists || time.Now().After(expiry) {
 		json.NewEncoder(w).Encode(map[string]interface{}{"code": 400, "message": "Código inválido o expirado"})
@@ -932,6 +938,25 @@ func activationValidateHandler(w http.ResponseWriter, r *http.Request) {
 			"planType": "free",
 			"valid":    true,
 		},
+	})
+}
+
+func activationDebugHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	activationMu.RLock()
+	codes := make([]map[string]interface{}, 0)
+	for code, expiry := range activationCodes {
+		codes = append(codes, map[string]interface{}{
+			"code":    code,
+			"expires": expiry.Format(time.RFC3339),
+			"valid":   time.Now().Before(expiry),
+		})
+	}
+	activationMu.RUnlock()
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"code":  200,
+		"count": len(codes),
+		"data":  codes,
 	})
 }
 

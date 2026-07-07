@@ -40,3 +40,4 @@ AndroidManifest.xml
 cd.txt
 *-recovery-codes*
 *.pem
+keystore_b64.txt

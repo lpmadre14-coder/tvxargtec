@@ -110,10 +110,9 @@ public class ChannelDataManager {
     private static void saveToCache(Context context, List<Channel> channels) {
         try {
             File cacheFile = new File(context.getCacheDir(), "channels_cache.json");
-            String json = new Gson().toJson(channels);
             FileOutputStream fos = new FileOutputStream(cacheFile);
             OutputStreamWriter writer = new OutputStreamWriter(fos);
-            writer.write(json);
+            new Gson().toJson(channels, writer);
             writer.close();
         } catch (Exception ignored) {}
     }
@@ -241,8 +240,9 @@ public class ChannelDataManager {
                     }
                     completed[0]++;
                     if (completed[0] >= total) {
+                        final List<Channel> snapshot = new ArrayList<>(merged);
                         saveToCache(context, merged);
-                        new Handler(Looper.getMainLooper()).post(() -> callback.onDataLoaded(merged));
+                        new Handler(Looper.getMainLooper()).post(() -> callback.onDataLoaded(snapshot));
                     }
                 }
 
@@ -250,8 +250,9 @@ public class ChannelDataManager {
                 public void onError(Exception e) {
                     completed[0]++;
                     if (completed[0] >= total) {
+                        final List<Channel> snapshot = new ArrayList<>(merged);
                         saveToCache(context, merged);
-                        new Handler(Looper.getMainLooper()).post(() -> callback.onDataLoaded(merged));
+                        new Handler(Looper.getMainLooper()).post(() -> callback.onDataLoaded(snapshot));
                     }
                 }
             });
@@ -321,7 +322,7 @@ public class ChannelDataManager {
                         List<String> lineList = new ArrayList<>();
                         Collections.addAll(lineList, lines);
                         List<Channel> channels = M3u8Parser.parseLines(lineList);
-                        new Handler(Looper.getMainLooper()).post(() -> callback.onDataLoaded(channels));
+                        callback.onDataLoaded(channels);
                     } else {
                         callback.onError(new Exception("HTTP " + response.code()));
                     }

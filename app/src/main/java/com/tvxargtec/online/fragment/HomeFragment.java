@@ -1,5 +1,6 @@
 package com.tvxargtec.online.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -148,30 +149,38 @@ public class HomeFragment extends Fragment {
     private void loadChannels() {
         if (loadingContainer != null) loadingContainer.setVisibility(View.VISIBLE);
 
-        ChannelDataManager.fetchRemoteM3USources(requireContext(), new ChannelDataManager.DataCallback() {
+        if (!isAdded()) return;
+        Context ctx = requireContext();
+
+        ChannelDataManager.fetchRemoteM3USources(ctx, new ChannelDataManager.DataCallback() {
             @Override
             public void onDataLoaded(List<Channel> channels) {
+                if (!isAdded()) return;
                 updateChannelSections(channels);
             }
 
             @Override
             public void onError(Exception e) {
-                updateChannelSections(ChannelDataManager.getChannels(requireContext(), ""));
+                if (!isAdded()) return;
+                updateChannelSections(ChannelDataManager.getChannels(ctx, ""));
             }
         });
     }
 
     private void updateChannelSections(List<Channel> allChannels) {
+        if (!isAdded()) return;
+        Context ctx = requireContext();
+
         List<Channel> continueWatching = allChannels.subList(0, Math.min(5, allChannels.size()));
         if (adapterContinueWatching == null) {
-            adapterContinueWatching = new ChannelAdapter(requireContext(), continueWatching, channel -> Unit.INSTANCE);
+            adapterContinueWatching = new ChannelAdapter(ctx, continueWatching, channel -> Unit.INSTANCE);
             rvContinueWatching.setAdapter(adapterContinueWatching);
         } else {
             adapterContinueWatching.updateChannels(continueWatching);
         }
 
         if (adapterLiveChannels == null) {
-            adapterLiveChannels = new ChannelAdapter(requireContext(), allChannels, channel -> Unit.INSTANCE);
+            adapterLiveChannels = new ChannelAdapter(ctx, allChannels, channel -> Unit.INSTANCE);
             rvLiveChannels.setAdapter(adapterLiveChannels);
         } else {
             adapterLiveChannels.updateChannels(allChannels);
@@ -179,7 +188,7 @@ public class HomeFragment extends Fragment {
 
         List<Channel> recommended = allChannels.subList(0, Math.min(5, allChannels.size()));
         if (adapterRecommended == null) {
-            adapterRecommended = new ChannelAdapter(requireContext(), recommended, channel -> Unit.INSTANCE);
+            adapterRecommended = new ChannelAdapter(ctx, recommended, channel -> Unit.INSTANCE);
             rvRecommended.setAdapter(adapterRecommended);
         } else {
             adapterRecommended.updateChannels(recommended);
@@ -187,7 +196,7 @@ public class HomeFragment extends Fragment {
 
         List<Channel> newReleases = allChannels.subList(Math.max(0, allChannels.size() - 5), allChannels.size());
         if (adapterNewReleases == null) {
-            adapterNewReleases = new ChannelAdapter(requireContext(), newReleases, channel -> Unit.INSTANCE);
+            adapterNewReleases = new ChannelAdapter(ctx, newReleases, channel -> Unit.INSTANCE);
             rvNewReleases.setAdapter(adapterNewReleases);
         } else {
             adapterNewReleases.updateChannels(newReleases);
@@ -197,7 +206,7 @@ public class HomeFragment extends Fragment {
         int end = Math.min(allChannels.size(), start + 5);
         List<Channel> trending = allChannels.subList(start, end);
         if (adapterTrending == null) {
-            adapterTrending = new ChannelAdapter(requireContext(), trending, channel -> Unit.INSTANCE);
+            adapterTrending = new ChannelAdapter(ctx, trending, channel -> Unit.INSTANCE);
             rvTrending.setAdapter(adapterTrending);
         } else {
             adapterTrending.updateChannels(trending);

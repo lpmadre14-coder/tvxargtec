@@ -1,162 +1,176 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_primary"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:padding="32dp">
+    android:fillViewport="true">
 
-    <ImageView
-        android:layout_width="72dp"
-        android:layout_height="72dp"
-        android:layout_marginBottom="16dp"
-        android:src="@drawable/ic_vip"
-        android:tint="@color/brand_violet" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Activación Gratuita"
-        android:textColor="@color/text_primary"
-        android:textSize="22sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Ingresá el código de 6 dígitos de la web para activar el plan Free"
-        android:textColor="@color/text_secondary"
-        android:textSize="14sp"
-        android:gravity="center" />
-
-    <!-- Código a mostrar -->
-    <TextView
-        android:id="@+id/tvCodeLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="Tu código de activación:"
-        android:textColor="@color/text_secondary"
-        android:textSize="13sp" />
-
-    <TextView
-        android:id="@+id/tvDisplayCode"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:letterSpacing="0.15"
-        android:text="------"
-            android:textColor="@color/brand_cyan"
-        android:textSize="36sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/tvTimer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="⏱ 20s"
-        android:textColor="@color/text_secondary"
-        android:textSize="18sp"
-        android:textStyle="bold" />
-
-    <!-- Inputs código -->
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:padding="32dp"
+        android:layout_marginTop="48dp">
 
-        <EditText
-            android:id="@+id/etCode1"
-            android:layout_width="48dp"
-            android:layout_height="56dp"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/bg_pin_box"
+        <!-- Glow accent top -->
+        <View
+            android:layout_width="160dp"
+            android:layout_height="160dp"
+            android:background="@drawable/bg_glow_violet"
+            android:alpha="0.3"
+            android:layout_marginBottom="-120dp" />
+
+        <!-- Icon card -->
+        <LinearLayout
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:gravity="center"
-            android:inputType="number"
-            android:maxLength="1"
+            android:background="@drawable/bg_glass_card"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:src="@drawable/ic_vip"
+                android:tint="@color/brand_violet" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Activación Gratuita"
             android:textColor="@color/text_primary"
-            android:textSize="20sp"
+            android:textSize="24sp"
             android:textStyle="bold" />
 
-        <EditText
-            android:id="@+id/etCode2"
-            android:layout_width="48dp"
-            android:layout_height="56dp"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/bg_pin_box"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Ingresá el código de 6 dígitos\nde la web para activar el plan Free"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
             android:gravity="center"
-            android:inputType="number"
-            android:maxLength="1"
-            android:textColor="@color/text_primary"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:lineSpacingExtra="4dp" />
 
-        <EditText
-            android:id="@+id/etCode3"
-            android:layout_width="48dp"
-            android:layout_height="56dp"
-            android:layout_marginEnd="16dp"
-            android:background="@drawable/bg_pin_box"
+        <!-- Inputs código -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
             android:gravity="center"
-            android:inputType="number"
-            android:maxLength="1"
-            android:textColor="@color/text_primary"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:orientation="horizontal">
 
-        <EditText
-            android:id="@+id/etCode4"
-            android:layout_width="48dp"
-            android:layout_height="56dp"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/bg_pin_box"
-            android:gravity="center"
-            android:inputType="number"
-            android:maxLength="1"
-            android:textColor="@color/text_primary"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            <EditText
+                android:id="@+id/etCode1"
+                android:layout_width="52dp"
+                android:layout_height="60dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/bg_pin_box"
+                android:gravity="center"
+                android:inputType="number"
+                android:maxLength="1"
+                android:textColor="@color/text_primary"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:importantForAutofill="no" />
 
-        <EditText
-            android:id="@+id/etCode5"
-            android:layout_width="48dp"
-            android:layout_height="56dp"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/bg_pin_box"
-            android:gravity="center"
-            android:inputType="number"
-            android:maxLength="1"
-            android:textColor="@color/text_primary"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            <EditText
+                android:id="@+id/etCode2"
+                android:layout_width="52dp"
+                android:layout_height="60dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/bg_pin_box"
+                android:gravity="center"
+                android:inputType="number"
+                android:maxLength="1"
+                android:textColor="@color/text_primary"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:importantForAutofill="no" />
 
-        <EditText
-            android:id="@+id/etCode6"
-            android:layout_width="48dp"
-            android:layout_height="56dp"
-            android:background="@drawable/bg_pin_box"
+            <EditText
+                android:id="@+id/etCode3"
+                android:layout_width="52dp"
+                android:layout_height="60dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/bg_pin_box"
+                android:gravity="center"
+                android:inputType="number"
+                android:maxLength="1"
+                android:textColor="@color/text_primary"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:importantForAutofill="no" />
+
+            <EditText
+                android:id="@+id/etCode4"
+                android:layout_width="52dp"
+                android:layout_height="60dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/bg_pin_box"
+                android:gravity="center"
+                android:inputType="number"
+                android:maxLength="1"
+                android:textColor="@color/text_primary"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:importantForAutofill="no" />
+
+            <EditText
+                android:id="@+id/etCode5"
+                android:layout_width="52dp"
+                android:layout_height="60dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/bg_pin_box"
+                android:gravity="center"
+                android:inputType="number"
+                android:maxLength="1"
+                android:textColor="@color/text_primary"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:importantForAutofill="no" />
+
+            <EditText
+                android:id="@+id/etCode6"
+                android:layout_width="52dp"
+                android:layout_height="60dp"
+                android:background="@drawable/bg_pin_box"
+                android:gravity="center"
+                android:inputType="number"
+                android:maxLength="1"
+                android:textColor="@color/text_primary"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:importantForAutofill="no" />
+
+        </LinearLayout>
+
+        <!-- Status -->
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Ingresá el código de la web"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp"
+            android:gravity="center" />
+
+        <!-- Hint -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
             android:gravity="center"
-            android:inputType="number"
-            android:maxLength="1"
-            android:textColor="@color/text_primary"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:text="El código se genera en la web\nal hacer clic en «Activar código gratuito»"
+            android:textColor="@color/text_hint"
+            android:textSize="12sp"
+            android:lineSpacingExtra="3dp" />
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tvStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Ingresá el código mostrado arriba"
-        android:textColor="@color/text_secondary"
-        android:textSize="13sp"
-        android:gravity="center" />
-
-</LinearLayout>
+</ScrollView>

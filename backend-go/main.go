@@ -342,6 +342,7 @@ func main() {
 	http.HandleFunc("/api/fcm/register", fcmRegisterHandler)
 	http.HandleFunc("/api/activation/code", activationCodeHandler)
 	http.HandleFunc("/api/activation/validate", activationValidateHandler)
+	http.HandleFunc("/api/activation/register-fallback", activationRegisterFallbackHandler)
 	http.HandleFunc("/api/notifications/send", sendNotificationHandler)
 	http.HandleFunc("/api/backup", backupHandler)
 	http.HandleFunc("/api/channel/report", channelReportHandler)
@@ -352,7 +353,20 @@ func main() {
 	http.HandleFunc("/api/user/activate-free", activateFreeHandler)
 
 	fmt.Println("🚀 Servidor TVXargtec corriendo en http://localhost:8081")
-	log.Fatal(http.ListenAndServe(":8081", nil))
+	log.Fatal(http.ListenAndServe(":8081", corsMiddleware(http.DefaultServeMux)))
+}
+
+func corsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
 }
 
 // Handlers
@@ -842,7 +856,7 @@ func activationCodeHandler(w http.ResponseWriter, r *http.Request) {
 	code := fmt.Sprintf("%06d", mathrand.Intn(1000000))
 
 	activationMu.Lock()
-	activationCodes[code] = time.Now().Add(20 * time.Second)
+	activationCodes[code] = time.Now().Add(120 * time.Second)
 	activationMu.Unlock()
 
 	json.NewEncoder(w).Encode(map[string]interface{}{
@@ -850,7 +864,33 @@ func activationCodeHandler(w http.ResponseWriter, r *http.Request) {
 		"message": "Código generado",
 		"data": map[string]interface{}{
 			"code":      code,
-			"expiresIn": 20,
+			"expiresIn": 120,
+		},
+	})
+}
+
+func activationRegisterFallbackHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	if r.Method != http.MethodPost {
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 405, "message": "Método no permitido"})
+		return
+	}
+	var req struct {
+		Code string `json:"code"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || req.Code == "" {
+		json.NewEncoder(w).Encode(map[string]interface{}{"code": 400, "message": "Código requerido"})
+		return
+	}
+	activationMu.Lock()
+	activationCodes[req.Code] = time.Now().Add(120 * time.Second)
+	activationMu.Unlock()
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"code":    200,
+		"message": "Código registrado",
+		"data": map[string]interface{}{
+			"code":      req.Code,
+			"expiresIn": 120,
 		},
 	})
 }

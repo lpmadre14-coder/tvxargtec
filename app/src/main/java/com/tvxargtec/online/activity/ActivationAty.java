@@ -41,10 +41,6 @@ public class ActivationAty extends BaseActivity {
         et6 = findViewById(R.id.etCode6);
         tvStatus = findViewById(R.id.tvStatus);
 
-        findViewById(R.id.tvDisplayCode).setVisibility(android.view.View.GONE);
-        findViewById(R.id.tvTimer).setVisibility(android.view.View.GONE);
-        findViewById(R.id.tvCodeLabel).setVisibility(android.view.View.GONE);
-
         tvStatus.setText("Ingresá el código de 6 dígitos de la web");
     }
 

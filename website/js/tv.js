@@ -39,10 +39,16 @@ function handleAuth(e) {
     return false;
 }
 
-/* ── Activation 20s ── */
+/* ── Activation 120s ── */
 let timerInterval = null;
-let timeLeft = 20;
+let timeLeft = 120;
 let currentCode = '';
+
+function fmtTime(secs) {
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return `${m}:${s.toString().padStart(2, '0')}`;
+}
 
 function fetchCodeFromBackend() {
     return fetch('https://apitvxargtec.duckdns.org/api/activation/code')
@@ -52,36 +58,46 @@ function fetchCodeFromBackend() {
                 currentCode = data.data.code;
                 const el = document.getElementById('activationCode');
                 if (el) el.textContent = currentCode;
-                timeLeft = data.data.expiresIn || 20;
+                timeLeft = data.data.expiresIn || 120;
                 updateTimer();
                 return currentCode;
             }
-            return fallbackCode();
+            throw new Error('Respuesta inválida del servidor');
         })
-        .catch(() => fallbackCode());
-}
-
-function fallbackCode() {
-    currentCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const el = document.getElementById('activationCode');
-    if (el) el.textContent = currentCode;
-    timeLeft = 20;
-    updateTimer();
-    return currentCode;
+        .catch(() => {
+            // Generar fallback y registrarlo en backend
+            const code = Math.floor(100000 + Math.random() * 900000).toString();
+            return fetch('https://apitvxargtec.duckdns.org/api/activation/register-fallback', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({code: code})
+            }).then(() => {
+                currentCode = code;
+                const el = document.getElementById('activationCode');
+                if (el) el.textContent = currentCode;
+                timeLeft = 120;
+                updateTimer();
+                return currentCode;
+            }).catch(() => {
+                const el = document.getElementById('activationCode');
+                if (el) el.textContent = 'Error';
+                return null;
+            });
+        });
 }
 
 function updateTimer() {
     const el = document.getElementById('timer');
     if (!el) return;
-    el.textContent = `⏱ ${timeLeft}s`;
-    el.className = 'timer' + (timeLeft <= 5 ? ' warning' : '');
+    el.textContent = `⏱ ${fmtTime(timeLeft)}`;
+    el.className = 'timer' + (timeLeft <= 15 ? ' warning' : '');
     if (timeLeft <= 0) fetchCodeFromBackend();
 }
 
 function openActivation() {
     const modal = document.getElementById('activationModal');
     if (modal) modal.classList.add('active');
-    timeLeft = 20;
+    timeLeft = 120;
     clearInterval(timerInterval);
     fetchCodeFromBackend();
     timerInterval = setInterval(() => { timeLeft--; updateTimer(); }, 1000);
@@ -175,7 +191,7 @@ const translations = {
         sec1Title: 'FLAG_SECURE',
         sec1Desc: 'Bloqueo de capturas de pantalla en toda la app.',
         sec2Title: 'PIN 6 dígitos',
-        sec2Desc: 'Control parental con PIN configurable (default 525452).',
+        sec2Desc: 'Control parental con PIN configurable (default 123456).',
         sec3Title: 'JWT + Refresh',
         sec3Desc: 'Tokens con auto-refresh y renovación silenciosa.',
         sec4Title: 'ProGuard / R8',
@@ -195,7 +211,7 @@ const translations = {
         footer: 'Hecho con ❤️ en Argentina.',
         apiStatus: 'API Status',
         modalTitle: '🎫 Activación Gratuita',
-        modalDesc: 'Usá este código de 6 dígitos para activar el plan Free en la app. Vence en 20 segundos.',
+        modalDesc: 'Usá este código de 6 dígitos para activar el plan Free en la app. Vence en 2 minutos.',
         modalAuto: 'El código se regenera automáticamente al vencer.',
         authSuccess: '✅ Sesión iniciada. Descargá la app para disfrutar.',
         invalidCreds: 'Credenciales inválidas',
@@ -274,7 +290,7 @@ const translations = {
         sec1Title: 'FLAG_SECURE',
         sec1Desc: 'Screenshot blocking throughout the app.',
         sec2Title: '6-digit PIN',
-        sec2Desc: 'Parental control with configurable PIN (default 525452).',
+        sec2Desc: 'Parental control with configurable PIN (default 123456).',
         sec3Title: 'JWT + Refresh',
         sec3Desc: 'Tokens with auto-refresh and silent renewal.',
         sec4Title: 'ProGuard / R8',
@@ -294,7 +310,7 @@ const translations = {
         footer: 'Made with ❤️ in Argentina.',
         apiStatus: 'API Status',
         modalTitle: '🎫 Free Activation',
-        modalDesc: 'Use this 6-digit code to activate the Free plan in the app. Expires in 20 seconds.',
+        modalDesc: 'Use this 6-digit code to activate the Free plan in the app. Expires in 2 minutes.',
         modalAuto: 'The code regenerates automatically when it expires.',
         authSuccess: '✅ Session started. Download the app to enjoy.',
         invalidCreds: 'Invalid credentials',
@@ -373,7 +389,7 @@ const translations = {
         sec1Title: 'FLAG_SECURE',
         sec1Desc: 'Bloqueio de capturas de tela em todo o app.',
         sec2Title: 'PIN 6 dígitos',
-        sec2Desc: 'Controle parental com PIN configurável (padrão 525452).',
+        sec2Desc: 'Controle parental com PIN configurável (padrão 123456).',
         sec3Title: 'JWT + Refresh',
         sec3Desc: 'Tokens com auto-refresh e renovação silenciosa.',
         sec4Title: 'ProGuard / R8',
@@ -393,7 +409,7 @@ const translations = {
         footer: 'Feito com ❤️ na Argentina.',
         apiStatus: 'Status da API',
         modalTitle: '🎫 Ativação Gratuita',
-        modalDesc: 'Use este código de 6 dígitos para ativar o plano Free no app. Expira em 20 segundos.',
+        modalDesc: 'Use este código de 6 dígitos para ativar o plano Free no app. Expira em 2 minutos.',
         modalAuto: 'O código regenera automaticamente ao expirar.',
         authSuccess: '✅ Sessão iniciada. Baixe o app para aproveitar.',
         invalidCreds: 'Credenciais inválidas',
